@@ -130,6 +130,182 @@ paths:
         required: true
         schema:
           $ref: "#/definitions/PasswordResetRequest"
+  /users:
+    get:
+      tags:
+      - "users"
+      summary: "List users"
+      operationId: "listUsers"
+      produces:
+      - "application/json"
+      parameters:
+      - in: query
+        name: "status"
+        description: "Restrict status of the returned users"
+        required: false
+        type: string
+        enum: [enabled, disabled]
+      - in: query
+        name: "enrollment_status"
+        description: "Restrict enrollment status of the returned users"
+        required: false
+        type: string
+        enum: [enrolled, unenrolled, pending, expired]
+      - in: query
+        name: "group_name[]"
+        description: "Restrict groups of the returned users"
+        required: false
+        type: array
+        collectionFormat: multi
+        items:
+          type: integer
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: array
+            items:
+              allOf:
+              - $ref: "#/definitions/User"
+              - type: object
+                properties:
+                  total_devices:
+                    type: integer
+                    example: 2
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+    post:
+      tags:
+        - "users"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Create user"
+      operationId: "createUser"
+      parameters:
+      - in: "body"
+        name: "user"
+        description: "Information about the user to create and whether to send an email invitation"
+        required: true
+        schema:
+          type: object
+          properties:
+            user:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                enabled:
+                  type: boolean
+                  example: true
+                group_ids:
+                  type: array
+                  items:
+                    type: integer
+                name:
+                  type: string
+                  example: "John Doe"
+                phone_number:
+                  type: string
+                send_email_invitation:
+                  type: boolean
+      responses:
+        201:
+          description: "User created"
+          schema:
+            allOf:
+              - $ref: "#/definitions/User"
+              - type: object
+                properties:
+                  devices:
+                    # TODO point to device model (probably)
+                    type: array
+                    items:
+                      type: object
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+  /users/{id}:
+    patch:
+      tags:
+        - "users"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Edit user"
+      operationId: "editUser"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the user to edit"
+      - in: body
+        name: "user"
+        description: "User information to modify"
+        required: true
+        schema:
+          type: object
+          properties:
+            user:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                enabled:
+                  type: boolean
+                  example: true
+                group_ids:
+                  type: array
+                  items:
+                    type: integer
+                name:
+                  type: string
+                  example: "John Doe"
+                phone_number:
+                  type: string
+      responses:
+        200:
+          description: "User edited"
+          schema:
+            allOf:
+              - $ref: "#/definitions/User"
+              - type: object
+                properties:
+                  devices:
+                    # TODO point to device model (probably)
+                    type: array
+                    items:
+                      type: object
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+    delete:
+      tags:
+        - "users"
+      summary: "Delete user"
+      operationId: "deleteUser"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the user to delete"
+      responses:
+        204:
+          description: "User deleted"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
 securityDefinitions:
   petstore_auth:
     type: "oauth2"
@@ -178,7 +354,8 @@ definitions:
           image:
             # TODO is it a string?
             type: string
-            nullable: true
+            x-nullable: true
+            example: null
           tenant_name:
             type: string
             example: "Fyde"
@@ -208,6 +385,7 @@ definitions:
         properties:
           id:
             type: integer
+            example: 34
           email:
             type: string
             format: email
@@ -228,7 +406,8 @@ definitions:
           image:
             # TODO is it a string?
             type: string
-            nullable: true
+            x-nullable: true
+            example: true
           tenant_name:
             type: string
             example: "Fyde"
@@ -254,6 +433,66 @@ definitions:
       redirect_url:
         type: string
         example: "https://enterprise.fyde.com/auth/password"
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 23
+      name:
+        type: string
+        example: "John Doe"
+      email:
+        type: string
+        format: email
+      enabled:
+        type: boolean 
+        example: true
+      modifiable:
+        type: boolean
+        example: true
+      updated_at:
+        type: string
+        format: date-time
+      created_at:
+        type: string
+        format: date-time
+      status:
+        type: string
+        # TODO figure out other possible enum options
+        enum: [unenrolled, enrolled]
+        example: unenrolled
+      enrollment_status:
+        type: string
+        enum: [valid, expired]
+        example: expired
+      enrollment:
+        type: object
+        properties:
+          count:
+            type: integer
+            example: 4
+          expiration:
+            type: string
+            format: date-time
+          url:
+            type: string
+            format: url
+            example: "https://www.fyde.com/enroll?endpoint=https%3A%2F%2Fexample.com&token=7b3710ca-9078-4ca3-9375-0a99392b02cf"
+      groups:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: "All"
+            color:
+              type: string
+              example: "#20B8AA"
   GenericUnauthorizedResponse:
     type: object
     properties:
