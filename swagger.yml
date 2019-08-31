@@ -62,6 +62,7 @@ paths:
       - "application/json"
       produces:
       - "application/json"
+      security: []
       parameters:
       - in: "body"
         name: "body"
@@ -308,17 +309,28 @@ paths:
           schema:
             $ref: "#/definitions/GenericUnauthorizedResponse"
 securityDefinitions:
-  petstore_auth:
-    type: "oauth2"
-    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
-    flow: "implicit"
-    scopes:
-      write:pets: "modify pets in your account"
-      read:pets: "read your pets"
-  api_key:
+  tokenType:
     type: "apiKey"
-    name: "api_key"
+    name: "token-type"
     in: "header"
+  uid:
+    type: "apiKey"
+    name: "uid"
+    in: "header"
+  accessToken:
+    type: "apiKey"
+    name: "access-token"
+    in: "header"
+  client:
+    type: "apiKey"
+    name: "client"
+    in: "header"
+security:
+  # require all at once
+  - tokenType: []
+    uid: []
+    accessToken: []
+    client: []
 parameters:
   sortParam:
     in: query
