@@ -158,7 +158,8 @@ paths:
         type: array
         collectionFormat: multi
         items:
-          type: integer
+          type: string
+      - $ref: '#/parameters/sortParam'
       responses:
         200:
           description: "successful operation"
@@ -318,6 +319,14 @@ securityDefinitions:
     type: "apiKey"
     name: "api_key"
     in: "header"
+parameters:
+  sortParam:
+    in: query
+    name: sort
+    description: "Sort results"
+    type: string
+    enum: ['created_asc', 'created_desc', 'id_asc', 'id_desc', 'name_asc', 'name_desc', 'updated_asc', 'updated_desc']
+    required: false
 definitions:
   SignInRequest:
     type: "object"
