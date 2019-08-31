@@ -75,6 +75,19 @@ paths:
           description: "successful operation"
           schema:
             $ref: "#/definitions/SignInResponse"
+          headers:
+            Access-Token:
+              type: string
+              description: Authentication - Access Token
+            Client:
+              type: string
+              description: Authentication - Client
+            Token-Type:
+              type: string
+              description: Authentication - Token Type (Bearer)
+            UID:
+              type: string
+              description: Authentication - User ID
         401:
           description: "unauthorized: invalid credentials"
           schema:
@@ -131,6 +144,9 @@ paths:
         required: true
         schema:
           $ref: "#/definitions/PasswordResetRequest"
+      responses:
+        200:
+          description: "successful operation"
   /users:
     get:
       tags:
@@ -309,10 +325,6 @@ paths:
           schema:
             $ref: "#/definitions/GenericUnauthorizedResponse"
 securityDefinitions:
-  tokenType:
-    type: "apiKey"
-    name: "token-type"
-    in: "header"
   uid:
     type: "apiKey"
     name: "uid"
@@ -327,8 +339,7 @@ securityDefinitions:
     in: "header"
 security:
   # require all at once
-  - tokenType: []
-    uid: []
+  - uid: []
     accessToken: []
     client: []
 parameters:
