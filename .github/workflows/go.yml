@@ -28,12 +28,7 @@ jobs:
         mkdir -p "$(dirname "${WORKDIR}")"
         ln -s "${PWD}" "${WORKDIR}"
         cd "${WORKDIR}"
-        pwd
-        ls
 
-        git config --global credential.helper store
-        echo "https://${GITHUB_TOKEN}:x-oauth-basic@github.com" >> ~/.git-credentials
-        git config --global url."https://github.com".insteadOf git://github.com
         go get -v -t -d ./...
         if [ -f Gopkg.toml ]; then
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
