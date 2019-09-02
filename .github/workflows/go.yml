@@ -20,8 +20,18 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com/"
-        git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com".insteadOf "git://github.com"
+        WORKDIR="${GOPATH}/src/github.com/${GITHUB_REPOSITORY}"
+
+        # Go can only find dependencies if they're under $GOPATH/src.
+        # GitHub Actions mounts your repository outside of $GOPATH.
+        # So symlink the repository into $GOPATH, and then cd to it.
+        mkdir -p "$(dirname "${WORKDIR}")"
+        ln -s "${PWD}" "${WORKDIR}"
+        cd "${WORKDIR}"
+
+        git config --global credential.helper store
+        echo "https://${GITHUB_TOKEN}:x-oauth-basic@github.com" >> ~/.git-credentials
+        git config --global url."https://github.com".insteadOf git://github.com
         go get -v -t -d ./...
         if [ -f Gopkg.toml ]; then
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
