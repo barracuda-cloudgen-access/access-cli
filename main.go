@@ -11,6 +11,7 @@ import (
 
 	apiclient "github.com/oNaiPs/fyde-cli/client"
 	apiauth "github.com/oNaiPs/fyde-cli/client/auth"
+	apidevices "github.com/oNaiPs/fyde-cli/client/devices"
 	apiusers "github.com/oNaiPs/fyde-cli/client/users"
 	"github.com/oNaiPs/fyde-cli/models"
 )
@@ -49,20 +50,32 @@ func main() {
 
 	log.Println("Logged in as", signInResponse.Payload.Data.Name)
 
-	uparams := apiusers.NewListUsersParams()
-
 	authWriter := FydeAPIKeyAuth(signInResponse.AccessToken,
 		signInResponse.Client,
 		signInResponse.UID)
 
 	// make the request to get all users
-	resp, err := client.Users.ListUsers(uparams, authWriter)
+	uparams := apiusers.NewListUsersParams()
+	uresp, err := client.Users.ListUsers(uparams, authWriter)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for _, item := range resp.Payload {
+	log.Println("User list:")
+	for _, item := range uresp.Payload {
 		log.Println("User", item.Name, "has email", item.Email, "and enrollment status", item.EnrollmentStatus)
+	}
+
+	// make the request to get all devices
+	dparams := apidevices.NewListDevicesParams()
+	dresp, err := client.Devices.ListDevices(dparams, authWriter)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("Device list:")
+	for _, item := range dresp.Payload {
+		log.Println("Device", item.ID, "has status", item.Status, "and belongs to user", item.User.Name)
 	}
 }
 

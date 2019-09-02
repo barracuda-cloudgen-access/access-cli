@@ -12,6 +12,7 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/oNaiPs/fyde-cli/client/auth"
+	"github.com/oNaiPs/fyde-cli/client/devices"
 	"github.com/oNaiPs/fyde-cli/client/users"
 )
 
@@ -59,6 +60,8 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *FydeEnterp
 	cli.Transport = transport
 
 	cli.Auth = auth.New(transport, formats)
+
+	cli.Devices = devices.New(transport, formats)
 
 	cli.Users = users.New(transport, formats)
 
@@ -108,6 +111,8 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 type FydeEnterpriseConsole struct {
 	Auth *auth.Client
 
+	Devices *devices.Client
+
 	Users *users.Client
 
 	Transport runtime.ClientTransport
@@ -118,6 +123,8 @@ func (c *FydeEnterpriseConsole) SetTransport(transport runtime.ClientTransport) 
 	c.Transport = transport
 
 	c.Auth.SetTransport(transport)
+
+	c.Devices.SetTransport(transport)
 
 	c.Users.SetTransport(transport)
 
