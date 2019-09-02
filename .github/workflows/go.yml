@@ -19,9 +19,8 @@ jobs:
     - name: Get dependencies
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GOPATH: ~/go
       run: |
-        WORKDIR="${GOPATH}/src/github.com/${GITHUB_REPOSITORY}"
+        WORKDIR="~/go/src/github.com/${GITHUB_REPOSITORY}"
 
         # Go can only find dependencies if they're under $GOPATH/src.
         # GitHub Actions mounts your repository outside of $GOPATH.
