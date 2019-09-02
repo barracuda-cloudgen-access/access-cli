@@ -20,7 +20,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        WORKDIR="~/go/src/github.com/${GITHUB_REPOSITORY}"
+        WORKDIR="${HOME}/go/src/github.com/${GITHUB_REPOSITORY}"
 
         # Go can only find dependencies if they're under $GOPATH/src.
         # GitHub Actions mounts your repository outside of $GOPATH.
@@ -28,6 +28,7 @@ jobs:
         mkdir -p "$(dirname "${WORKDIR}")"
         ln -s "${PWD}" "${WORKDIR}"
         cd "${WORKDIR}"
+        pwd
         ls
 
         git config --global credential.helper store
