@@ -306,6 +306,9 @@ paths:
           description: "unauthorized: invalid credentials or missing authentication headers"
           schema:
             $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "user not found"
+        
     delete:
       tags:
         - "users"
@@ -324,6 +327,8 @@ paths:
           description: "unauthorized: invalid credentials or missing authentication headers"
           schema:
             $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "user not found"
   /groups:
     get:
       tags:
@@ -448,6 +453,8 @@ paths:
           description: "unauthorized: invalid credentials or missing authentication headers"
           schema:
             $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "group not found"
     patch:
       tags:
         - "groups"
@@ -495,6 +502,8 @@ paths:
           description: "unauthorized: invalid credentials or missing authentication headers"
           schema:
             $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "group not found"
     delete:
       tags:
         - "groups"
@@ -513,6 +522,8 @@ paths:
           description: "unauthorized: invalid credentials or missing authentication headers"
           schema:
             $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "group not found"
   /devices:
     get:
       tags:
@@ -575,6 +586,8 @@ paths:
           description: "unauthorized: invalid credentials or missing authentication headers"
           schema:
             $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "device not found"
 
 securityDefinitions:
   uid:
