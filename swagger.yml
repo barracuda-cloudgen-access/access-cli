@@ -324,6 +324,195 @@ paths:
           description: "unauthorized: invalid credentials or missing authentication headers"
           schema:
             $ref: "#/definitions/GenericUnauthorizedResponse"
+  /groups:
+    get:
+      tags:
+      - "groups"
+      summary: "List groups"
+      operationId: "listGroups"
+      produces:
+      - "application/json"
+      parameters:
+      - $ref: '#/parameters/sortParam'
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: array
+            items:
+              allOf:
+              - $ref: "#/definitions/Group"
+              - type: object
+                properties:
+                  total_users:
+                    type: object
+                    properties:
+                      pending:
+                        type: integer
+                        example: 1
+                      unenrolled:
+                        type: integer
+                        example: 1
+                      enrolled:
+                        type: integer
+                        example: 1
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+    post:
+      tags:
+        - "groups"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Create group"
+      operationId: "createGroup"
+      parameters:
+      - in: "body"
+        name: "group"
+        description: "Information about the group to create"
+        required: true
+        schema:
+          type: object
+          properties:
+            group:
+              type: object
+              properties:
+                color:
+                  type: string
+                description:
+                  type: string
+                  example: "An example group"
+                name:
+                  type: string
+                  example: "Ninjas"
+      responses:
+        201:
+          description: "Group created"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Group"
+              - type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 23
+                        name:
+                          type: string
+                          example: "John Doe"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+  /groups/{id}:
+    get:
+      tags:
+        - "groups"
+      produces:
+      - "application/json"
+      summary: "Retrieve information about a group"
+      operationId: "getGroup"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the group to retrieve"
+      responses:
+        200:
+          description: "Group info"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Group"
+              - type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 23
+                        name:
+                          type: string
+                          example: "John Doe"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+    patch:
+      tags:
+        - "groups"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Edit group"
+      operationId: "editGroup"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the group to edit"
+      - in: body
+        name: "group"
+        description: "Group information to modify"
+        required: true
+        schema:
+          type: object
+          properties:
+            group:
+              $ref: "#/definitions/Group"
+      responses:
+        200:
+          description: "Group edited"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Group"
+              - type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 23
+                        name:
+                          type: string
+                          example: "John Doe"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+    delete:
+      tags:
+        - "groups"
+      summary: "Delete group"
+      operationId: "deleteGroup"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the group to delete"
+      responses:
+        204:
+          description: "Group deleted"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
   /devices:
     get:
       tags:
@@ -588,6 +777,33 @@ definitions:
             color:
               type: string
               example: "#20B8AA"
+  Group:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 23
+      name:
+        type: string
+        example: "Ninjas"
+      color:
+        type: string
+      description:
+        type: string 
+        example: "An example group"
+      external_id:
+        # TODO is this an integer?
+        type: integer
+        x-nullable: true
+        example: null
+      updated_at:
+        type: string
+        format: date-time
+      created_at:
+        type: string
+        format: date-time
+      modifiable:
+        type: boolean
   Device:
     type: object
     properties:
