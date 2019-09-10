@@ -13,4 +13,5 @@ require (
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.3.2
 	golang.org/x/crypto v0.0.0-20190617133340-57b3e21c3d56 // indirect
+	golang.org/x/tools v0.0.0-20190617190820-da514acc4774 // indirect
 )

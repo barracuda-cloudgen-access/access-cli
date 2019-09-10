@@ -32,9 +32,12 @@ var endpointCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		if authViper.GetString("endpoint") == "" {
+		endpoint := authViper.GetString("endpoint")
+		if endpoint == "" {
 			fmt.Println("Endpoint not currently set")
 		}
+		fmt.Println("Currently configured endpoint:")
+		fmt.Println(endpoint)
 	},
 }
 
