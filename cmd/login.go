@@ -33,15 +33,9 @@ var password string
 
 // loginCmd represents the login command
 var loginCmd = &cobra.Command{
-	Use:   "login",
-	Short: "Sign in to the console and store access token",
-	PreRunE: func(cmd *cobra.Command, args []string) error {
-		if authViper.GetString("endpoint") == "" || global.Client == nil {
-			return fmt.Errorf("endpoint not set! Run `fyde-cli endpoint [hostname]` first")
-		}
-
-		return nil
-	},
+	Use:     "login",
+	Short:   "Sign in to the console and store access token",
+	PreRunE: preRunCheckEndpoint,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		passwordfd, err := cmd.Flags().GetInt("password-fd")
 		if err == nil && passwordfd >= 0 {
@@ -114,9 +108,9 @@ var loginCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(loginCmd)
 
-	loginCmd.Flags().StringVarP(&username, "username", "u", "", "Username to use when logging in")
-	loginCmd.Flags().IntP("password-fd", "d", -1, "Read password from file descriptor, terminated by end of file, '\\r' or '\\n'.")
-	loginCmd.Flags().StringVarP(&password, "password", "p", "", "Password to use when logging in. Note that the password can be viewed by other processes. Prefer --password-fd instead.")
+	loginCmd.Flags().StringVarP(&username, "username", "u", "", "username to use when logging in")
+	loginCmd.Flags().IntP("password-fd", "d", -1, "read password from file descriptor, terminated by end of file, '\\r' or '\\n'.")
+	loginCmd.Flags().StringVarP(&password, "password", "p", "", "password to use when logging in. Note that the password can be viewed by other processes. Prefer --password-fd instead.")
 
 	// Here you will define your flags and configuration settings.
 

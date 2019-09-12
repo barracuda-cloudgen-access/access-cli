@@ -161,12 +161,13 @@ func initClient() {
 
 	switch authViper.GetString(ckeyAuthMethod) {
 	case "bearerToken":
-	default:
 		accessToken := authViper.GetString(ckeyAuthAccessToken)
 		client := authViper.GetString(ckeyAuthClient)
 		uid := authViper.GetString(ckeyAuthUID)
 		global.AuthWriter = FydeAPIKeyAuth(accessToken, client, uid)
+	default:
 	}
+
 }
 
 // FydeAPIKeyAuth provides an API key auth info writer

@@ -21,26 +21,25 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// endpointCmd represents the endpoint command
-var endpointCmd = &cobra.Command{
-	Use:   "endpoint",
-	Short: "Get currently configured console endpoint",
-	PreRunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) > 0 && args[0] != "get" {
-			return fmt.Errorf("use `fyde-cli endpoint set` to set the console endpoint")
-		}
-		return nil
-	},
+// usersCmd represents the users command
+var usersCmd = &cobra.Command{
+	Use:   "users",
+	Short: "Operations on users",
 	Run: func(cmd *cobra.Command, args []string) {
-		endpoint := authViper.GetString(ckeyAuthEndpoint)
-		if endpoint == "" {
-			fmt.Println("Endpoint not currently set")
-		}
-		fmt.Println("Currently configured endpoint:")
-		fmt.Println(endpoint)
+		fmt.Println("users called")
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(endpointCmd)
+	rootCmd.AddCommand(usersCmd)
+
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// usersCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// usersCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
