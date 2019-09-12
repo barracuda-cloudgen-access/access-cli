@@ -43,6 +43,7 @@ type globalInfo struct {
 	Transport  *httptransport.Runtime
 	Client     *apiclient.FydeEnterpriseConsole
 	AuthWriter runtime.ClientAuthInfoWriter
+	Verbose    bool
 }
 
 var global globalInfo
@@ -77,6 +78,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/fyde/fyde-cli/config.yaml)")
 	rootCmd.PersistentFlags().StringVar(&authFile, "auth", "", "credentials file (default is $HOME/.config/fyde/fyde-cli/auth.yaml)")
+	rootCmd.PersistentFlags().BoolVarP(&global.Verbose, "verbose", "v", false, "verbose output")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -109,7 +111,7 @@ func initConfig() {
 	cfgViper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
-	if err := cfgViper.ReadInConfig(); err == nil {
+	if err := cfgViper.ReadInConfig(); err == nil && global.Verbose {
 		fmt.Println("Using config file:", cfgViper.ConfigFileUsed())
 	}
 }
@@ -141,7 +143,7 @@ func initAuthConfig() {
 	authViper.AutomaticEnv() // read in environment variables that match
 
 	// If a credentials file is found, read it in.
-	if err := authViper.ReadInConfig(); err == nil {
+	if err := authViper.ReadInConfig(); err == nil && global.Verbose {
 		fmt.Println("Using credentials file:", authViper.ConfigFileUsed())
 	}
 }
