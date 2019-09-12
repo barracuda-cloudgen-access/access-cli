@@ -65,7 +65,7 @@ func preRunFlagCheckOutput(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func processErrorResponse(response interface{}, err error) error {
+func processErrorResponse(err error) error {
 	// TODO prepare for other error response types
 	// (maybe use reflection if we can always get the Payload from within the error type)
 	switch r := err.(type) {
