@@ -28,15 +28,16 @@ import (
 	apiauth "github.com/oNaiPs/fyde-cli/client/auth"
 )
 
-var username string
-var password string
-
 // loginCmd represents the login command
 var loginCmd = &cobra.Command{
 	Use:     "login",
 	Short:   "Sign in to the console and store access token",
 	PreRunE: preRunCheckEndpoint,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// ignoring errors, as we'll just ask for these if they are blank
+		username, _ := cmd.Flags().GetString("username")
+		password, _ := cmd.Flags().GetString("password")
+
 		passwordfd, err := cmd.Flags().GetInt("password-fd")
 		if err == nil && passwordfd >= 0 {
 			// TODO reading from FD is broken, figure out why later
@@ -108,9 +109,9 @@ var loginCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(loginCmd)
 
-	loginCmd.Flags().StringVarP(&username, "username", "u", "", "username to use when logging in")
+	loginCmd.Flags().StringP("username", "u", "", "username to use when logging in")
 	loginCmd.Flags().IntP("password-fd", "d", -1, "read password from file descriptor, terminated by end of file, '\\r' or '\\n'.")
-	loginCmd.Flags().StringVarP(&password, "password", "p", "", "password to use when logging in. Note that the password can be viewed by other processes. Prefer --password-fd instead.")
+	loginCmd.Flags().StringP("password", "p", "", "password to use when logging in. Note that the password can be viewed by other processes. Prefer --password-fd instead.")
 
 	// Here you will define your flags and configuration settings.
 
