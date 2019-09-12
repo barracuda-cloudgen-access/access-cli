@@ -17,9 +17,12 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/thoas/go-funk"
+
+	apiusers "github.com/oNaiPs/fyde-cli/client/users"
 )
 
 func preRunCheckEndpoint(cmd *cobra.Command, args []string) error {
@@ -60,4 +63,15 @@ func preRunFlagCheckOutput(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("invalid output format %s", output)
 	}
 	return nil
+}
+
+func processErrorResponse(response interface{}, err error) error {
+	// TODO prepare for other error response types
+	// (maybe use reflection if we can always get the Payload from within the error type)
+	switch r := err.(type) {
+	case *apiusers.ListUsersUnauthorized:
+		return fmt.Errorf(strings.Join(r.Payload.Errors, "\n"))
+	default:
+		return err
+	}
 }

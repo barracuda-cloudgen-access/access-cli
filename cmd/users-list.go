@@ -49,7 +49,7 @@ var usersListCmd = &cobra.Command{
 		uparams := apiusers.NewListUsersParams()
 		resp, err := global.Client.Users.ListUsers(uparams, global.AuthWriter)
 		if err != nil {
-			return err
+			return processErrorResponse(err)
 		}
 
 		tw := table.NewWriter()
