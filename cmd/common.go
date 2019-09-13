@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"math"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -74,4 +75,29 @@ func processErrorResponse(err error) error {
 	default:
 		return err
 	}
+}
+
+type pageable interface {
+	SetPerPage(perPage *int64)
+	SetPage(page *int64)
+}
+
+// forAllPages is a pagination helper
+// all int64 usage is because go-swagger really likes int64
+func forAllPages(params pageable, do func() (int64, error)) error {
+	// func do must return the total number of items
+	perPage := int64(50)
+
+	total := int64(math.MaxInt64)
+	var err error
+	for curPage := int64(0); perPage*curPage < total; curPage++ {
+		p := curPage + 1
+		params.SetPage(&p)
+		params.SetPerPage(&perPage)
+		total, err = do()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

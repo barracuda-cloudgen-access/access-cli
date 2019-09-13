@@ -47,7 +47,14 @@ var usersListCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		uparams := apiusers.NewListUsersParams()
-		resp, err := global.Client.Users.ListUsers(uparams, global.AuthWriter)
+		completePayload := []*apiusers.ListUsersOKBodyItems0{}
+		err := forAllPages(uparams, func() (int64, error) {
+			resp, err := global.Client.Users.ListUsers(uparams, global.AuthWriter)
+			if err == nil {
+				completePayload = append(completePayload, resp.Payload...)
+			}
+			return resp.Total, err
+		})
 		if err != nil {
 			return processErrorResponse(err)
 		}
@@ -64,7 +71,7 @@ var usersListCmd = &cobra.Command{
 			"EnrollmentStatus",
 		})
 
-		for _, item := range resp.Payload {
+		for _, item := range completePayload {
 			groups := strings.Join(funk.Map(item.Groups, func(g *models.UserGroupsItems0) string {
 				return g.Name
 			}).([]string), ",")
