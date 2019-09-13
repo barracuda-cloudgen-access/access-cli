@@ -13,6 +13,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
+	"github.com/go-openapi/swag"
 
 	strfmt "github.com/go-openapi/strfmt"
 )
@@ -20,7 +21,7 @@ import (
 // NewListDevicesParams creates a new ListDevicesParams object
 // with the default values initialized.
 func NewListDevicesParams() *ListDevicesParams {
-
+	var ()
 	return &ListDevicesParams{
 
 		timeout: cr.DefaultTimeout,
@@ -30,7 +31,7 @@ func NewListDevicesParams() *ListDevicesParams {
 // NewListDevicesParamsWithTimeout creates a new ListDevicesParams object
 // with the default values initialized, and the ability to set a timeout on a request
 func NewListDevicesParamsWithTimeout(timeout time.Duration) *ListDevicesParams {
-
+	var ()
 	return &ListDevicesParams{
 
 		timeout: timeout,
@@ -40,7 +41,7 @@ func NewListDevicesParamsWithTimeout(timeout time.Duration) *ListDevicesParams {
 // NewListDevicesParamsWithContext creates a new ListDevicesParams object
 // with the default values initialized, and the ability to set a context for a request
 func NewListDevicesParamsWithContext(ctx context.Context) *ListDevicesParams {
-
+	var ()
 	return &ListDevicesParams{
 
 		Context: ctx,
@@ -50,7 +51,7 @@ func NewListDevicesParamsWithContext(ctx context.Context) *ListDevicesParams {
 // NewListDevicesParamsWithHTTPClient creates a new ListDevicesParams object
 // with the default values initialized, and the ability to set a custom HTTPClient for a request
 func NewListDevicesParamsWithHTTPClient(client *http.Client) *ListDevicesParams {
-
+	var ()
 	return &ListDevicesParams{
 		HTTPClient: client,
 	}
@@ -60,6 +61,23 @@ func NewListDevicesParamsWithHTTPClient(client *http.Client) *ListDevicesParams 
 for the list devices operation typically these are written to a http.Request
 */
 type ListDevicesParams struct {
+
+	/*Page
+	  Page number
+
+	*/
+	Page *int64
+	/*PerPage
+	  Number of items to return per page
+
+	*/
+	PerPage *int64
+	/*Sort
+	  Sort results
+
+	*/
+	Sort *string
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -98,6 +116,39 @@ func (o *ListDevicesParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithPage adds the page to the list devices params
+func (o *ListDevicesParams) WithPage(page *int64) *ListDevicesParams {
+	o.SetPage(page)
+	return o
+}
+
+// SetPage adds the page to the list devices params
+func (o *ListDevicesParams) SetPage(page *int64) {
+	o.Page = page
+}
+
+// WithPerPage adds the perPage to the list devices params
+func (o *ListDevicesParams) WithPerPage(perPage *int64) *ListDevicesParams {
+	o.SetPerPage(perPage)
+	return o
+}
+
+// SetPerPage adds the perPage to the list devices params
+func (o *ListDevicesParams) SetPerPage(perPage *int64) {
+	o.PerPage = perPage
+}
+
+// WithSort adds the sort to the list devices params
+func (o *ListDevicesParams) WithSort(sort *string) *ListDevicesParams {
+	o.SetSort(sort)
+	return o
+}
+
+// SetSort adds the sort to the list devices params
+func (o *ListDevicesParams) SetSort(sort *string) {
+	o.Sort = sort
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *ListDevicesParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -105,6 +156,54 @@ func (o *ListDevicesParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.R
 		return err
 	}
 	var res []error
+
+	if o.Page != nil {
+
+		// query param page
+		var qrPage int64
+		if o.Page != nil {
+			qrPage = *o.Page
+		}
+		qPage := swag.FormatInt64(qrPage)
+		if qPage != "" {
+			if err := r.SetQueryParam("page", qPage); err != nil {
+				return err
+			}
+		}
+
+	}
+
+	if o.PerPage != nil {
+
+		// query param per_page
+		var qrPerPage int64
+		if o.PerPage != nil {
+			qrPerPage = *o.PerPage
+		}
+		qPerPage := swag.FormatInt64(qrPerPage)
+		if qPerPage != "" {
+			if err := r.SetQueryParam("per_page", qPerPage); err != nil {
+				return err
+			}
+		}
+
+	}
+
+	if o.Sort != nil {
+
+		// query param sort
+		var qrSort string
+		if o.Sort != nil {
+			qrSort = *o.Sort
+		}
+		qSort := qrSort
+		if qSort != "" {
+			if err := r.SetQueryParam("sort", qSort); err != nil {
+				return err
+			}
+		}
+
+	}
 
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)

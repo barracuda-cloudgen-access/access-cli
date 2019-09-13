@@ -54,6 +54,10 @@ func NewListUsersOK() *ListUsersOK {
 successful operation
 */
 type ListUsersOK struct {
+	/*Total number of items (for pagination)
+	 */
+	Total int64
+
 	Payload []*ListUsersOKBodyItems0
 }
 
@@ -66,6 +70,13 @@ func (o *ListUsersOK) GetPayload() []*ListUsersOKBodyItems0 {
 }
 
 func (o *ListUsersOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response header total
+	total, err := swag.ConvertInt64(response.GetHeader("total"))
+	if err != nil {
+		return errors.InvalidType("total", "header", "int64", response.GetHeader("total"))
+	}
+	o.Total = total
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {

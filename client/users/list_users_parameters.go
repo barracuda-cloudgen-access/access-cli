@@ -72,6 +72,16 @@ type ListUsersParams struct {
 
 	*/
 	GroupName []string
+	/*Page
+	  Page number
+
+	*/
+	Page *int64
+	/*PerPage
+	  Number of items to return per page
+
+	*/
+	PerPage *int64
 	/*Sort
 	  Sort results
 
@@ -143,6 +153,28 @@ func (o *ListUsersParams) SetGroupName(groupName []string) {
 	o.GroupName = groupName
 }
 
+// WithPage adds the page to the list users params
+func (o *ListUsersParams) WithPage(page *int64) *ListUsersParams {
+	o.SetPage(page)
+	return o
+}
+
+// SetPage adds the page to the list users params
+func (o *ListUsersParams) SetPage(page *int64) {
+	o.Page = page
+}
+
+// WithPerPage adds the perPage to the list users params
+func (o *ListUsersParams) WithPerPage(perPage *int64) *ListUsersParams {
+	o.SetPerPage(perPage)
+	return o
+}
+
+// SetPerPage adds the perPage to the list users params
+func (o *ListUsersParams) SetPerPage(perPage *int64) {
+	o.PerPage = perPage
+}
+
 // WithSort adds the sort to the list users params
 func (o *ListUsersParams) WithSort(sort *string) *ListUsersParams {
 	o.SetSort(sort)
@@ -195,6 +227,38 @@ func (o *ListUsersParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Reg
 	// query array param group_name[]
 	if err := r.SetQueryParam("group_name[]", joinedGroupName...); err != nil {
 		return err
+	}
+
+	if o.Page != nil {
+
+		// query param page
+		var qrPage int64
+		if o.Page != nil {
+			qrPage = *o.Page
+		}
+		qPage := swag.FormatInt64(qrPage)
+		if qPage != "" {
+			if err := r.SetQueryParam("page", qPage); err != nil {
+				return err
+			}
+		}
+
+	}
+
+	if o.PerPage != nil {
+
+		// query param per_page
+		var qrPerPage int64
+		if o.PerPage != nil {
+			qrPerPage = *o.PerPage
+		}
+		qPerPage := swag.FormatInt64(qrPerPage)
+		if qPerPage != "" {
+			if err := r.SetQueryParam("per_page", qPerPage); err != nil {
+				return err
+			}
+		}
+
 	}
 
 	if o.Sort != nil {

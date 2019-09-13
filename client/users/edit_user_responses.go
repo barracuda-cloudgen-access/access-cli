@@ -39,6 +39,12 @@ func (o *EditUserReader) ReadResponse(response runtime.ClientResponse, consumer 
 			return nil, err
 		}
 		return nil, result
+	case 404:
+		result := NewEditUserNotFound()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 
 	default:
 		return nil, runtime.NewAPIError("unknown error", response, response.Code())
@@ -107,6 +113,27 @@ func (o *EditUserUnauthorized) readResponse(response runtime.ClientResponse, con
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
 		return err
 	}
+
+	return nil
+}
+
+// NewEditUserNotFound creates a EditUserNotFound with default headers values
+func NewEditUserNotFound() *EditUserNotFound {
+	return &EditUserNotFound{}
+}
+
+/*EditUserNotFound handles this case with default header values.
+
+user not found
+*/
+type EditUserNotFound struct {
+}
+
+func (o *EditUserNotFound) Error() string {
+	return fmt.Sprintf("[PATCH /users/{id}][%d] editUserNotFound ", 404)
+}
+
+func (o *EditUserNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }

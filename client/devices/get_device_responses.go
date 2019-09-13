@@ -39,6 +39,12 @@ func (o *GetDeviceReader) ReadResponse(response runtime.ClientResponse, consumer
 			return nil, err
 		}
 		return nil, result
+	case 404:
+		result := NewGetDeviceNotFound()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 
 	default:
 		return nil, runtime.NewAPIError("unknown error", response, response.Code())
@@ -55,6 +61,10 @@ func NewGetDeviceOK() *GetDeviceOK {
 Device info
 */
 type GetDeviceOK struct {
+	/*Total number of items (for pagination)
+	 */
+	Total int64
+
 	Payload *GetDeviceOKBody
 }
 
@@ -67,6 +77,13 @@ func (o *GetDeviceOK) GetPayload() *GetDeviceOKBody {
 }
 
 func (o *GetDeviceOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response header total
+	total, err := swag.ConvertInt64(response.GetHeader("total"))
+	if err != nil {
+		return errors.InvalidType("total", "header", "int64", response.GetHeader("total"))
+	}
+	o.Total = total
 
 	o.Payload = new(GetDeviceOKBody)
 
@@ -107,6 +124,27 @@ func (o *GetDeviceUnauthorized) readResponse(response runtime.ClientResponse, co
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
 		return err
 	}
+
+	return nil
+}
+
+// NewGetDeviceNotFound creates a GetDeviceNotFound with default headers values
+func NewGetDeviceNotFound() *GetDeviceNotFound {
+	return &GetDeviceNotFound{}
+}
+
+/*GetDeviceNotFound handles this case with default header values.
+
+device not found
+*/
+type GetDeviceNotFound struct {
+}
+
+func (o *GetDeviceNotFound) Error() string {
+	return fmt.Sprintf("[GET /devices/{id}][%d] getDeviceNotFound ", 404)
+}
+
+func (o *GetDeviceNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }

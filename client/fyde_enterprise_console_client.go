@@ -13,6 +13,7 @@ import (
 
 	"github.com/oNaiPs/fyde-cli/client/auth"
 	"github.com/oNaiPs/fyde-cli/client/devices"
+	"github.com/oNaiPs/fyde-cli/client/groups"
 	"github.com/oNaiPs/fyde-cli/client/users"
 )
 
@@ -62,6 +63,8 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *FydeEnterp
 	cli.Auth = auth.New(transport, formats)
 
 	cli.Devices = devices.New(transport, formats)
+
+	cli.Groups = groups.New(transport, formats)
 
 	cli.Users = users.New(transport, formats)
 
@@ -113,6 +116,8 @@ type FydeEnterpriseConsole struct {
 
 	Devices *devices.Client
 
+	Groups *groups.Client
+
 	Users *users.Client
 
 	Transport runtime.ClientTransport
@@ -125,6 +130,8 @@ func (c *FydeEnterpriseConsole) SetTransport(transport runtime.ClientTransport) 
 	c.Auth.SetTransport(transport)
 
 	c.Devices.SetTransport(transport)
+
+	c.Groups.SetTransport(transport)
 
 	c.Users.SetTransport(transport)
 
