@@ -177,9 +177,15 @@ paths:
         items:
           type: string
       - $ref: '#/parameters/sortParam'
+      - $ref: '#/parameters/pageParam'
+      - $ref: '#/parameters/perPageParam'
       responses:
         200:
           description: "successful operation"
+          headers:
+            total:
+              description: "Total number of items (for pagination)"
+              type: integer
           schema:
             type: array
             items:
@@ -339,9 +345,15 @@ paths:
       - "application/json"
       parameters:
       - $ref: '#/parameters/sortParam'
+      - $ref: '#/parameters/pageParam'
+      - $ref: '#/parameters/perPageParam'
       responses:
         200:
           description: "successful operation"
+          headers:
+            total:
+              description: "Total number of items (for pagination)"
+              type: integer
           schema:
             type: array
             items:
@@ -532,6 +544,10 @@ paths:
       operationId: "listDevices"
       produces:
       - "application/json"
+      parameters:
+      - $ref: '#/parameters/sortParam'
+      - $ref: '#/parameters/pageParam'
+      - $ref: '#/parameters/perPageParam'
       responses:
         200:
           description: "successful operation"
@@ -560,6 +576,10 @@ paths:
       responses:
         200:
           description: "Device info"
+          headers:
+            total:
+              description: "Total number of items (for pagination)"
+              type: integer
           schema:
             allOf:
               - $ref: "#/definitions/Device"
@@ -614,6 +634,18 @@ parameters:
     description: "Sort results"
     type: string
     enum: ['created_asc', 'created_desc', 'id_asc', 'id_desc', 'name_asc', 'name_desc', 'updated_asc', 'updated_desc']
+    required: false
+  pageParam:
+    in: query
+    name: page
+    description: "Page number"
+    type: integer
+    required: false
+  perPageParam:
+    in: query
+    name: per_page
+    description: "Number of items to return per page"
+    type: integer
     required: false
 definitions:
   SignInRequest:
