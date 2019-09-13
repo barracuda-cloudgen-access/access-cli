@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"strings"
@@ -100,4 +101,18 @@ func forAllPages(params pageable, do func() (int64, error)) error {
 		}
 	}
 	return nil
+}
+
+func renderJSON(data interface{}) string {
+	var r []byte
+	var err error
+	if global.Verbose {
+		r, err = json.MarshalIndent(data, "", "  ")
+	} else {
+		r, err = json.Marshal(data)
+	}
+	if err != nil {
+		return ""
+	}
+	return string(r)
 }

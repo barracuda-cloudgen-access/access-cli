@@ -97,6 +97,8 @@ var usersListCmd = &cobra.Command{
 			result = tw.Render()
 		case "csv":
 			result = tw.RenderCSV()
+		case "json":
+			result = renderJSON(completePayload)
 		}
 		fmt.Println(result)
 		return nil
