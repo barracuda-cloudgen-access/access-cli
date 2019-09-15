@@ -87,21 +87,9 @@ var resourcesListCmd = &cobra.Command{
 			})
 		}
 
-		var result string
-		outputFormat, err := cmd.Flags().GetString("output")
-		if err != nil {
-			return err
-		}
-		switch outputFormat {
-		case "table":
-			result = tw.Render()
-		case "csv":
-			result = tw.RenderCSV()
-		case "json":
-			result = renderJSON(completePayload)
-		}
+		result, err := renderListOutput(cmd, completePayload, tw)
 		fmt.Println(result)
-		return nil
+		return err
 	},
 }
 

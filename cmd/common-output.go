@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/jedib0t/go-pretty/table"
 	"github.com/spf13/cobra"
 	"github.com/thoas/go-funk"
 )
@@ -42,7 +43,28 @@ func preRunFlagCheckOutput(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func renderJSON(data interface{}) string {
+func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Writer) (string, error) {
+	if _, ok := cmd.Annotations["output_flags_init"]; !ok {
+		panic("renderListOutput called for command where output flags were not initialized. This is a bug!")
+	}
+
+	outputFormat, err := cmd.Flags().GetString("output")
+	if err != nil {
+		return "", err
+	}
+	switch outputFormat {
+	case "table":
+		return tableWriter.Render(), nil
+	case "csv":
+		return tableWriter.RenderCSV(), nil
+	case "json":
+		return renderJSON(data)
+	default:
+		return "", fmt.Errorf("unsupported output format %s", outputFormat)
+	}
+}
+
+func renderJSON(data interface{}) (string, error) {
 	var r []byte
 	var err error
 	if global.Verbose {
@@ -51,7 +73,7 @@ func renderJSON(data interface{}) string {
 		r, err = json.Marshal(data)
 	}
 	if err != nil {
-		return ""
+		return "", err
 	}
-	return string(r)
+	return string(r), nil
 }
