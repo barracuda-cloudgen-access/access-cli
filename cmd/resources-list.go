@@ -49,7 +49,7 @@ var resourcesListCmd = &cobra.Command{
 		uparams := apiresources.NewListResourcesParams()
 		setSort(cmd, uparams)
 		completePayload := []*apiresources.ListResourcesOKBodyItems0{}
-		err := forAllPages(uparams, func() (int64, error) {
+		cutStart, cutEnd, err := forAllPages(cmd, uparams, func() (int64, error) {
 			resp, err := global.Client.AccessResources.ListResources(uparams, global.AuthWriter)
 			if err == nil {
 				completePayload = append(completePayload, resp.Payload...)
@@ -59,6 +59,7 @@ var resourcesListCmd = &cobra.Command{
 		if err != nil {
 			return processErrorResponse(err)
 		}
+		completePayload = completePayload[cutStart:int64min(cutEnd, int64(len(completePayload)))]
 
 		tw := table.NewWriter()
 		tw.Style().Format.Header = text.FormatDefault
@@ -117,7 +118,8 @@ func init() {
 	// is called directly, e.g.:
 	// resourcesListCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initPaginationFlags(resourcesListCmd)
 	initSortFlags(resourcesListCmd)
+	initOutputFlags(resourcesListCmd)
 	resourcesListCmd.Flags().StringP("filter", "f", "", "filter resources")
-	resourcesListCmd.Flags().StringP("output", "o", "table", "output format (table, json or csv)")
 }

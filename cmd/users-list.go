@@ -38,7 +38,7 @@ var usersListCmd = &cobra.Command{
 			return err
 		}
 
-		err = preRunFlagCheckOutput(cmd, args)
+		err = preRunFlagChecks(cmd, args)
 		if err != nil {
 			return err
 		}
@@ -49,7 +49,7 @@ var usersListCmd = &cobra.Command{
 		uparams := apiusers.NewListUsersParams()
 		setSort(cmd, uparams)
 		completePayload := []*apiusers.ListUsersOKBodyItems0{}
-		err := forAllPages(uparams, func() (int64, error) {
+		cutStart, cutEnd, err := forAllPages(cmd, uparams, func() (int64, error) {
 			resp, err := global.Client.Users.ListUsers(uparams, global.AuthWriter)
 			if err == nil {
 				completePayload = append(completePayload, resp.Payload...)
@@ -59,6 +59,7 @@ var usersListCmd = &cobra.Command{
 		if err != nil {
 			return processErrorResponse(err)
 		}
+		completePayload = completePayload[cutStart:int64min(cutEnd, int64(len(completePayload)))]
 
 		tw := table.NewWriter()
 		tw.Style().Format.Header = text.FormatDefault
@@ -119,7 +120,8 @@ func init() {
 	// is called directly, e.g.:
 	// usersListCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initPaginationFlags(usersListCmd)
 	initSortFlags(usersListCmd)
+	initOutputFlags(usersListCmd)
 	usersListCmd.Flags().StringP("filter", "f", "", "filter users")
-	usersListCmd.Flags().StringP("output", "o", "table", "output format (table, json or csv)")
 }

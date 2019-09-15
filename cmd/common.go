@@ -16,13 +16,10 @@ limitations under the License.
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
-	"math"
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/thoas/go-funk"
 
 	apiusers "github.com/oNaiPs/fyde-cli/client/users"
 )
@@ -56,17 +53,6 @@ func preRunCheckAuth(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func preRunFlagCheckOutput(cmd *cobra.Command, args []string) error {
-	output, err := cmd.Flags().GetString("output")
-	if err != nil {
-		return err
-	}
-	if !funk.Contains([]string{"table", "json", "csv"}, output) {
-		return fmt.Errorf("invalid output format %s", output)
-	}
-	return nil
-}
-
 func processErrorResponse(err error) error {
 	// TODO prepare for other error response types
 	// (maybe use reflection if we can always get the Payload from within the error type)
@@ -78,64 +64,38 @@ func processErrorResponse(err error) error {
 	}
 }
 
-type sortable interface {
-	SetSort(sort *string)
-}
-
-func initSortFlags(cmd *cobra.Command) {
+func preRunFlagChecks(cmd *cobra.Command, args []string) error {
 	if cmd.Annotations == nil {
 		cmd.Annotations = make(map[string]string)
 	}
-	cmd.Annotations["sort_flags_init"] = "yes"
-	cmd.Flags().String("sort", "id_asc", "sort output. Possible options include: id_{asc|desc}, name_{asc|desc}, created_{asc|desc}, updated_{asc|desc}")
-}
 
-func setSort(cmd *cobra.Command, s sortable) {
-	if _, ok := cmd.Annotations["sort_flags_init"]; !ok {
-		panic("setSort called for command where sorting flag was not initialized. This is a bug!")
-	}
-	sort, err := cmd.Flags().GetString("sort")
-	// TODO perform some sort of parameter validation?
-	if err == nil {
-		s.SetSort(&sort)
-	}
-}
-
-type pageable interface {
-	SetPerPage(perPage *int64)
-	SetPage(page *int64)
-}
-
-// forAllPages is a pagination helper
-// all int64 usage is because go-swagger really likes int64
-func forAllPages(params pageable, do func() (int64, error)) error {
-	// func do must return the total number of items
-	perPage := int64(50)
-
-	total := int64(math.MaxInt64)
-	var err error
-	for curPage := int64(0); perPage*curPage < total; curPage++ {
-		p := curPage + 1
-		params.SetPage(&p)
-		params.SetPerPage(&perPage)
-		total, err = do()
+	if _, ok := cmd.Annotations["pagination_flags_init"]; ok {
+		err := preRunFlagCheckPagination(cmd, args)
 		if err != nil {
 			return err
 		}
 	}
+
+	if _, ok := cmd.Annotations["sort_flags_init"]; ok {
+		err := preRunFlagCheckSort(cmd, args)
+		if err != nil {
+			return err
+		}
+	}
+
+	if _, ok := cmd.Annotations["output_flags_init"]; ok {
+		err := preRunFlagCheckOutput(cmd, args)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
-func renderJSON(data interface{}) string {
-	var r []byte
-	var err error
-	if global.Verbose {
-		r, err = json.MarshalIndent(data, "", "  ")
-	} else {
-		r, err = json.Marshal(data)
+func int64min(a, b int64) int64 {
+	if a < b {
+		return a
 	}
-	if err != nil {
-		return ""
-	}
-	return string(r)
+	return b
 }
