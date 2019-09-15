@@ -9,7 +9,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
+	"github.com/go-openapi/swag"
 
 	strfmt "github.com/go-openapi/strfmt"
 
@@ -52,6 +54,10 @@ func NewListDevicesOK() *ListDevicesOK {
 successful operation
 */
 type ListDevicesOK struct {
+	/*Total number of items (for pagination)
+	 */
+	Total int64
+
 	Payload []*models.Device
 }
 
@@ -64,6 +70,13 @@ func (o *ListDevicesOK) GetPayload() []*models.Device {
 }
 
 func (o *ListDevicesOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response header total
+	total, err := swag.ConvertInt64(response.GetHeader("total"))
+	if err != nil {
+		return errors.InvalidType("total", "header", "int64", response.GetHeader("total"))
+	}
+	o.Total = total
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {

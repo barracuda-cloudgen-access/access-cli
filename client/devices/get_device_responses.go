@@ -61,10 +61,6 @@ func NewGetDeviceOK() *GetDeviceOK {
 Device info
 */
 type GetDeviceOK struct {
-	/*Total number of items (for pagination)
-	 */
-	Total int64
-
 	Payload *GetDeviceOKBody
 }
 
@@ -77,13 +73,6 @@ func (o *GetDeviceOK) GetPayload() *GetDeviceOKBody {
 }
 
 func (o *GetDeviceOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	// response header total
-	total, err := swag.ConvertInt64(response.GetHeader("total"))
-	if err != nil {
-		return errors.InvalidType("total", "header", "int64", response.GetHeader("total"))
-	}
-	o.Total = total
 
 	o.Payload = new(GetDeviceOKBody)
 
