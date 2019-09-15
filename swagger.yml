@@ -551,6 +551,10 @@ paths:
       responses:
         200:
           description: "successful operation"
+          headers:
+            total:
+              description: "Total number of items (for pagination)"
+              type: integer
           schema:
             type: array
             items:
@@ -576,10 +580,6 @@ paths:
       responses:
         200:
           description: "Device info"
-          headers:
-            total:
-              description: "Total number of items (for pagination)"
-              type: integer
           schema:
             allOf:
               - $ref: "#/definitions/Device"
@@ -608,6 +608,222 @@ paths:
             $ref: "#/definitions/GenericUnauthorizedResponse"
         404:
           description: "device not found"
+  /access_resources:
+    get:
+      tags:
+      - "access_resources"
+      summary: "List resources"
+      operationId: "listResources"
+      produces:
+      - "application/json"
+      parameters:
+      - $ref: '#/parameters/sortParam'
+      - $ref: '#/parameters/pageParam'
+      - $ref: '#/parameters/perPageParam'
+      responses:
+        200:
+          description: "successful operation"
+          headers:
+            total:
+              description: "Total number of items (for pagination)"
+              type: integer
+          schema:
+            type: array
+            items:
+              allOf:
+                - $ref: "#/definitions/AccessResource"
+                - type: object
+                  properties:
+                    access_proxy_id:
+                      type: string
+                      format: uuid
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+    post:
+      tags:
+        - "access_resources"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Create resource"
+      operationId: "createResource"
+      parameters:
+      - in: "body"
+        name: "resource"
+        description: "Information about the resource to create"
+        required: true
+        schema:
+          type: object
+          properties:
+            access_resource:
+              type: object
+              properties:
+                access_policy_ids:
+                  type: array
+                  items:
+                    type: integer
+                    example: 42
+                # TODO some of these fields might not be required (I imagine the backend only cares about IDs)
+                access_policy_name:
+                  type: string
+                  example: "Deny All"
+                access_proxy_id:
+                  type: string
+                  format: uuid
+                access_proxy_name:
+                  type: string
+                internal_host:
+                  type: string
+                  example: "10.1.1.3"
+                name:
+                  type: string
+                  example: "Graphite"
+                notes:
+                  type: string
+                ports:
+                  type: array
+                  items:
+                    type: string
+                    example: "80:80"
+                public_host:
+                  type: string
+                  example: "graphite.local"
+                enabled:
+                  type: boolean
+                  example: true
+      responses:
+        201:
+          description: "Resource created"
+          schema:
+            $ref: "#/definitions/AccessResource"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+  /access_resources/{id}:
+    get:
+      tags:
+        - "access_resources"
+      produces:
+      - "application/json"
+      summary: "Retrieve information about a resource"
+      operationId: "getResource"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the resource to retrieve"
+      responses:
+        200:
+          description: "Resource info"
+          schema:
+            allOf:
+              - $ref: "#/definitions/AccessResource"
+              - type: object
+                properties:
+                  access_proxy_name:
+                    type: string
+                  last_access_at:
+                    # TODO guessing it's a string
+                    type: string
+                    x-nullable: true
+                    format: date-time
+                  access_count:
+                    type: object
+                    properties:
+                      denied:
+                        type: integer
+                      granted:
+                        type: integer
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "resource not found"
+    patch:
+      tags:
+        - "access_resources"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Edit resource"
+      operationId: "editResource"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: string
+        format: uuid
+        description: "The ID of the resource to edit"
+      - in: body
+        name: "resource"
+        description: "Resource information to modify"
+        required: true
+        schema:
+          type: object
+          properties:
+            access_resource:
+              allOf:
+              - $ref: "#/definitions/AccessResource"
+              - type: object
+                properties:
+                  access_proxy_name:
+                    type: string
+                  last_access_at:
+                    # TODO guessing it's a string
+                    type: string
+                    x-nullable: true
+                    format: date-time
+                  access_count:
+                    type: object
+                    properties:
+                      denied:
+                        type: integer
+                      granted:
+                        type: integer
+      responses:
+        200:
+          description: "Resource edited"
+          schema:
+            allOf:
+              - $ref: "#/definitions/AccessResource"
+              - type: object
+                properties:
+                  access_proxy_name:
+                    type: string
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "resource not found"
+    delete:
+      tags:
+        - "access_resources"
+      summary: "Delete resource"
+      operationId: "deleteResource"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: string
+        format: uuid
+        description: "The ID of the resource to delete"
+      responses:
+        204:
+          description: "Resource deleted"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "resource not found"
 
 securityDefinitions:
   uid:
@@ -914,6 +1130,52 @@ definitions:
       os_version:
         type: string
         example: "13.0.0"
+  AccessResource:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+        example: Graphite
+      enabled:
+        type: boolean
+      internal_ports:
+        type: array
+        items:
+          type: string
+          example: "80"
+      public_ports:
+        type: array
+        items:
+          type: string
+          example: "80"
+      ports:
+        type: array
+        items:
+          type: string
+          example: "80:80"
+      internal_host:
+        type: string
+        example: "10.0.3.14"
+      public_host:
+        type: string
+        example: "graphite.local"
+      notes:
+        type: string
+      access_policies:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 42
+            name:
+              type: string
+              example: "Deny All"
+
 
   GenericUnauthorizedResponse:
     type: object
