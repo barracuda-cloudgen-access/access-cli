@@ -47,6 +47,7 @@ var usersListCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		uparams := apiusers.NewListUsersParams()
+		setSort(cmd, uparams)
 		completePayload := []*apiusers.ListUsersOKBodyItems0{}
 		err := forAllPages(uparams, func() (int64, error) {
 			resp, err := global.Client.Users.ListUsers(uparams, global.AuthWriter)
@@ -118,6 +119,7 @@ func init() {
 	// is called directly, e.g.:
 	// usersListCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initSortFlags(usersListCmd)
 	usersListCmd.Flags().StringP("filter", "f", "", "filter users")
 	usersListCmd.Flags().StringP("output", "o", "table", "output format (table, json or csv)")
 }
