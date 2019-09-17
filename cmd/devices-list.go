@@ -51,9 +51,10 @@ var devicesListCmd = &cobra.Command{
 		completePayload := []*models.Device{}
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
 			resp, err := global.Client.Devices.ListDevices(params, global.AuthWriter)
-			if err == nil {
-				completePayload = append(completePayload, resp.Payload...)
+			if err != nil {
+				return 0, 0, err
 			}
+			completePayload = append(completePayload, resp.Payload...)
 			return len(resp.Payload), resp.Total, err
 		})
 		if err != nil {

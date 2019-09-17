@@ -23,6 +23,9 @@ import (
 
 	"github.com/spf13/cobra"
 
+	apiresources "github.com/oNaiPs/fyde-cli/client/access_resources"
+	apidevices "github.com/oNaiPs/fyde-cli/client/devices"
+	apigroups "github.com/oNaiPs/fyde-cli/client/groups"
 	apiusers "github.com/oNaiPs/fyde-cli/client/users"
 )
 
@@ -60,6 +63,12 @@ func processErrorResponse(err error) error {
 	// (maybe use reflection if we can always get the Payload from within the error type)
 	switch r := err.(type) {
 	case *apiusers.ListUsersUnauthorized:
+		return fmt.Errorf(strings.Join(r.Payload.Errors, "\n"))
+	case *apigroups.ListGroupsUnauthorized:
+		return fmt.Errorf(strings.Join(r.Payload.Errors, "\n"))
+	case *apidevices.ListDevicesUnauthorized:
+		return fmt.Errorf(strings.Join(r.Payload.Errors, "\n"))
+	case *apiresources.ListResourcesUnauthorized:
 		return fmt.Errorf(strings.Join(r.Payload.Errors, "\n"))
 	default:
 		return err
