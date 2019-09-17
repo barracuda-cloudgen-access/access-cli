@@ -42,10 +42,11 @@ var cfgViper *viper.Viper
 var authViper *viper.Viper
 
 type globalInfo struct {
-	Transport  *httptransport.Runtime
-	Client     *apiclient.FydeEnterpriseConsole
-	AuthWriter runtime.ClientAuthInfoWriter
-	Verbose    bool
+	Transport    *httptransport.Runtime
+	Client       *apiclient.FydeEnterpriseConsole
+	AuthWriter   runtime.ClientAuthInfoWriter
+	Verbose      bool
+	FetchPerPage int
 }
 
 var global globalInfo
@@ -162,6 +163,7 @@ func initClient() {
 	}
 	global.Transport = httptransport.New(endpoint, "/api/v1", nil)
 	global.Client = apiclient.New(global.Transport, strfmt.Default)
+	global.FetchPerPage = 50
 
 	switch authViper.GetString(ckeyAuthMethod) {
 	case "bearerToken":
