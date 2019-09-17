@@ -47,6 +47,7 @@ type globalInfo struct {
 	AuthWriter   runtime.ClientAuthInfoWriter
 	Verbose      bool
 	FetchPerPage int
+	FilterData   map[*cobra.Command]*filterData
 }
 
 var global globalInfo

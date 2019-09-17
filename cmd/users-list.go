@@ -50,6 +50,7 @@ var usersListCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apiusers.NewListUsersParams()
 		setSort(cmd, params)
+		setFilter(cmd, params.SetGroupName, params.SetStatus, params.SetEnrollmentStatus)
 		completePayload := []*apiusers.ListUsersOKBodyItems0{}
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
 			resp, err := global.Client.Users.ListUsers(params, global.AuthWriter)
@@ -112,6 +113,9 @@ func init() {
 
 	initPaginationFlags(usersListCmd)
 	initSortFlags(usersListCmd)
+	initFilterFlags(usersListCmd,
+		filterType{"group", "[]string"},
+		filterType{"enabled-status", "string"},
+		filterType{"status", "string"})
 	initOutputFlags(usersListCmd)
-	usersListCmd.Flags().StringP("filter", "f", "", "filter users")
 }
