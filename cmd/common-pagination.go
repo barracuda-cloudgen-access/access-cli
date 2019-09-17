@@ -81,7 +81,7 @@ func forAllPages(cmd *cobra.Command, params pageable, do func() (int, int64, err
 		rangeEnd-- // user-facing values are 1-based
 	}
 
-	perPage := int64(0)
+	perPage := int64(50)
 
 	total := int64(math.MaxInt64)
 	curPage := rangeStart / perPage
@@ -106,6 +106,5 @@ func forAllPages(cmd *cobra.Command, params pageable, do func() (int, int64, err
 	if sliceEnd > int64(totalAdded) {
 		sliceEnd = int64(totalAdded)
 	}
-	fmt.Println(sliceStart, sliceEnd)
 	return sliceStart, sliceEnd, nil
 }
