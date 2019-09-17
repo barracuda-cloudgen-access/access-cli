@@ -60,8 +60,8 @@ func preRunFlagCheckPagination(cmd *cobra.Command, args []string) error {
 
 // forAllPages is a pagination helper
 // all int64 usage is because go-swagger really likes int64
-// function `do` must return the total number of items
-func forAllPages(cmd *cobra.Command, params pageable, do func() (int64, error)) (sliceStart, sliceEnd int64, err error) {
+// function `do` must return the number of items added in each iteration and the total number of items
+func forAllPages(cmd *cobra.Command, params pageable, do func() (int, int64, error)) (sliceStart, sliceEnd int64, err error) {
 	if _, ok := cmd.Annotations["pagination_flags_init"]; !ok {
 		panic("forAllPages called for command where pagination flags were not initialized. This is a bug!")
 	}
@@ -81,21 +81,31 @@ func forAllPages(cmd *cobra.Command, params pageable, do func() (int64, error)) 
 		rangeEnd-- // user-facing values are 1-based
 	}
 
-	perPage := int64(50)
+	perPage := int64(0)
 
 	total := int64(math.MaxInt64)
 	curPage := rangeStart / perPage
 	sliceStart = rangeStart - curPage*perPage
 	sliceEnd = rangeEnd - curPage*perPage
 	lastPage := rangeEnd/perPage + perPage
+	totalAdded := 0
 	for ; curPage < lastPage && perPage*curPage < total; curPage++ {
 		p := curPage + 1
 		params.SetPage(&p)
 		params.SetPerPage(&perPage)
-		total, err = do()
+		added := 0
+		added, total, err = do()
 		if err != nil {
 			return 0, 0, err
 		}
+		totalAdded += added
 	}
+	if sliceStart > int64(totalAdded) {
+		sliceStart = int64(totalAdded)
+	}
+	if sliceEnd > int64(totalAdded) {
+		sliceEnd = int64(totalAdded)
+	}
+	fmt.Println(sliceStart, sliceEnd)
 	return sliceStart, sliceEnd, nil
 }

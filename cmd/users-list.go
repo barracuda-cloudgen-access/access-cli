@@ -51,17 +51,17 @@ var usersListCmd = &cobra.Command{
 		params := apiusers.NewListUsersParams()
 		setSort(cmd, params)
 		completePayload := []*apiusers.ListUsersOKBodyItems0{}
-		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int64, error) {
+		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
 			resp, err := global.Client.Users.ListUsers(params, global.AuthWriter)
 			if err == nil {
 				completePayload = append(completePayload, resp.Payload...)
 			}
-			return resp.Total, err
+			return len(resp.Payload), resp.Total, err
 		})
 		if err != nil {
 			return processErrorResponse(err)
 		}
-		completePayload = completePayload[cutStart:int64min(cutEnd, int64(len(completePayload)))]
+		completePayload = completePayload[cutStart:cutEnd]
 
 		tw := table.NewWriter()
 		tw.Style().Format.Header = text.FormatDefault

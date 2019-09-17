@@ -94,10 +94,3 @@ func preRunFlagChecks(cmd *cobra.Command, args []string) error {
 
 	return nil
 }
-
-func int64min(a, b int64) int64 {
-	if a < b {
-		return a
-	}
-	return b
-}

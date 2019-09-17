@@ -49,17 +49,17 @@ var devicesListCmd = &cobra.Command{
 		params := apidevices.NewListDevicesParams()
 		//setSort(cmd, params) // TODO re-enable when/if devices supports sort
 		completePayload := []*models.Device{}
-		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int64, error) {
+		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
 			resp, err := global.Client.Devices.ListDevices(params, global.AuthWriter)
 			if err == nil {
 				completePayload = append(completePayload, resp.Payload...)
 			}
-			return resp.Total, err
+			return len(resp.Payload), resp.Total, err
 		})
 		if err != nil {
 			return processErrorResponse(err)
 		}
-		completePayload = completePayload[cutStart:int64min(cutEnd, int64(len(completePayload)))]
+		completePayload = completePayload[cutStart:cutEnd]
 
 		tw := table.NewWriter()
 		tw.Style().Format.Header = text.FormatDefault
