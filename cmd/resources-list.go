@@ -40,7 +40,7 @@ var resourcesListCmd = &cobra.Command{
 			return err
 		}
 
-		err = preRunFlagCheckOutput(cmd, args)
+		err = preRunFlagChecks(cmd, args)
 		if err != nil {
 			return err
 		}
@@ -48,11 +48,11 @@ var resourcesListCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		uparams := apiresources.NewListResourcesParams()
-		setSort(cmd, uparams)
+		params := apiresources.NewListResourcesParams()
+		setSort(cmd, params)
 		completePayload := []*apiresources.ListResourcesOKBodyItems0{}
-		cutStart, cutEnd, err := forAllPages(cmd, uparams, func() (int64, error) {
-			resp, err := global.Client.AccessResources.ListResources(uparams, global.AuthWriter)
+		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int64, error) {
+			resp, err := global.Client.AccessResources.ListResources(params, global.AuthWriter)
 			if err == nil {
 				completePayload = append(completePayload, resp.Payload...)
 			}

@@ -19,21 +19,19 @@ limitations under the License.
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
-	"github.com/thoas/go-funk"
 
-	apiusers "github.com/oNaiPs/fyde-cli/client/users"
+	apidevices "github.com/oNaiPs/fyde-cli/client/devices"
 	"github.com/oNaiPs/fyde-cli/models"
 )
 
-// usersListCmd represents the list command
-var usersListCmd = &cobra.Command{
+// devicesListCmd represents the list command
+var devicesListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List users",
+	Short: "List devices",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {
@@ -48,11 +46,11 @@ var usersListCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		params := apiusers.NewListUsersParams()
-		setSort(cmd, params)
-		completePayload := []*apiusers.ListUsersOKBodyItems0{}
+		params := apidevices.NewListDevicesParams()
+		//setSort(cmd, params) // TODO re-enable when/if devices supports sort
+		completePayload := []*models.Device{}
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int64, error) {
-			resp, err := global.Client.Users.ListUsers(params, global.AuthWriter)
+			resp, err := global.Client.Devices.ListDevices(params, global.AuthWriter)
 			if err == nil {
 				completePayload = append(completePayload, resp.Payload...)
 			}
@@ -67,27 +65,33 @@ var usersListCmd = &cobra.Command{
 		tw.Style().Format.Header = text.FormatDefault
 		tw.AppendHeader(table.Row{
 			"ID",
-			"Name",
-			"Email",
-			"Groups",
-			"Enabled",
+			"User",
+			"User Name",
+			"OS",
+			"Brand",
+			"Model",
 			"Status",
-			"EnrollmentStatus",
+			"Failed security checks",
+			"Total security checks",
 		})
 
 		for _, item := range completePayload {
-			groups := strings.Join(funk.Map(item.Groups, func(g *models.UserGroupsItems0) string {
-				return g.Name
-			}).([]string), ",")
-
+			failedChecks := 0
+			for _, check := range item.SecurityChecks {
+				if check.Status != "passed" {
+					failedChecks++
+				}
+			}
 			tw.AppendRow(table.Row{
 				item.ID,
-				item.Name,
-				item.Email,
-				groups,
-				item.Enabled,
+				item.User.ID,
+				item.User.Name,
+				item.Os,
+				item.Brand,
+				item.HardwareModel,
 				item.Status,
-				item.EnrollmentStatus,
+				failedChecks,
+				len(item.SecurityChecks),
 			})
 		}
 
@@ -98,20 +102,20 @@ var usersListCmd = &cobra.Command{
 }
 
 func init() {
-	usersCmd.AddCommand(usersListCmd)
+	devicesCmd.AddCommand(devicesListCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// usersListCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// devicesListCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// usersListCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// devicesListCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	initPaginationFlags(usersListCmd)
-	initSortFlags(usersListCmd)
-	initOutputFlags(usersListCmd)
-	usersListCmd.Flags().StringP("filter", "f", "", "filter users")
+	initPaginationFlags(devicesListCmd)
+	//initSortFlags(devicesListCmd) // TODO re-enable when/if devices supports sort
+	initOutputFlags(devicesListCmd)
+	devicesListCmd.Flags().StringP("filter", "f", "", "filter devices")
 }
