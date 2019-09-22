@@ -70,7 +70,7 @@ func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Wr
 func renderJSON(data interface{}) (string, error) {
 	var r []byte
 	var err error
-	if global.Verbose {
+	if global.VerboseLevel > 0 { // TODO FIXME use proper separate output name
 		r, err = json.MarshalIndent(data, "", "  ")
 	} else {
 		r, err = json.Marshal(data)

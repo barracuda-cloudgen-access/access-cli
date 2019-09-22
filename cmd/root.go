@@ -23,9 +23,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/spf13/cobra"
-
+	"github.com/motemen/go-loghttp"
 	"github.com/shibukawa/configdir"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/go-openapi/runtime"
@@ -45,7 +45,7 @@ type globalInfo struct {
 	Transport    *httptransport.Runtime
 	Client       *apiclient.FydeEnterpriseConsole
 	AuthWriter   runtime.ClientAuthInfoWriter
-	Verbose      bool
+	VerboseLevel int
 	WriteFiles   bool
 	FetchPerPage int
 	FilterData   map[*cobra.Command]*filterData
@@ -85,7 +85,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is "+d+")")
 	d = filepath.Join(getUserConfigPath(), "auth.yaml")
 	rootCmd.PersistentFlags().StringVar(&authFile, "auth", "", "credentials file (default is "+d+")")
-	rootCmd.PersistentFlags().BoolVarP(&global.Verbose, "verbose", "v", false, "verbose output")
+	rootCmd.PersistentFlags().IntVarP(&global.VerboseLevel, "verbose", "v", 0, "verbose output level, higher levels are more verbose")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -123,7 +123,7 @@ func initConfig() {
 	cfgViper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
-	if err := cfgViper.ReadInConfig(); err == nil && global.Verbose {
+	if err := cfgViper.ReadInConfig(); err == nil && global.VerboseLevel > 0 {
 		fmt.Println("Using config file:", cfgViper.ConfigFileUsed())
 	}
 }
@@ -159,7 +159,7 @@ func initAuthConfig() {
 	authViper.AutomaticEnv() // read in environment variables that match
 
 	// If a credentials file is found, read it in.
-	if err := authViper.ReadInConfig(); err == nil && global.Verbose {
+	if err := authViper.ReadInConfig(); err == nil && global.VerboseLevel > 0 {
 		fmt.Println("Using credentials file:", authViper.ConfigFileUsed())
 	}
 }
@@ -175,6 +175,12 @@ func initClient() {
 		return
 	}
 	global.Transport = httptransport.New(endpoint, "/api/v1", nil)
+	if global.VerboseLevel > 1 {
+		global.Transport.Transport = &loghttp.Transport{}
+	}
+	if global.VerboseLevel > 2 {
+		global.Transport.SetDebug(true)
+	}
 	global.Client = apiclient.New(global.Transport, strfmt.Default)
 	global.FetchPerPage = 50
 
