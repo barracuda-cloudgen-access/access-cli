@@ -33,7 +33,11 @@ func initOutputFlags(cmd *cobra.Command) {
 		cmd.Annotations = make(map[string]string)
 	}
 	cmd.Annotations["output_flags_init"] = "yes"
-	cmd.Flags().StringP("output", "o", "table", "output format (table, json or csv)")
+	d := "json"
+	if terminal.IsTerminal(int(os.Stdout.Fd())) {
+		d = "table"
+	}
+	cmd.Flags().StringP("output", "o", d, "output format (table, json, json-pretty or csv) (default \"json\" if pipe)")
 }
 
 func preRunFlagCheckOutput(cmd *cobra.Command, args []string) error {
