@@ -20,10 +20,12 @@ limitations under the License.
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/spf13/cobra"
 	"github.com/thoas/go-funk"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 func initOutputFlags(cmd *cobra.Command) {
@@ -56,6 +58,12 @@ func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Wr
 	}
 	switch outputFormat {
 	case "table":
+		if terminal.IsTerminal(int(os.Stdout.Fd())) {
+			width, _, err := terminal.GetSize(int(os.Stdout.Fd()))
+			if err == nil {
+				tableWriter.SetAllowedRowLength(width)
+			}
+		}
 		return fmt.Sprintf("%s\n(%d records out of %d)",
 			tableWriter.Render(), tableWriter.Length(), total), nil
 	case "csv":
