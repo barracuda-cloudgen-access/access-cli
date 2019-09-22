@@ -33,6 +33,7 @@ import (
 // loginCmd represents the login command
 var loginCmd = &cobra.Command{
 	Use:     "login",
+	Aliases: []string{"log-in", "signin", "sign-in", "authenticate"},
 	Short:   "Sign in to the console and store access token",
 	PreRunE: preRunCheckEndpoint,
 	RunE: func(cmd *cobra.Command, args []string) error {

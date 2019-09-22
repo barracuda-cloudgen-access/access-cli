@@ -16,6 +16,7 @@ require (
 	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32
 	github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0
 	github.com/spf13/cobra v0.0.5
+	github.com/spf13/pflag v1.0.3
 	github.com/spf13/viper v1.3.2
 	github.com/thoas/go-funk v0.4.0
 	golang.org/x/crypto v0.0.0-20190617133340-57b3e21c3d56
