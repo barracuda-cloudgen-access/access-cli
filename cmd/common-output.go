@@ -68,8 +68,14 @@ func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Wr
 				tableWriter.SetAllowedRowLength(width)
 			}
 		}
-		return fmt.Sprintf("%s\n(%d records out of %d)",
-			tableWriter.Render(), tableWriter.Length(), total), nil
+		totalsMessage := ""
+		if tableWriter.Length() != total {
+			totalsMessage = fmt.Sprintf("\n(%d records out of %d)",
+				tableWriter.Length(), total)
+		} else {
+			totalsMessage = fmt.Sprintf("\n(%d records)", total)
+		}
+		return tableWriter.Render() + totalsMessage, nil
 	case "csv":
 		return tableWriter.RenderCSV(), nil
 	case "json":
