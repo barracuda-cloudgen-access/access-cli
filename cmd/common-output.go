@@ -38,6 +38,7 @@ func initOutputFlags(cmd *cobra.Command) {
 		d = "table"
 	}
 	cmd.Flags().StringP("output", "o", d, "output format (table, json, json-pretty or csv) (default \"json\" if pipe)")
+	cmd.Flags().SetNormalizeFunc(aliasNormalizeFunc)
 }
 
 func preRunFlagCheckOutput(cmd *cobra.Command, args []string) error {

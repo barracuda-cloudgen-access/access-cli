@@ -26,6 +26,7 @@ import (
 	"github.com/motemen/go-loghttp"
 	"github.com/shibukawa/configdir"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
 	"github.com/go-openapi/runtime"
@@ -87,9 +88,19 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&authFile, "auth", "", "credentials file (default is "+d+")")
 	rootCmd.PersistentFlags().IntVarP(&global.VerboseLevel, "verbose", "v", 0, "verbose output level, higher levels are more verbose")
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().SetNormalizeFunc(aliasNormalizeFunc)
+}
+
+func aliasNormalizeFunc(f *pflag.FlagSet, name string) pflag.NormalizedName {
+	switch name {
+	case "record-start":
+		name = "range-start"
+		break
+	case "record-end":
+		name = "range-end"
+		break
+	}
+	return pflag.NormalizedName(name)
 }
 
 // initConfig reads in config file and ENV variables if set.
