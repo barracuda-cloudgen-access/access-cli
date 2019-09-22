@@ -18,8 +18,6 @@ limitations under the License.
 */
 
 import (
-	"fmt"
-
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
@@ -48,12 +46,14 @@ var groupsListCmd = &cobra.Command{
 		params := apigroups.NewListGroupsParams()
 		setSort(cmd, params)
 		completePayload := []*apigroups.ListGroupsOKBodyItems0{}
+		total := 0
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
 			resp, err := global.Client.Groups.ListGroups(params, global.AuthWriter)
 			if err != nil {
 				return 0, 0, err
 			}
 			completePayload = append(completePayload, resp.Payload...)
+			total = int(resp.Total)
 			return len(resp.Payload), resp.Total, err
 		})
 		if err != nil {
@@ -81,8 +81,8 @@ var groupsListCmd = &cobra.Command{
 			})
 		}
 
-		result, err := renderListOutput(cmd, completePayload, tw)
-		fmt.Println(result)
+		result, err := renderListOutput(cmd, completePayload, tw, total)
+		cmd.Println(result)
 		return err
 	},
 }

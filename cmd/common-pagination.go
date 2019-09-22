@@ -35,7 +35,7 @@ func initPaginationFlags(cmd *cobra.Command) {
 	}
 	cmd.Annotations["pagination_flags_init"] = "yes"
 	cmd.Flags().Int64("range-start", 1, "start of the range of items to return")
-	cmd.Flags().Int64("range-end", 0, "end of the range of items to return (0 to return all items past range-start)")
+	cmd.Flags().Int64("range-end", -1, "end of the range of items to return (0 to return all items past range-start)")
 }
 
 func preRunFlagCheckPagination(cmd *cobra.Command, args []string) error {
@@ -50,6 +50,9 @@ func preRunFlagCheckPagination(cmd *cobra.Command, args []string) error {
 	rangeEnd, err := cmd.Flags().GetInt64("range-end")
 	if err != nil {
 		return err
+	}
+	if rangeEnd == -1 {
+		rangeEnd = rangeStart + 20
 	}
 	if rangeEnd != 0 && rangeEnd <= rangeStart {
 		return fmt.Errorf("invalid range end %d", rangeEnd)
@@ -75,7 +78,9 @@ func forAllPages(cmd *cobra.Command, params pageable, do func() (int, int64, err
 	if err != nil {
 		return 0, 0, err
 	}
-	if rangeEnd == 0 {
+	if rangeEnd == -1 {
+		rangeEnd = rangeStart + 20
+	} else if rangeEnd == 0 {
 		rangeEnd = math.MaxInt64
 	} else {
 		rangeEnd-- // user-facing values are 1-based

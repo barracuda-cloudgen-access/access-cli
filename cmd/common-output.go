@@ -45,7 +45,7 @@ func preRunFlagCheckOutput(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Writer) (string, error) {
+func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Writer, total int) (string, error) {
 	if _, ok := cmd.Annotations["output_flags_init"]; !ok {
 		panic("renderListOutput called for command where output flags were not initialized. This is a bug!")
 	}
@@ -56,7 +56,8 @@ func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Wr
 	}
 	switch outputFormat {
 	case "table":
-		return tableWriter.Render(), nil
+		return fmt.Sprintf("%s\n(%d records out of %d)",
+			tableWriter.Render(), tableWriter.Length(), total), nil
 	case "csv":
 		return tableWriter.RenderCSV(), nil
 	case "json":

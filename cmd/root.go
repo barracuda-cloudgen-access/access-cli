@@ -46,6 +46,7 @@ type globalInfo struct {
 	Client       *apiclient.FydeEnterpriseConsole
 	AuthWriter   runtime.ClientAuthInfoWriter
 	Verbose      bool
+	WriteFiles   bool
 	FetchPerPage int
 	FilterData   map[*cobra.Command]*filterData
 }
@@ -91,6 +92,11 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+	if cfgViper != nil {
+		// already init (e.g. in tests)
+		return
+	}
+	global.WriteFiles = true
 	cfgViper = viper.New()
 	if cfgFile != "" {
 		// Use config file from the flag.
@@ -122,6 +128,10 @@ func initConfig() {
 
 // initAuthConfig reads in credentials file and ENV variables if set.
 func initAuthConfig() {
+	if authViper != nil {
+		// already init (e.g. in tests)
+		return
+	}
 	authViper = viper.New()
 	setAuthDefaults()
 	if authFile != "" {

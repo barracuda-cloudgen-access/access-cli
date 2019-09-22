@@ -41,11 +41,13 @@ var endpointSetCmd = &cobra.Command{
 		authViper.Set(ckeyAuthUID, "")
 		authViper.Set(ckeyAuthMethod, "")
 		authViper.Set(ckeyAuthEndpoint, args[0])
-		err := authViper.WriteConfig()
-		if err != nil {
-			return err
+		if global.WriteFiles {
+			err := authViper.WriteConfig()
+			if err != nil {
+				return err
+			}
 		}
-		fmt.Println("Endpoint changed. Credentials cleared, please login again using `fyde-cli login`")
+		cmd.Println("Endpoint changed. Credentials cleared, please login again using `fyde-cli login`")
 		return nil
 	},
 }

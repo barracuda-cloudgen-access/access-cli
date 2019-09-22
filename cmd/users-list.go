@@ -18,7 +18,6 @@ limitations under the License.
 */
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/jedib0t/go-pretty/table"
@@ -52,12 +51,14 @@ var usersListCmd = &cobra.Command{
 		setSort(cmd, params)
 		setFilter(cmd, params.SetGroupName, params.SetStatus, params.SetEnrollmentStatus)
 		completePayload := []*apiusers.ListUsersOKBodyItems0{}
+		total := 0
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
 			resp, err := global.Client.Users.ListUsers(params, global.AuthWriter)
 			if err != nil {
 				return 0, 0, err
 			}
 			completePayload = append(completePayload, resp.Payload...)
+			total = int(resp.Total)
 			return len(resp.Payload), resp.Total, err
 		})
 		if err != nil {
@@ -93,8 +94,8 @@ var usersListCmd = &cobra.Command{
 			})
 		}
 
-		result, err := renderListOutput(cmd, completePayload, tw)
-		fmt.Println(result)
+		result, err := renderListOutput(cmd, completePayload, tw, total)
+		cmd.Println(result)
 		return err
 	},
 }

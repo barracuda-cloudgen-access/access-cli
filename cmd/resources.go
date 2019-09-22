@@ -18,8 +18,6 @@ limitations under the License.
 */
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -28,7 +26,7 @@ var resourcesCmd = &cobra.Command{
 	Use:   "resources",
 	Short: "Operations on resources",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("resources called")
+		cmd.Println("resources called")
 	},
 }
 

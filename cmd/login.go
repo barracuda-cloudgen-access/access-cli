@@ -48,7 +48,7 @@ var loginCmd = &cobra.Command{
 				return fmt.Errorf("invalid file descriptor %d", passwordfd)
 			}
 			defer file.Close()
-			fmt.Println("Reading password from file descriptor", passwordfd)
+			cmd.Println("Reading password from file descriptor", passwordfd)
 			pwbytes, err := ioutil.ReadAll(file)
 			if err != nil {
 				return err
@@ -60,12 +60,12 @@ var loginCmd = &cobra.Command{
 			} else {
 				password = string(pwbytes)
 			}
-			fmt.Println(password)
+			cmd.Println(password)
 		}
 
 		// read username from terminal, if not obtained by other means
 		if username == "" {
-			fmt.Print("Username: ")
+			cmd.Print("Username: ")
 			i, err := fmt.Scanln(&username)
 			if i == 0 || err != nil {
 				return err
@@ -74,7 +74,7 @@ var loginCmd = &cobra.Command{
 
 		// read password from terminal, if not obtained by other means
 		if password == "" {
-			fmt.Print("Password: ")
+			cmd.Print("Password: ")
 			passwordbytes, err := gopass.GetPasswd()
 			if err != nil {
 				return err
@@ -99,11 +99,15 @@ var loginCmd = &cobra.Command{
 		authViper.Set(ckeyAuthUID, signInResponse.UID)
 		authViper.Set(ckeyAuthMethod, "bearerToken")
 
-		err = authViper.WriteConfig()
-		if err != nil {
-			return err
+		if global.WriteFiles {
+			err = authViper.WriteConfig()
+			if err != nil {
+				return err
+			}
+			cmd.Println("Logged in successfully, access token stored in", authViper.ConfigFileUsed())
+		} else {
+			cmd.Println("Logged in successfully")
 		}
-		fmt.Println("Logged in successfully, access token stored in", authViper.ConfigFileUsed())
 		return nil
 	},
 }

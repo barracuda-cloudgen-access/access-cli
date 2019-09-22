@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/nbio/st"
 	"github.com/spf13/cobra"
 )
 
@@ -119,9 +120,7 @@ func TestPagination(t *testing.T) {
 			result = append(result, r...)
 			return len(r), int64(len(fPageable.data)), nil
 		})
-		if err != nil {
-			t.Error(err)
-		}
+		st.Expect(t, err, nil)
 		result = result[cutStart:cutEnd]
 
 		if !reflect.DeepEqual(result, testCase.expected) {

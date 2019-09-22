@@ -36,10 +36,10 @@ var endpointCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		endpoint := authViper.GetString(ckeyAuthEndpoint)
 		if endpoint == "" {
-			fmt.Println("Endpoint not currently set")
+			cmd.Println("Endpoint not currently set")
 		}
-		fmt.Println("Currently configured endpoint:")
-		fmt.Println(endpoint)
+		cmd.Println("Currently configured endpoint:")
+		cmd.Println(endpoint)
 	},
 }
 

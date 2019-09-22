@@ -18,8 +18,6 @@ limitations under the License.
 */
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -28,7 +26,7 @@ var usersCmd = &cobra.Command{
 	Use:   "users",
 	Short: "Operations on users",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("users called")
+		cmd.Println("users called")
 	},
 }
 

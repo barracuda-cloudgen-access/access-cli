@@ -18,8 +18,6 @@ limitations under the License.
 */
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -28,7 +26,7 @@ var devicesCmd = &cobra.Command{
 	Use:   "devices",
 	Short: "Operations on devices",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("devices called")
+		cmd.Println("devices called")
 	},
 }
 
