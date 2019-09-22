@@ -81,8 +81,10 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/fyde/fyde-cli/config.yaml)")
-	rootCmd.PersistentFlags().StringVar(&authFile, "auth", "", "credentials file (default is $HOME/.config/fyde/fyde-cli/auth.yaml)")
+	d := filepath.Join(getUserConfigPath(), "config.yaml")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is "+d+")")
+	d = filepath.Join(getUserConfigPath(), "auth.yaml")
+	rootCmd.PersistentFlags().StringVar(&authFile, "auth", "", "credentials file (default is "+d+")")
 	rootCmd.PersistentFlags().BoolVarP(&global.Verbose, "verbose", "v", false, "verbose output")
 
 	// Cobra also supports local flags, which will only run
