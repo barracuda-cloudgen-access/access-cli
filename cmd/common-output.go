@@ -39,7 +39,7 @@ func preRunFlagCheckOutput(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	if !funk.Contains([]string{"table", "json", "csv"}, output) {
+	if !funk.Contains([]string{"table", "json", "json-pretty", "csv"}, output) {
 		return fmt.Errorf("invalid output format %s", output)
 	}
 	return nil
@@ -62,6 +62,8 @@ func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Wr
 		return tableWriter.RenderCSV(), nil
 	case "json":
 		return renderJSON(data)
+	case "json-pretty":
+		return renderPrettyJSON(data)
 	default:
 		return "", fmt.Errorf("unsupported output format %s", outputFormat)
 	}
@@ -70,11 +72,17 @@ func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Wr
 func renderJSON(data interface{}) (string, error) {
 	var r []byte
 	var err error
-	if global.VerboseLevel > 0 { // TODO FIXME use proper separate output name
-		r, err = json.MarshalIndent(data, "", "  ")
-	} else {
-		r, err = json.Marshal(data)
+	r, err = json.Marshal(data)
+	if err != nil {
+		return "", err
 	}
+	return string(r), nil
+}
+
+func renderPrettyJSON(data interface{}) (string, error) {
+	var r []byte
+	var err error
+	r, err = json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		return "", err
 	}
