@@ -77,6 +77,7 @@ var usersListCmd = &cobra.Command{
 			"Status",
 			"EnrollmentStatus",
 		})
+		tw.SetAllowedColumnLengths([]int{15, 30, 30, 30, 10, 15, 16})
 
 		for _, item := range completePayload {
 			groups := strings.Join(funk.Map(item.Groups, func(g *models.UserGroupsItems0) string {

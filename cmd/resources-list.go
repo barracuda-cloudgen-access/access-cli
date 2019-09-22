@@ -75,6 +75,7 @@ var resourcesListCmd = &cobra.Command{
 			"Port ext:int",
 			"Access Proxy",
 		})
+		tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 30, 36})
 
 		for _, item := range completePayload {
 			accessPolicies := strings.Join(funk.Map(item.AccessPolicies, func(g *models.AccessResourceAccessPoliciesItems0) string {
