@@ -25,7 +25,7 @@ func init() {
 	authViper = viper.New()
 	cfgViper = viper.New()
 	authViper.Set(ckeyAuthEndpoint, "mocked")
-	authViper.Set(ckeyAuthMethod, "bearerToken")
+	authViper.Set(ckeyAuthMethod, authMethodBearerToken)
 	authViper.Set(ckeyAuthAccessToken, "testAccessToken")
 	authViper.Set(ckeyAuthClient, "testClient")
 	authViper.Set(ckeyAuthUID, "test@example.com")

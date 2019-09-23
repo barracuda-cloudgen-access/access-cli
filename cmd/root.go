@@ -19,12 +19,10 @@ limitations under the License.
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
 	"github.com/motemen/go-loghttp"
-	"github.com/shibukawa/configdir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -56,9 +54,9 @@ var global globalInfo
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "fyde-cli",
+	Use:   ApplicationName,
 	Short: "Command-line client for the Fyde Enterprise Console",
-	Long:  `fyde-cli allows access to all Enterprise Console APIs from the command line`,
+	Long:  ApplicationName + ` allows access to all Enterprise Console APIs from the command line`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
@@ -82,9 +80,9 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	d := filepath.Join(getUserConfigPath(), "config.yaml")
+	d := filepath.Join(getUserConfigPath(), ConfigFileName)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is "+d+")")
-	d = filepath.Join(getUserConfigPath(), "auth.yaml")
+	d = filepath.Join(getUserConfigPath(), AuthFileName)
 	rootCmd.PersistentFlags().StringVar(&authFile, "auth", "", "credentials file (default is "+d+")")
 	rootCmd.PersistentFlags().IntVarP(&global.VerboseLevel, "verbose", "v", 0, "verbose output level, higher levels are more verbose")
 
@@ -103,83 +101,6 @@ func aliasNormalizeFunc(f *pflag.FlagSet, name string) pflag.NormalizedName {
 	return pflag.NormalizedName(name)
 }
 
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	if cfgViper != nil {
-		// already init (e.g. in tests)
-		return
-	}
-	global.WriteFiles = true
-	cfgViper = viper.New()
-	if cfgFile != "" {
-		// Use config file from the flag.
-		cfgViper.SetConfigFile(cfgFile)
-	} else {
-		p := getUserConfigPath()
-
-		// viper currently requires that config files exist in order to be able to write them
-		// remove once https://github.com/spf13/viper/pull/723 is merged
-		os.MkdirAll(p, os.ModePerm)
-		fp := filepath.Join(p, "config.yaml")
-		if _, err := os.Stat(fp); os.IsNotExist(err) {
-			ioutil.WriteFile(fp, []byte{}, os.FileMode(0644))
-		}
-		// ---
-
-		cfgViper.AddConfigPath(p)
-		cfgViper.SetConfigName("config")
-		cfgViper.SetConfigType("yaml")
-	}
-
-	cfgViper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := cfgViper.ReadInConfig(); err == nil && global.VerboseLevel > 0 {
-		fmt.Println("Using config file:", cfgViper.ConfigFileUsed())
-	}
-}
-
-// initAuthConfig reads in credentials file and ENV variables if set.
-func initAuthConfig() {
-	if authViper != nil {
-		// already init (e.g. in tests)
-		return
-	}
-	authViper = viper.New()
-	setAuthDefaults()
-	if authFile != "" {
-		// Use config file from the flag.
-		authViper.SetConfigFile(authFile)
-	} else {
-		p := getUserConfigPath()
-
-		// viper currently requires that config files exist in order to be able to write them
-		// remove once https://github.com/spf13/viper/pull/723 is merged
-		os.MkdirAll(p, os.ModePerm)
-		fp := filepath.Join(p, "auth.yaml")
-		if _, err := os.Stat(fp); os.IsNotExist(err) {
-			ioutil.WriteFile(fp, []byte{}, os.FileMode(0644))
-		}
-		// ---
-
-		authViper.AddConfigPath(p)
-		authViper.SetConfigName("auth")
-		authViper.SetConfigType("yaml")
-	}
-
-	authViper.AutomaticEnv() // read in environment variables that match
-
-	// If a credentials file is found, read it in.
-	if err := authViper.ReadInConfig(); err == nil && global.VerboseLevel > 0 {
-		fmt.Println("Using credentials file:", authViper.ConfigFileUsed())
-	}
-}
-
-func getUserConfigPath() string {
-	configDirs := configdir.New("fyde", "fyde-cli")
-	return configDirs.QueryFolders(configdir.Global)[0].Path
-}
-
 func initClient() {
 	endpoint := authViper.GetString(ckeyAuthEndpoint)
 	if endpoint == "" {
@@ -196,7 +117,7 @@ func initClient() {
 	global.FetchPerPage = 50
 
 	switch authViper.GetString(ckeyAuthMethod) {
-	case "bearerToken":
+	case authMethodBearerToken:
 		accessToken := authViper.GetString(ckeyAuthAccessToken)
 		client := authViper.GetString(ckeyAuthClient)
 		uid := authViper.GetString(ckeyAuthUID)

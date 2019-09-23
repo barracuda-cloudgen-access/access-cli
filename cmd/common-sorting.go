@@ -27,7 +27,7 @@ func initSortFlags(cmd *cobra.Command) {
 	if cmd.Annotations == nil {
 		cmd.Annotations = make(map[string]string)
 	}
-	cmd.Annotations["sort_flags_init"] = "yes"
+	cmd.Annotations[flagInitSort] = "yes"
 	cmd.Flags().String("sort", "id_asc", "sort output. Possible options include: id_{asc|desc}, name_{asc|desc}, created_{asc|desc}, updated_{asc|desc}")
 }
 
@@ -37,7 +37,7 @@ func preRunFlagCheckSort(cmd *cobra.Command, args []string) error {
 }
 
 func setSort(cmd *cobra.Command, s sortable) {
-	if _, ok := cmd.Annotations["sort_flags_init"]; !ok {
+	if _, ok := cmd.Annotations[flagInitSort]; !ok {
 		panic("setSort called for command where sorting flag was not initialized. This is a bug!")
 	}
 	sort, err := cmd.Flags().GetString("sort")

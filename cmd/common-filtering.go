@@ -36,7 +36,7 @@ func initFilterFlags(cmd *cobra.Command, filterTypes ...filterType) {
 	if cmd.Annotations == nil {
 		cmd.Annotations = make(map[string]string)
 	}
-	cmd.Annotations["filter_flags_init"] = "yes"
+	cmd.Annotations[flagInitFilter] = "yes"
 	for _, filterType := range filterTypes {
 		desc := fmt.Sprintf("filter output %s", filterType.name)
 		name := fmt.Sprintf("filter-%s", filterType.name)
@@ -67,7 +67,7 @@ func preRunFlagCheckFilter(cmd *cobra.Command, args []string) error {
 }
 
 func setFilter(cmd *cobra.Command, filterApplyFuncs ...interface{}) {
-	if _, ok := cmd.Annotations["filter_flags_init"]; !ok {
+	if _, ok := cmd.Annotations[flagInitFilter]; !ok {
 		panic("setFilter called for command where filtering flag was not initialized. This is a bug!")
 	}
 	data := global.FilterData[cmd]

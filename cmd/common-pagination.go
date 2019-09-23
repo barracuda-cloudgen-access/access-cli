@@ -33,7 +33,7 @@ func initPaginationFlags(cmd *cobra.Command) {
 	if cmd.Annotations == nil {
 		cmd.Annotations = make(map[string]string)
 	}
-	cmd.Annotations["pagination_flags_init"] = "yes"
+	cmd.Annotations[flagInitPagination] = "yes"
 	cmd.Flags().Int64("range-start", 1, "start of the range of items to return")
 	cmd.Flags().Int64("range-end", -1, "end of the range of items to return (0 to return all items past range-start)")
 }
@@ -65,7 +65,7 @@ func preRunFlagCheckPagination(cmd *cobra.Command, args []string) error {
 // all int64 usage is because go-swagger really likes int64
 // function `do` must return the number of items added in each iteration and the total number of items
 func forAllPages(cmd *cobra.Command, params pageable, do func() (int, int64, error)) (sliceStart, sliceEnd int64, err error) {
-	if _, ok := cmd.Annotations["pagination_flags_init"]; !ok {
+	if _, ok := cmd.Annotations[flagInitPagination]; !ok {
 		panic("forAllPages called for command where pagination flags were not initialized. This is a bug!")
 	}
 

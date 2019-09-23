@@ -63,7 +63,7 @@ func TestLogin(t *testing.T) {
 		t.Fatal("Unexpected output")
 	}
 
-	st.Expect(t, authViper.GetString(ckeyAuthMethod), "bearerToken")
+	st.Expect(t, authViper.GetString(ckeyAuthMethod), authMethodBearerToken)
 	st.Expect(t, authViper.GetString(ckeyAuthAccessToken), "testAccessToken")
 	st.Expect(t, authViper.GetString(ckeyAuthClient), "testClient")
 	st.Expect(t, authViper.GetString(ckeyAuthUID), "testUID")

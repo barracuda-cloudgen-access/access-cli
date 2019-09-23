@@ -32,7 +32,7 @@ func initOutputFlags(cmd *cobra.Command) {
 	if cmd.Annotations == nil {
 		cmd.Annotations = make(map[string]string)
 	}
-	cmd.Annotations["output_flags_init"] = "yes"
+	cmd.Annotations[flagInitOutput] = "yes"
 	d := "json"
 	if terminal.IsTerminal(int(os.Stdout.Fd())) {
 		d = "table"
@@ -53,7 +53,7 @@ func preRunFlagCheckOutput(cmd *cobra.Command, args []string) error {
 }
 
 func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Writer, total int) (string, error) {
-	if _, ok := cmd.Annotations["output_flags_init"]; !ok {
+	if _, ok := cmd.Annotations[flagInitOutput]; !ok {
 		panic("renderListOutput called for command where output flags were not initialized. This is a bug!")
 	}
 

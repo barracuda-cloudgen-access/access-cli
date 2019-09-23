@@ -47,7 +47,7 @@ var endpointSetCmd = &cobra.Command{
 				return err
 			}
 		}
-		cmd.Println("Endpoint changed. Credentials cleared, please login again using `fyde-cli login`")
+		cmd.Printf("Endpoint changed. Credentials cleared, please login again using `%s login`\n", ApplicationName)
 		return nil
 	},
 }

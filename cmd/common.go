@@ -31,7 +31,7 @@ import (
 
 func preRunCheckEndpoint(cmd *cobra.Command, args []string) error {
 	if authViper.GetString(ckeyAuthEndpoint) == "" || global.Client == nil {
-		return fmt.Errorf("endpoint not set! Run `fyde-cli endpoint [hostname]` first")
+		return fmt.Errorf("endpoint not set! Run `%s endpoint [hostname]` first", ApplicationName)
 	}
 
 	return nil
@@ -44,15 +44,15 @@ func preRunCheckAuth(cmd *cobra.Command, args []string) error {
 	}
 
 	switch authViper.GetString(ckeyAuthMethod) {
-	case "bearerToken":
+	case authMethodBearerToken:
 		if authViper.GetString(ckeyAuthAccessToken) == "" ||
 			authViper.GetString(ckeyAuthClient) == "" ||
 			authViper.GetString(ckeyAuthUID) == "" {
-			return fmt.Errorf("not logged in! Run `fyde-cli login` first")
+			return fmt.Errorf("not logged in! Run `%s login` first", ApplicationName)
 		}
 	case "":
 	default:
-		return fmt.Errorf("not logged in! Run `fyde-cli login` first")
+		return fmt.Errorf("not logged in! Run `%s login` first", ApplicationName)
 	}
 
 	return nil
@@ -80,28 +80,28 @@ func preRunFlagChecks(cmd *cobra.Command, args []string) error {
 		cmd.Annotations = make(map[string]string)
 	}
 
-	if _, ok := cmd.Annotations["pagination_flags_init"]; ok {
+	if _, ok := cmd.Annotations[flagInitPagination]; ok {
 		err := preRunFlagCheckPagination(cmd, args)
 		if err != nil {
 			return err
 		}
 	}
 
-	if _, ok := cmd.Annotations["sort_flags_init"]; ok {
+	if _, ok := cmd.Annotations[flagInitSort]; ok {
 		err := preRunFlagCheckSort(cmd, args)
 		if err != nil {
 			return err
 		}
 	}
 
-	if _, ok := cmd.Annotations["filter_flags_init"]; ok {
+	if _, ok := cmd.Annotations[flagInitFilter]; ok {
 		err := preRunFlagCheckFilter(cmd, args)
 		if err != nil {
 			return err
 		}
 	}
 
-	if _, ok := cmd.Annotations["output_flags_init"]; ok {
+	if _, ok := cmd.Annotations[flagInitOutput]; ok {
 		err := preRunFlagCheckOutput(cmd, args)
 		if err != nil {
 			return err
