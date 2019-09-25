@@ -36,15 +36,24 @@ func initPaginationFlags(cmd *cobra.Command) {
 	cmd.Annotations[flagInitPagination] = "yes"
 	cmd.Flags().Int64("range-start", 1, "start of the range of items to return")
 	cmd.Flags().Int64("range-end", -1, "end of the range of items to return (0 to return all items past range-start)")
+	cmd.Flags().Bool("list-all", false, "list all items. Alias for --range-start=1 --range-end=0")
 }
 
 func preRunFlagCheckPagination(cmd *cobra.Command, args []string) error {
+	listAll, err := cmd.Flags().GetBool("list-all")
+	if err != nil {
+		return err
+	}
+
 	rangeStart, err := cmd.Flags().GetInt64("range-start")
 	if err != nil {
 		return err
 	}
 	if rangeStart < 1 {
 		return fmt.Errorf("invalid range start %d", rangeStart)
+	}
+	if listAll && rangeStart != 1 {
+		return fmt.Errorf("mutually exclusive flags list-all and range-start specified")
 	}
 
 	rangeEnd, err := cmd.Flags().GetInt64("range-end")
@@ -53,6 +62,11 @@ func preRunFlagCheckPagination(cmd *cobra.Command, args []string) error {
 	}
 	if rangeEnd == -1 {
 		rangeEnd = rangeStart + 20
+		if listAll {
+			rangeEnd = 0
+		}
+	} else if listAll {
+		return fmt.Errorf("mutually exclusive flags list-all and range-end specified")
 	}
 	if rangeEnd != 0 && rangeEnd <= rangeStart {
 		return fmt.Errorf("invalid range end %d", rangeEnd)
@@ -78,7 +92,16 @@ func forAllPages(cmd *cobra.Command, params pageable, do func() (int, int64, err
 	if err != nil {
 		return 0, 0, err
 	}
-	if rangeEnd == -1 {
+
+	listAll, err := cmd.Flags().GetBool("list-all")
+	if err != nil {
+		return 0, 0, err
+	}
+
+	if listAll {
+		rangeStart = 0
+		rangeEnd = math.MaxInt64
+	} else if rangeEnd == -1 {
 		rangeEnd = rangeStart + 20
 	} else if rangeEnd == 0 {
 		rangeEnd = math.MaxInt64
