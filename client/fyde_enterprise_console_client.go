@@ -11,6 +11,8 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
+	"github.com/oNaiPs/fyde-cli/client/access_policies"
+	"github.com/oNaiPs/fyde-cli/client/access_proxies"
 	"github.com/oNaiPs/fyde-cli/client/access_resources"
 	"github.com/oNaiPs/fyde-cli/client/auth"
 	"github.com/oNaiPs/fyde-cli/client/devices"
@@ -60,6 +62,10 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *FydeEnterp
 
 	cli := new(FydeEnterpriseConsole)
 	cli.Transport = transport
+
+	cli.AccessPolicies = access_policies.New(transport, formats)
+
+	cli.AccessProxies = access_proxies.New(transport, formats)
 
 	cli.AccessResources = access_resources.New(transport, formats)
 
@@ -115,6 +121,10 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 
 // FydeEnterpriseConsole is a client for fyde enterprise console
 type FydeEnterpriseConsole struct {
+	AccessPolicies *access_policies.Client
+
+	AccessProxies *access_proxies.Client
+
 	AccessResources *access_resources.Client
 
 	Auth *auth.Client
@@ -131,6 +141,10 @@ type FydeEnterpriseConsole struct {
 // SetTransport changes the transport on the client and all its subresources
 func (c *FydeEnterpriseConsole) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
+
+	c.AccessPolicies.SetTransport(transport)
+
+	c.AccessProxies.SetTransport(transport)
 
 	c.AccessResources.SetTransport(transport)
 
