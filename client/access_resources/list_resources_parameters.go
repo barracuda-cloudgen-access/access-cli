@@ -72,6 +72,16 @@ type ListResourcesParams struct {
 
 	*/
 	PerPage *int64
+	/*PolicyID
+	  Restrict policies of the returned resources
+
+	*/
+	PolicyID []int64
+	/*ProxyID
+	  Restrict proxies of the returned resources
+
+	*/
+	ProxyID []strfmt.UUID
 	/*Sort
 	  Sort results
 
@@ -138,6 +148,28 @@ func (o *ListResourcesParams) SetPerPage(perPage *int64) {
 	o.PerPage = perPage
 }
 
+// WithPolicyID adds the policyID to the list resources params
+func (o *ListResourcesParams) WithPolicyID(policyID []int64) *ListResourcesParams {
+	o.SetPolicyID(policyID)
+	return o
+}
+
+// SetPolicyID adds the policyId to the list resources params
+func (o *ListResourcesParams) SetPolicyID(policyID []int64) {
+	o.PolicyID = policyID
+}
+
+// WithProxyID adds the proxyID to the list resources params
+func (o *ListResourcesParams) WithProxyID(proxyID []strfmt.UUID) *ListResourcesParams {
+	o.SetProxyID(proxyID)
+	return o
+}
+
+// SetProxyID adds the proxyId to the list resources params
+func (o *ListResourcesParams) SetProxyID(proxyID []strfmt.UUID) {
+	o.ProxyID = proxyID
+}
+
 // WithSort adds the sort to the list resources params
 func (o *ListResourcesParams) WithSort(sort *string) *ListResourcesParams {
 	o.SetSort(sort)
@@ -187,6 +219,28 @@ func (o *ListResourcesParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 			}
 		}
 
+	}
+
+	var valuesPolicyID []string
+	for _, v := range o.PolicyID {
+		valuesPolicyID = append(valuesPolicyID, swag.FormatInt64(v))
+	}
+
+	joinedPolicyID := swag.JoinByFormat(valuesPolicyID, "multi")
+	// query array param policy_id[]
+	if err := r.SetQueryParam("policy_id[]", joinedPolicyID...); err != nil {
+		return err
+	}
+
+	var valuesProxyID []string
+	for _, v := range o.ProxyID {
+		valuesProxyID = append(valuesProxyID, v.String())
+	}
+
+	joinedProxyID := swag.JoinByFormat(valuesProxyID, "multi")
+	// query array param proxy_id[]
+	if err := r.SetQueryParam("proxy_id[]", joinedProxyID...); err != nil {
+		return err
 	}
 
 	if o.Sort != nil {

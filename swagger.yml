@@ -617,6 +617,23 @@ paths:
       produces:
       - "application/json"
       parameters:
+      - in: query
+        name: "policy_id[]"
+        description: "Restrict policies of the returned resources"
+        required: false
+        type: array
+        collectionFormat: multi
+        items:
+          type: integer
+      - in: query
+        name: "proxy_id[]"
+        description: "Restrict proxies of the returned resources"
+        required: false
+        type: array
+        collectionFormat: multi
+        items:
+          type: string
+          format: uuid
       - $ref: '#/parameters/sortParam'
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
