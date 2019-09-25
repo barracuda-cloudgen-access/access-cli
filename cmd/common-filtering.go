@@ -20,7 +20,9 @@ limitations under the License.
 import (
 	"fmt"
 
+	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
+	"github.com/thoas/go-funk"
 )
 
 type filterData struct {
@@ -47,6 +49,8 @@ func initFilterFlags(cmd *cobra.Command, filterTypes ...filterType) {
 			cmd.Flags().Int(name, 0, desc)
 		case "string":
 			cmd.Flags().String(name, "", desc)
+		case "[]int":
+			cmd.Flags().IntSlice(name, []int{}, desc)
 		case "[]string":
 			cmd.Flags().StringSlice(name, []string{}, desc)
 		default:
@@ -98,13 +102,34 @@ func setFilter(cmd *cobra.Command, filterApplyFuncs ...interface{}) {
 			if err == nil {
 				f(&d)
 			}
+		case func([]int):
+			d, err := cmd.Flags().GetIntSlice(flagName)
+			if err == nil {
+				f(d)
+			}
+		case func([]int64):
+			d, err := cmd.Flags().GetIntSlice(flagName)
+			if err == nil {
+				dconv := funk.Map(d, func(x int) int64 {
+					return int64(x)
+				}).([]int64)
+				f(dconv)
+			}
 		case func([]string):
 			d, err := cmd.Flags().GetStringSlice(flagName)
 			if err == nil {
 				f(d)
 			}
+		case func([]strfmt.UUID):
+			d, err := cmd.Flags().GetStringSlice(flagName)
+			if err == nil {
+				dconv := funk.Map(d, func(x string) strfmt.UUID {
+					return strfmt.UUID(x)
+				}).([]strfmt.UUID)
+				f(dconv)
+			}
 		default:
-			panic("setFilter called with inadequate function in parameters")
+			panic(fmt.Errorf("setFilter called with inadequate function in parameters (function is %T for filter vartype %s)", filterApplyFuncs[i], filterType.vartype))
 		}
 	}
 }

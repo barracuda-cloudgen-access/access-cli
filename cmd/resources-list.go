@@ -49,6 +49,7 @@ var resourcesListCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apiresources.NewListResourcesParams()
 		setSort(cmd, params)
+		setFilter(cmd, params.SetPolicyID, params.SetProxyID)
 		completePayload := []*apiresources.ListResourcesOKBodyItems0{}
 		total := 0
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
@@ -113,6 +114,8 @@ func init() {
 
 	initPaginationFlags(resourcesListCmd)
 	initSortFlags(resourcesListCmd)
+	initFilterFlags(resourcesListCmd,
+		filterType{"policy", "[]int"},
+		filterType{"proxy", "[]string"})
 	initOutputFlags(resourcesListCmd)
-	resourcesListCmd.Flags().StringP("filter", "f", "", "filter resources")
 }
