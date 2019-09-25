@@ -1114,6 +1114,252 @@ paths:
             $ref: "#/definitions/GenericUnauthorizedResponse"
         404:
           description: "policy not found"
+  /access_proxies:
+    get:
+      tags:
+      - "access_proxies"
+      summary: "List proxies"
+      operationId: "listProxies"
+      produces:
+      - "application/json"
+      parameters:
+      - $ref: '#/parameters/sortParam'
+      - $ref: '#/parameters/pageParam'
+      - $ref: '#/parameters/perPageParam'
+      responses:
+        200:
+          description: "successful operation"
+          headers:
+            total:
+              description: "Total number of items (for pagination)"
+              type: integer
+          schema:
+            type: array
+            items:
+              allOf:
+                - $ref: "#/definitions/AccessProxy"
+                - type: object
+                  properties:
+                    enrollment_count:
+                      type: integer
+                    access_resources_count:
+                      type: integer
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+    post:
+      tags:
+        - "access_proxies"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Create proxy"
+      operationId: "createProxy"
+      parameters:
+      - in: "body"
+        name: "proxy"
+        description: "Information about the proxy to create"
+        required: true
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+            host:
+              type: string
+              example: westproxy.example.com
+            location:
+              type: string
+              example: US-West
+            port:
+              type: string
+              example: "8009"
+      responses:
+        201:
+          description: "Proxy created"
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              location:
+                type: string
+              host:
+                type: string
+                example: westproxy.example.com
+              port:
+                type: integer
+                example: 8009
+              enrollment_url:
+                type: string
+                format: url
+              status:
+                type: string
+                enum: [proxy_pending, proxy_enabled]
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+  /access_proxies/{id}:
+    get:
+      tags:
+        - "access_proxies"
+      produces:
+      - "application/json"
+      summary: "Retrieve information about a proxy"
+      operationId: "getProxy"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: string
+        format: uuid
+        description: "The ID of the proxy to retrieve"
+      responses:
+        200:
+          description: "Proxy info"
+          schema:
+            allOf:
+                - $ref: "#/definitions/AccessProxy"
+                - type: object
+                  properties:
+                    proxy_version:
+                      type: string
+                      example: "1.1.6"
+                    access_resources:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                          name:
+                            type: string
+                          enabled:
+                            type: boolean
+                          created_at:
+                            type: string
+                            format: date-time
+                          updated_at:
+                            type: string
+                            format: date-time
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "Proxy not found"
+    patch:
+      tags:
+        - "access_proxies"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Edit proxy"
+      operationId: "editProxy"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: string
+        format: uuid
+        description: "The ID of the proxy to edit"
+      - in: body
+        name: "proxy"
+        description: "Proxy information to modify"
+        required: true
+        schema:
+          type: object
+          properties:
+            access_proxy:
+              allOf:
+              - $ref: "#/definitions/AccessProxy"
+              - type: object
+                properties:
+                  proxy_version:
+                    type: string
+                    example: "1.1.6"
+                  access_resources:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        name:
+                          type: string
+                        enabled:
+                          type: boolean
+                        created_at:
+                          type: string
+                          format: date-time
+                        updated_at:
+                          type: string
+                          format: date-time
+      responses:
+        200:
+          description: "Proxy edited"
+          schema:
+            allOf:
+            - $ref: "#/definitions/AccessProxy"
+            - type: object
+            properties:
+              proxy_version:
+                type: string
+                example: "1.1.6"
+              access_resources:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+                    enabled:
+                      type: boolean
+                    created_at:
+                      type: string
+                      format: date-time
+                    updated_at:
+                      type: string
+                      format: date-time
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "Proxy not found"
+    delete:
+      tags:
+        - "access_proxies"
+      summary: "Delete proxy"
+      operationId: "deleteProxy"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: string
+        format: uuid
+        description: "The ID of the proxy to delete"
+      responses:
+        204:
+          description: "Proxy deleted"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "Proxy not found"
 
 securityDefinitions:
   uid:
@@ -1482,7 +1728,47 @@ definitions:
       conditions:
         type: object
         # TODO properties (only those enabled are present)
-
+  AccessProxy:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+        example: US-West Proxy
+      location:
+        type: string
+        example: US-West
+      host:
+        type: string
+        example: westproxy.example.com
+      port:
+        type: integer
+        example: 9008
+      status:
+        type: string
+        enum: [proxy_pending, proxy_enabled]
+      tenant_id:
+        type: string
+        format: uuid
+      updated_at:
+        type: string
+        format: date-time
+      created_at:
+        type: string
+        format: date-time
+      last_access_at:
+        type: string
+        format: date-time
+        x-nullable: true
+      access_count:
+        type: object
+        properties:
+          denied:
+            type: integer
+          granted:
+            type: integer
 
   GenericUnauthorizedResponse:
     type: object
