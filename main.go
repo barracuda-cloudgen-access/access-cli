@@ -17,6 +17,22 @@ package main
 
 import "github.com/oNaiPs/fyde-cli/cmd"
 
+var (
+	// GitCommit is provided by govvv at compile-time
+	GitCommit = "???"
+	// BuildDate is provided by govvv at compile-time
+	BuildDate = "???"
+	// GitState is provided by govvv at compile-time
+	GitState = "???"
+	// Version is provided by govvv at compile-time
+	Version = "???"
+)
+
 func main() {
-  cmd.Execute()
+	cmd.Execute(&cmd.VersionInformation{
+		GitCommit: GitCommit,
+		BuildDate: BuildDate,
+		GitState:  GitState,
+		Version:   Version,
+	})
 }
