@@ -841,6 +841,279 @@ paths:
             $ref: "#/definitions/GenericUnauthorizedResponse"
         404:
           description: "resource not found"
+  /access_policies:
+    get:
+      tags:
+      - "access_policies"
+      summary: "List policies"
+      operationId: "listPolicies"
+      produces:
+      - "application/json"
+      parameters:
+      - $ref: '#/parameters/sortParam'
+      - $ref: '#/parameters/pageParam'
+      - $ref: '#/parameters/perPageParam'
+      responses:
+        200:
+          description: "successful operation"
+          headers:
+            total:
+              description: "Total number of items (for pagination)"
+              type: integer
+          schema:
+            type: array
+            items:
+              allOf:
+                - $ref: "#/definitions/AccessPolicy"
+                - type: object
+                  properties:
+                    access_resources_count:
+                      type: integer
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+    post:
+      tags:
+        - "access_policies"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Create policy"
+      operationId: "createPolicy"
+      parameters:
+      - in: "body"
+        name: "policy"
+        description: "Information about the policy to create"
+        required: true
+        schema:
+          type: object
+          properties:
+            access_policy:
+              type: object
+              properties:
+                access_resource_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                conditions:
+                  type: object
+                  # TODO (along with conditions on AccessPolicy)
+                group_ids:
+                  type: array
+                  items:
+                    type: integer
+                    example: 4
+                name:
+                  type: string
+                  example: "Block jailbroken"
+      responses:
+        201:
+          description: "Policy created"
+          schema:
+            allOf:
+              - $ref: "#/definitions/AccessPolicy"
+              - type: object
+                properties:
+                  access_resources:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        name:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
+                        updated_at:
+                          type: string
+                          format: date-time
+                  groups:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 45
+                        name:
+                          type: string
+                          example: "Developers"
+                        color:
+                          type: string
+                          x-nullable: true
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+  /access_policies/{id}:
+    get:
+      tags:
+        - "access_policies"
+      produces:
+      - "application/json"
+      summary: "Retrieve information about a policy"
+      operationId: "getPolicy"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the policy to retrieve"
+      responses:
+        200:
+          description: "Policy info"
+          schema:
+            allOf:
+              - $ref: "#/definitions/AccessPolicy"
+              - type: object
+                properties:
+                  access_resources:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        name:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
+                        updated_at:
+                          type: string
+                          format: date-time
+                  groups:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 45
+                        name:
+                          type: string
+                          example: "Developers"
+                        color:
+                          type: string
+                          x-nullable: true
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "policy not found"
+    patch:
+      tags:
+        - "access_policies"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Edit policy"
+      operationId: "editPolicy"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the policy to edit"
+      - in: body
+        name: "policy"
+        description: "Policy information to modify"
+        required: true
+        schema:
+          type: object
+          properties:
+            access_policy:
+              type: object
+              properties:
+                access_resource_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                conditions:
+                  type: object
+                  # TODO (along with conditions on AccessPolicy)
+                group_ids:
+                  type: array
+                  items:
+                    type: integer
+                    example: 4
+                name:
+                  type: string
+                  example: "Block jailbroken"
+      responses:
+        200:
+          description: "Policy edited"
+          schema:
+            allOf:
+              - $ref: "#/definitions/AccessPolicy"
+              - type: object
+                properties:
+                  access_resources:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        name:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
+                        updated_at:
+                          type: string
+                          format: date-time
+                  groups:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 45
+                        name:
+                          type: string
+                          example: "Developers"
+                        color:
+                          type: string
+                          x-nullable: true
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "policy not found"
+    delete:
+      tags:
+        - "access_policies"
+      summary: "Delete policy"
+      operationId: "deletePolicy"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the policy to delete"
+      responses:
+        204:
+          description: "Policy deleted"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "policy not found"
 
 securityDefinitions:
   uid:
@@ -1192,6 +1465,23 @@ definitions:
             name:
               type: string
               example: "Deny All"
+  AccessPolicy:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+        example: Allow Everyone
+      updated_at:
+        type: string
+        format: date-time
+      created_at:
+        type: string
+        format: date-time
+      conditions:
+        type: object
+        # TODO properties (only those enabled are present)
 
 
   GenericUnauthorizedResponse:
