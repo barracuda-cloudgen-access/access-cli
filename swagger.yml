@@ -1589,8 +1589,7 @@ definitions:
         type: string 
         example: "An example group"
       external_id:
-        # TODO is this an integer?
-        type: integer
+        type: string
         x-nullable: true
         example: null
       updated_at:

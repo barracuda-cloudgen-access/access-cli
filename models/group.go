@@ -28,7 +28,7 @@ type Group struct {
 	Description string `json:"description,omitempty"`
 
 	// external id
-	ExternalID *int64 `json:"external_id,omitempty"`
+	ExternalID *string `json:"external_id,omitempty"`
 
 	// id
 	ID int64 `json:"id,omitempty"`
