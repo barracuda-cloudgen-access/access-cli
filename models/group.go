@@ -27,6 +27,9 @@ type Group struct {
 	// description
 	Description string `json:"description,omitempty"`
 
+	// display name
+	DisplayName string `json:"display_name,omitempty"`
+
 	// external id
 	ExternalID *string `json:"external_id,omitempty"`
 

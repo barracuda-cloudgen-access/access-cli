@@ -74,7 +74,7 @@ var groupsListCmd = &cobra.Command{
 		for _, item := range completePayload {
 			tw.AppendRow(table.Row{
 				item.ID,
-				item.Name,
+				item.DisplayName,
 				item.Description,
 				item.TotalUsers.Enrolled,
 				item.TotalUsers.Enrolled + item.TotalUsers.Pending + item.TotalUsers.Unenrolled,

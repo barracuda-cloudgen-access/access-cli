@@ -1583,6 +1583,9 @@ definitions:
       name:
         type: string
         example: "Ninjas"
+      display_name:
+        type: string
+        example: "lcl: Ninjas"
       color:
         type: string
       description:
