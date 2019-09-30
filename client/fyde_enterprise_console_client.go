@@ -15,6 +15,7 @@ import (
 	"github.com/oNaiPs/fyde-cli/client/access_proxies"
 	"github.com/oNaiPs/fyde-cli/client/access_resources"
 	"github.com/oNaiPs/fyde-cli/client/auth"
+	"github.com/oNaiPs/fyde-cli/client/device_events"
 	"github.com/oNaiPs/fyde-cli/client/devices"
 	"github.com/oNaiPs/fyde-cli/client/groups"
 	"github.com/oNaiPs/fyde-cli/client/users"
@@ -70,6 +71,8 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *FydeEnterp
 	cli.AccessResources = access_resources.New(transport, formats)
 
 	cli.Auth = auth.New(transport, formats)
+
+	cli.DeviceEvents = device_events.New(transport, formats)
 
 	cli.Devices = devices.New(transport, formats)
 
@@ -129,6 +132,8 @@ type FydeEnterpriseConsole struct {
 
 	Auth *auth.Client
 
+	DeviceEvents *device_events.Client
+
 	Devices *devices.Client
 
 	Groups *groups.Client
@@ -149,6 +154,8 @@ func (c *FydeEnterpriseConsole) SetTransport(transport runtime.ClientTransport) 
 	c.AccessResources.SetTransport(transport)
 
 	c.Auth.SetTransport(transport)
+
+	c.DeviceEvents.SetTransport(transport)
 
 	c.Devices.SetTransport(transport)
 

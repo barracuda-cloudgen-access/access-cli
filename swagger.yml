@@ -1360,6 +1360,59 @@ paths:
             $ref: "#/definitions/GenericUnauthorizedResponse"
         404:
           description: "Proxy not found"
+  /device_events:
+    get:
+      tags:
+      - "device_events"
+      summary: "List device events"
+      operationId: "listDeviceEvents"
+      produces:
+      - "application/json"
+      parameters:
+      - $ref: '#/parameters/pageParam'
+      - $ref: '#/parameters/perPageParam'
+      responses:
+        200:
+          description: "successful operation"
+          headers:
+            total:
+              description: "Total number of items (for pagination)"
+              type: integer
+          schema:
+            type: array
+            items:
+            - $ref: "#/definitions/DeviceEventListItem"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+  /device_events/{id}:
+    get:
+      tags:
+        - "device_events"
+      produces:
+      - "application/json"
+      summary: "Retrieve device event details"
+      operationId: "getDeviceEvent"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: string
+        format: uuid
+        description: "The ID of the event to retrieve"
+      responses:
+        200:
+          description: "Event info"
+          schema:
+            $ref: "#/definitions/DeviceEvent"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "Proxy not found"
+
 
 securityDefinitions:
   uid:
@@ -1771,6 +1824,139 @@ definitions:
             type: integer
           granted:
             type: integer
+  DeviceEventListItem:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+        example: tunnel-start
+      date:
+        type: string
+        format: date-time
+      params:
+        type: object
+      app:
+        type: object
+        properties:
+          version:
+            type: string
+      device:
+        type: object
+        properties:
+          brand:
+            type: string
+          category:
+            type: string
+            x-nullable: true
+            example: null
+          hardware_model:
+            type: string
+          id:
+            type: string
+            format: uuid
+          os:
+            type: object
+            properties:
+              name:
+                type: string
+              version:
+                type: string
+      user:
+        type: object
+        properties:
+          id:
+            type: integer
+          name:
+            type: string
+  DeviceEvent:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+        example: tunnel-start
+      date:
+        type: object
+        properties:
+          utc:
+            type: string
+            format: date-time
+          local:
+            type: string
+            format: date-time
+          first_open:
+            type: string
+            format: date-time
+      params:
+        type: object
+      app:
+        type: object
+        properties:
+          instance_id:
+            type: string
+            format: uuid
+          name:
+            type: string
+          version:
+            type: string
+      geo:
+        type: object
+        properties:
+          continent:
+            type: string
+            example: "Europe"
+          country:
+            type: string
+            example: "Portugal"
+          region:
+            type: string
+            x-nullable: true
+            example: null
+          city:
+            type: string
+            x-nullable: true
+            example: null
+      device:
+        type: object
+        properties:
+          brand:
+            type: string
+          category:
+            type: string
+            x-nullable: true
+            example: null
+          hardware_model:
+            type: string
+          id:
+            type: string
+            format: uuid
+          os:
+            type: object
+            properties:
+              name:
+                type: string
+              version:
+                type: string
+      tenant:
+        type: object
+        properties:
+          name:
+            type: string
+          id:
+            type: string
+            format: uuid
+      user:
+        type: object
+        properties:
+          id:
+            type: integer
+          name:
+            type: string
 
   GenericUnauthorizedResponse:
     type: object
