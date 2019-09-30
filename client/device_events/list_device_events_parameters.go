@@ -62,6 +62,11 @@ for the list device events operation typically these are written to a http.Reque
 */
 type ListDeviceEventsParams struct {
 
+	/*EventName
+	  Restrict the types of events to return
+
+	*/
+	EventName []string
 	/*Page
 	  Page number
 
@@ -72,6 +77,11 @@ type ListDeviceEventsParams struct {
 
 	*/
 	PerPage *int64
+	/*User
+	  Restrict the events to return to the specified user name
+
+	*/
+	User *string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -111,6 +121,17 @@ func (o *ListDeviceEventsParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithEventName adds the eventName to the list device events params
+func (o *ListDeviceEventsParams) WithEventName(eventName []string) *ListDeviceEventsParams {
+	o.SetEventName(eventName)
+	return o
+}
+
+// SetEventName adds the eventName to the list device events params
+func (o *ListDeviceEventsParams) SetEventName(eventName []string) {
+	o.EventName = eventName
+}
+
 // WithPage adds the page to the list device events params
 func (o *ListDeviceEventsParams) WithPage(page *int64) *ListDeviceEventsParams {
 	o.SetPage(page)
@@ -133,6 +154,17 @@ func (o *ListDeviceEventsParams) SetPerPage(perPage *int64) {
 	o.PerPage = perPage
 }
 
+// WithUser adds the user to the list device events params
+func (o *ListDeviceEventsParams) WithUser(user *string) *ListDeviceEventsParams {
+	o.SetUser(user)
+	return o
+}
+
+// SetUser adds the user to the list device events params
+func (o *ListDeviceEventsParams) SetUser(user *string) {
+	o.User = user
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *ListDeviceEventsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -140,6 +172,14 @@ func (o *ListDeviceEventsParams) WriteToRequest(r runtime.ClientRequest, reg str
 		return err
 	}
 	var res []error
+
+	valuesEventName := o.EventName
+
+	joinedEventName := swag.JoinByFormat(valuesEventName, "multi")
+	// query array param event_name[]
+	if err := r.SetQueryParam("event_name[]", joinedEventName...); err != nil {
+		return err
+	}
 
 	if o.Page != nil {
 
@@ -167,6 +207,22 @@ func (o *ListDeviceEventsParams) WriteToRequest(r runtime.ClientRequest, reg str
 		qPerPage := swag.FormatInt64(qrPerPage)
 		if qPerPage != "" {
 			if err := r.SetQueryParam("per_page", qPerPage); err != nil {
+				return err
+			}
+		}
+
+	}
+
+	if o.User != nil {
+
+		// query param user
+		var qrUser string
+		if o.User != nil {
+			qrUser = *o.User
+		}
+		qUser := qrUser
+		if qUser != "" {
+			if err := r.SetQueryParam("user", qUser); err != nil {
 				return err
 			}
 		}

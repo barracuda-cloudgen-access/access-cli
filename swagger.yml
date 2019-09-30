@@ -1369,6 +1369,20 @@ paths:
       produces:
       - "application/json"
       parameters:
+      - in: query
+        name: "user"
+        description: "Restrict the events to return to the specified user name"
+        required: false
+        type: string
+        enum: [enabled, disabled]
+      - in: query
+        name: "event_name[]"
+        description: "Restrict the types of events to return"
+        required: false
+        type: array
+        collectionFormat: multi
+        items:
+          type: string
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
       responses:
@@ -1381,7 +1395,7 @@ paths:
           schema:
             type: array
             items:
-            - $ref: "#/definitions/DeviceEventListItem"
+              $ref: "#/definitions/DeviceEventListItem"
         401:
           description: "unauthorized: invalid credentials or missing authentication headers"
           schema:

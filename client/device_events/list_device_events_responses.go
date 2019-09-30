@@ -6,15 +6,12 @@ package device_events
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/swag"
-	"github.com/go-openapi/validate"
 
 	strfmt "github.com/go-openapi/strfmt"
 
@@ -61,14 +58,14 @@ type ListDeviceEventsOK struct {
 	 */
 	Total int64
 
-	Payload *ListDeviceEventsOKBodyTuple0
+	Payload []*models.DeviceEventListItem
 }
 
 func (o *ListDeviceEventsOK) Error() string {
 	return fmt.Sprintf("[GET /device_events][%d] listDeviceEventsOK  %+v", 200, o.Payload)
 }
 
-func (o *ListDeviceEventsOK) GetPayload() *ListDeviceEventsOKBodyTuple0 {
+func (o *ListDeviceEventsOK) GetPayload() []*models.DeviceEventListItem {
 	return o.Payload
 }
 
@@ -81,10 +78,8 @@ func (o *ListDeviceEventsOK) readResponse(response runtime.ClientResponse, consu
 	}
 	o.Total = total
 
-	o.Payload = new(ListDeviceEventsOKBodyTuple0)
-
 	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
 		return err
 	}
 
@@ -121,104 +116,5 @@ func (o *ListDeviceEventsUnauthorized) readResponse(response runtime.ClientRespo
 		return err
 	}
 
-	return nil
-}
-
-/*ListDeviceEventsOKBodyTuple0 ListDeviceEventsOKBodyTuple0 a representation of an anonymous Tuple type
-swagger:model ListDeviceEventsOKBodyTuple0
-*/
-type ListDeviceEventsOKBodyTuple0 struct {
-
-	// p0
-	// Required: true
-	P0 *models.DeviceEventListItem `json:"-"` // custom serializer
-
-}
-
-// UnmarshalJSON unmarshals this tuple type from a JSON array
-func (o *ListDeviceEventsOKBodyTuple0) UnmarshalJSON(raw []byte) error {
-	// stage 1, get the array but just the array
-	var stage1 []json.RawMessage
-	buf := bytes.NewBuffer(raw)
-	dec := json.NewDecoder(buf)
-	dec.UseNumber()
-
-	if err := dec.Decode(&stage1); err != nil {
-		return err
-	}
-
-	// stage 2: hydrates struct members with tuple elements
-
-	if len(stage1) > 0 {
-		var dataP0 models.DeviceEventListItem
-		buf = bytes.NewBuffer(stage1[0])
-		dec := json.NewDecoder(buf)
-		dec.UseNumber()
-		if err := dec.Decode(&dataP0); err != nil {
-			return err
-		}
-		o.P0 = &dataP0
-
-	}
-
-	return nil
-}
-
-// MarshalJSON marshals this tuple type into a JSON array
-func (o ListDeviceEventsOKBodyTuple0) MarshalJSON() ([]byte, error) {
-	data := []interface{}{
-		o.P0,
-	}
-
-	return json.Marshal(data)
-}
-
-// Validate validates this list device events o k body tuple0
-func (o *ListDeviceEventsOKBodyTuple0) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.validateP0(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *ListDeviceEventsOKBodyTuple0) validateP0(formats strfmt.Registry) error {
-
-	if err := validate.Required("P0", "body", o.P0); err != nil {
-		return err
-	}
-
-	if o.P0 != nil {
-		if err := o.P0.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("P0")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *ListDeviceEventsOKBodyTuple0) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *ListDeviceEventsOKBodyTuple0) UnmarshalBinary(b []byte) error {
-	var res ListDeviceEventsOKBodyTuple0
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
 	return nil
 }
