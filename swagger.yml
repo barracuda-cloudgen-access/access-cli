@@ -1364,7 +1364,7 @@ paths:
     get:
       tags:
       - "device_events"
-      summary: "List device events"
+      summary: "List device events. Always returns 25 items per page."
       operationId: "listDeviceEvents"
       produces:
       - "application/json"
