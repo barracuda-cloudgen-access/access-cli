@@ -71,7 +71,7 @@ var recordsWatchCmd = &cobra.Command{
 			}
 
 			// most recent always comes first
-			lastSeenID = resp.Payload[0].ID.String()
+			lastSeenID = resp.Payload[0].ID
 			for i := len(resp.Payload) - 1; i >= 0; i-- {
 				recordChan <- resp.Payload[i]
 			}
@@ -94,7 +94,7 @@ var recordsWatchCmd = &cobra.Command{
 				// (if not, we'll need to fetch another page)
 				lastSeenIdx := -1
 				for i, record := range resp.Payload {
-					if record.ID.String() == lastSeenID {
+					if record.ID == lastSeenID {
 						lastSeenIdx = i
 					}
 				}
@@ -105,7 +105,7 @@ var recordsWatchCmd = &cobra.Command{
 					for i := len(newRecords) - 1; i >= 0; i-- {
 						recordChan <- newRecords[i]
 						if i == 0 {
-							lastSeenID = newRecords[0].ID.String()
+							lastSeenID = newRecords[0].ID
 						}
 					}
 
