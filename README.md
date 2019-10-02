@@ -8,7 +8,7 @@ It will cover all object types accessible from the web version and also help to 
 
 Install [go-swagger](https://github.com/go-swagger/go-swagger), then run the following command on the root of this repo:
 
-`swagger generate client -f .\swagger.yml`
+`swagger generate client -f swagger.yml`
 
 ## Compiling
 
