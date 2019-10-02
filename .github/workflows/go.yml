@@ -36,7 +36,7 @@ jobs:
         cd "${WORKDIR}"
       
     - name: Generate client code from swagger specification
-      run: swagger generate client -f swagger.yml
+      run: "${HOME}/go/bin/swagger" generate client -f swagger.yml
 
     - name: Get dependencies
       run: |
