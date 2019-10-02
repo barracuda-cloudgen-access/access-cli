@@ -16,12 +16,12 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1
 
-    - name: Install go-swagger v0.20.1
+    - name: Install go-swagger 5499abf2a8c86a57f3a8112aca47a624f609689e
       run: |
         swaggerdir=$(mktemp -d) 
         git clone https://github.com/go-swagger/go-swagger "$swaggerdir" 
         cd "$swaggerdir"
-        git checkout v0.20.1
+        git checkout 5499abf2a8c86a57f3a8112aca47a624f609689e
         go install ./cmd/swagger
     
     - name: Change directory
