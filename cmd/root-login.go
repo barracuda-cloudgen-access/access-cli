@@ -43,7 +43,6 @@ var loginCmd = &cobra.Command{
 
 		passwordfd, err := cmd.Flags().GetInt("password-fd")
 		if err == nil && passwordfd >= 0 {
-			// TODO reading from FD is broken, figure out why later
 			file := os.NewFile(uintptr(passwordfd), "pipe")
 			if file == nil {
 				return fmt.Errorf("invalid file descriptor %d", passwordfd)
@@ -61,7 +60,6 @@ var loginCmd = &cobra.Command{
 			} else {
 				password = string(pwbytes)
 			}
-			cmd.Println(password)
 		}
 
 		// read username from terminal, if not obtained by other means
