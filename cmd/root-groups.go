@@ -26,7 +26,7 @@ var groupsCmd = &cobra.Command{
 	Use:   "groups",
 	Short: "Operations on groups",
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Println("groups called")
+		cmd.Help()
 	},
 }
 

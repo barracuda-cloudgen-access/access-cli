@@ -26,7 +26,7 @@ var policiesCmd = &cobra.Command{
 	Use:   "policies",
 	Short: "Operations on policies",
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Println("policies called")
+		cmd.Help()
 	},
 }
 
