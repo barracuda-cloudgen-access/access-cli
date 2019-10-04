@@ -45,7 +45,7 @@ var recordsListCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apievents.NewListDeviceEventsParams()
-		setFilter(cmd, params.SetUser, params.SetEventName)
+		setFilter(cmd, params.SetEventName, params.SetUser)
 		completePayload := []*models.DeviceEventListItem{}
 		total := 0
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
