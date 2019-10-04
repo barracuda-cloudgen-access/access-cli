@@ -24,7 +24,7 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
-	apiproxies "github.com/oNaiPs/fyde-cli/client/access_proxies"
+	apiproxies "github.com/fyde/fyde-cli/client/access_proxies"
 )
 
 // proxiesListCmd represents the list command

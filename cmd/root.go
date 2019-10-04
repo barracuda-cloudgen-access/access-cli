@@ -31,7 +31,7 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
-	apiclient "github.com/oNaiPs/fyde-cli/client"
+	apiclient "github.com/fyde/fyde-cli/client"
 )
 
 var cfgFile string

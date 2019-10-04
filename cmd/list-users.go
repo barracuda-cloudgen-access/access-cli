@@ -25,8 +25,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/thoas/go-funk"
 
-	apiusers "github.com/oNaiPs/fyde-cli/client/users"
-	"github.com/oNaiPs/fyde-cli/models"
+	apiusers "github.com/fyde/fyde-cli/client/users"
+	"github.com/fyde/fyde-cli/models"
 )
 
 // usersListCmd represents the list command

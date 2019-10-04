@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "github.com/oNaiPs/fyde-cli/cmd"
+import "github.com/fyde/fyde-cli/cmd"
 
 var (
 	// GitCommit is provided by govvv at compile-time

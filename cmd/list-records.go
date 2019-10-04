@@ -22,8 +22,8 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
-	apievents "github.com/oNaiPs/fyde-cli/client/device_events"
-	"github.com/oNaiPs/fyde-cli/models"
+	apievents "github.com/fyde/fyde-cli/client/device_events"
+	"github.com/fyde/fyde-cli/models"
 )
 
 // recordsListCmd represents the list command

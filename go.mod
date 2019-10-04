@@ -1,4 +1,4 @@
-module github.com/oNaiPs/fyde-cli
+module github.com/fyde/fyde-cli
 
 go 1.12
 

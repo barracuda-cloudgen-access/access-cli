@@ -27,8 +27,8 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
-	apievents "github.com/oNaiPs/fyde-cli/client/device_events"
-	"github.com/oNaiPs/fyde-cli/models"
+	apievents "github.com/fyde/fyde-cli/client/device_events"
+	"github.com/fyde/fyde-cli/models"
 )
 
 // recordsWatchCmd represents the list command
@@ -230,5 +230,5 @@ func init() {
 		filterType{"user", "string"})
 	initOutputFlags(recordsWatchCmd)
 
-	recordsWatchCmd.Flags().IntP("refresh-period", "r", 5, "period, in seconds, at which to check for new events")
+	recordsWatchCmd.Flags().IntP("refresh-period", "r", 60, "period, in seconds, at which to check for new events")
 }

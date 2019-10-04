@@ -22,7 +22,7 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
-	apipolicies "github.com/oNaiPs/fyde-cli/client/access_policies"
+	apipolicies "github.com/fyde/fyde-cli/client/access_policies"
 )
 
 // policiesListCmd represents the list command

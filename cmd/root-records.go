@@ -27,6 +27,7 @@ var recordsCmd = &cobra.Command{
 	Short: "Operations on records",
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Println("records called")
+		cmd.Help()
 	},
 }
 

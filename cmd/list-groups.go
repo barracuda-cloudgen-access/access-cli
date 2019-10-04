@@ -22,7 +22,7 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
-	apigroups "github.com/oNaiPs/fyde-cli/client/groups"
+	apigroups "github.com/fyde/fyde-cli/client/groups"
 )
 
 // groupsListCmd represents the list command

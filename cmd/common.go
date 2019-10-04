@@ -23,10 +23,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	apiresources "github.com/oNaiPs/fyde-cli/client/access_resources"
-	apidevices "github.com/oNaiPs/fyde-cli/client/devices"
-	apigroups "github.com/oNaiPs/fyde-cli/client/groups"
-	apiusers "github.com/oNaiPs/fyde-cli/client/users"
+	apiresources "github.com/fyde/fyde-cli/client/access_resources"
+	apidevices "github.com/fyde/fyde-cli/client/devices"
+	apigroups "github.com/fyde/fyde-cli/client/groups"
+	apiusers "github.com/fyde/fyde-cli/client/users"
 )
 
 func preRunCheckEndpoint(cmd *cobra.Command, args []string) error {

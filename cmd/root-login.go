@@ -24,10 +24,10 @@ import (
 	"strings"
 
 	"github.com/howeyc/gopass"
-	"github.com/oNaiPs/fyde-cli/models"
+	"github.com/fyde/fyde-cli/models"
 	"github.com/spf13/cobra"
 
-	apiauth "github.com/oNaiPs/fyde-cli/client/auth"
+	apiauth "github.com/fyde/fyde-cli/client/auth"
 )
 
 // loginCmd represents the login command

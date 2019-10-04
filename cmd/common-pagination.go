@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"math"
 
-	apievents "github.com/oNaiPs/fyde-cli/client/device_events"
+	apievents "github.com/fyde/fyde-cli/client/device_events"
 	"github.com/spf13/cobra"
 )
 

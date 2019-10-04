@@ -22,8 +22,8 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
-	apidevices "github.com/oNaiPs/fyde-cli/client/devices"
-	"github.com/oNaiPs/fyde-cli/models"
+	apidevices "github.com/fyde/fyde-cli/client/devices"
+	"github.com/fyde/fyde-cli/models"
 )
 
 // devicesListCmd represents the list command

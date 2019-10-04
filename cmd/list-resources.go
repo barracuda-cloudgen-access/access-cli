@@ -25,8 +25,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/thoas/go-funk"
 
-	apiresources "github.com/oNaiPs/fyde-cli/client/access_resources"
-	"github.com/oNaiPs/fyde-cli/models"
+	apiresources "github.com/fyde/fyde-cli/client/access_resources"
+	"github.com/fyde/fyde-cli/models"
 )
 
 // resourcesListCmd represents the list command
