@@ -18,6 +18,7 @@ limitations under the License.
 */
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 	"time"
@@ -45,16 +46,28 @@ var recordsWatchCmd = &cobra.Command{
 			return err
 		}
 
+		refreshPeriod, err := cmd.Flags().GetInt("refresh-period")
+		if err != nil {
+			return err
+		}
+
+		if refreshPeriod < 1 {
+			return fmt.Errorf("invalid refresh period of %d seconds", refreshPeriod)
+		}
+
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		recordChan := make(chan *models.DeviceEventListItem)
+
+		refreshPeriod, _ := cmd.Flags().GetInt("refresh-period")
 
 		var innerError error
 
 		// launch producer thread
 		go func() {
 			lastSeenID := ""
+			var fetchStart time.Time
 
 			// newRecords contains the records created since last update check
 			// most recent are always first
@@ -114,7 +127,11 @@ var recordsWatchCmd = &cobra.Command{
 					// reset state and wait:
 					page = 0 // will be set to 1 once we loop
 					newRecords = []*models.DeviceEventListItem{}
-					time.Sleep(5 * time.Second)
+					waitFor := time.Duration(refreshPeriod)*time.Second - time.Since(fetchStart)
+					if waitFor > 0 {
+						time.Sleep(waitFor)
+					}
+					fetchStart = time.Now()
 				} else {
 					// collect all records from this page and move on to the next page
 					// (we loop until we find the last record we saw)
@@ -212,4 +229,6 @@ func init() {
 		filterType{"event_name", "[]string"},
 		filterType{"user", "string"})
 	initOutputFlags(recordsWatchCmd)
+
+	recordsWatchCmd.Flags().IntP("refresh-period", "r", 5, "period, in seconds, at which to check for new events")
 }
