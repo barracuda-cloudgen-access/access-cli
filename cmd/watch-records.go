@@ -18,7 +18,7 @@ limitations under the License.
 */
 
 import (
-	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -56,27 +56,6 @@ var recordsWatchCmd = &cobra.Command{
 		go func() {
 			lastSeenID := ""
 
-			params := apievents.NewListDeviceEventsParams()
-			setFilter(cmd, params.SetEventName, params.SetUser)
-			resp, err := global.Client.DeviceEvents.ListDeviceEvents(params, global.AuthWriter)
-			if err != nil {
-				innerError = err
-				close(recordChan)
-				return
-			}
-
-			if len(resp.Payload) == 0 {
-				innerError = fmt.Errorf("No records")
-				close(recordChan)
-				return
-			}
-
-			// most recent always comes first
-			lastSeenID = resp.Payload[0].ID
-			for i := len(resp.Payload) - 1; i >= 0; i-- {
-				recordChan <- resp.Payload[i]
-			}
-
 			// newRecords contains the records created since last update check
 			// most recent are always first
 			newRecords := []*models.DeviceEventListItem{}
@@ -91,16 +70,38 @@ var recordsWatchCmd = &cobra.Command{
 					return
 				}
 
+				// workaround for the fact that the server returns records
+				// ordered by descending timestamp, but the sorting is not
+				// stable, the order of events with the same timestamp changes.
+				// this breaks the check using lastSeenID
+				// sort the events ourselves
+				// order by timestamp desc, id asc
+				sort.Slice(resp.Payload, func(iIdx, jIdx int) bool {
+					i := resp.Payload[iIdx]
+					j := resp.Payload[jIdx]
+					if time.Time(i.Date).Equal(time.Time(j.Date)) {
+						return i.ID < j.ID
+					}
+					// use After for descending order
+					return time.Time(i.Date).After(time.Time(j.Date))
+				})
+				// end of workaround
+
 				// see if and where the last seen record is in this response
 				// (if not, we'll need to fetch another page)
 				lastSeenIdx := -1
-				for i, record := range resp.Payload {
-					if record.ID == lastSeenID {
-						lastSeenIdx = i
+				if lastSeenID == "" {
+					lastSeenIdx = len(resp.Payload)
+				} else {
+					for i, record := range resp.Payload {
+						if record.ID == lastSeenID {
+							lastSeenIdx = i
+						}
 					}
 				}
 				if lastSeenIdx != -1 {
 					newRecords = append(resp.Payload[0:lastSeenIdx], newRecords...)
+
 					// most recent always comes first in responses,
 					// but we want to produce records from old to new
 					for i := len(newRecords) - 1; i >= 0; i-- {
