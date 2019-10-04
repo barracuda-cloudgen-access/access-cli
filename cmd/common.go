@@ -62,8 +62,12 @@ func processErrorResponse(err error) error {
 	// TODO prepare for other error response types
 	// (maybe use reflection if we can always get the Payload from within the error type)
 	switch r := err.(type) {
+	case *apiusers.GetUserNotFound:
+		return fmt.Errorf("user not found")
 	case *apiusers.ListUsersUnauthorized:
 		return fmt.Errorf(strings.Join(r.Payload.Errors, "\n"))
+	case *apigroups.GetGroupNotFound:
+		return fmt.Errorf("group not found")
 	case *apigroups.ListGroupsUnauthorized:
 		return fmt.Errorf(strings.Join(r.Payload.Errors, "\n"))
 	case *apidevices.ListDevicesUnauthorized:

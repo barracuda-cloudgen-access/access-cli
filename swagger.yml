@@ -255,6 +255,37 @@ paths:
           schema:
             $ref: "#/definitions/GenericUnauthorizedResponse"
   /users/{id}:
+    get:
+      tags:
+        - "users"
+      produces:
+      - "application/json"
+      summary: "Retrieve information about a user"
+      operationId: "getUser"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the user to retrieve"
+      responses:
+        200:
+          description: "User info"
+          schema:
+            allOf:
+              - $ref: "#/definitions/User"
+              - type: object
+                properties:
+                  devices:
+                    type: array
+                    items:
+                      $ref: "#/definitions/DevicePartial"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "user not found"
     patch:
       tags:
         - "users"
@@ -304,10 +335,9 @@ paths:
               - type: object
                 properties:
                   devices:
-                    # TODO point to device model (probably)
                     type: array
                     items:
-                      type: object
+                      $ref: "#/definitions/DevicePartial"
         401:
           description: "unauthorized: invalid credentials or missing authentication headers"
           schema:
@@ -586,7 +616,6 @@ paths:
               - type: object
                 properties:
                   notes:
-                    # TODO guessing it's a string
                     type: string
                     x-nullable: true
                     example: null
@@ -1638,6 +1667,8 @@ definitions:
             name:
               type: string
               example: "All"
+            display_name:
+              type: string
             color:
               type: string
               example: "#20B8AA"
@@ -1735,6 +1766,43 @@ definitions:
       os_version:
         type: string
         example: "13.0.0"
+  DevicePartial:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 45
+      enrollment_id:
+        type: string
+        format: uuid
+      brand:
+        type: string
+        example: "Apple"
+      hardware_model:
+        type: string
+        example: "iPhone9,3"
+      os:
+        type: string
+        example: "iOS"
+      updated_at:
+        type: string
+        format: date-time
+      created_at:
+        type: string
+        format: date-time
+      enrolled_at:
+        type: string
+        format: date-time
+      status:
+        type: string
+        # TODO figure out other possible enum options
+        enum: [require_auth, enrolled]
+        example: enrolled
+      model:
+        type: string
+        example: "iPhone"
+      enabled:
+        type: boolean
   AccessResource:
     type: object
     properties:
