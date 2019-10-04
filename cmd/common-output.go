@@ -88,6 +88,37 @@ func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Wr
 	}
 }
 
+func renderWatchOutput(cmd *cobra.Command, data interface{}, tableWriter table.Writer) (bool, string, error) {
+	if _, ok := cmd.Annotations[flagInitOutput]; !ok {
+		panic("renderWatchOutput called for command where output flags were not initialized. This is a bug!")
+	}
+
+	outputFormat, err := cmd.Flags().GetString("output")
+	if err != nil {
+		return false, "", err
+	}
+	switch outputFormat {
+	case "table":
+		if terminal.IsTerminal(int(os.Stdout.Fd())) {
+			width, _, err := terminal.GetSize(int(os.Stdout.Fd()))
+			if err == nil {
+				tableWriter.SetAllowedRowLength(width)
+			}
+		}
+		return true, tableWriter.Render(), nil
+	case "csv":
+		return false, tableWriter.RenderCSV(), nil
+	case "json":
+		o, err := renderJSON(data)
+		return false, o, err
+	case "json-pretty":
+		o, err := renderPrettyJSON(data)
+		return false, o, err
+	default:
+		return false, "", fmt.Errorf("unsupported output format %s", outputFormat)
+	}
+}
+
 func renderJSON(data interface{}) (string, error) {
 	var r []byte
 	var err error

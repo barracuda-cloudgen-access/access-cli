@@ -19,6 +19,7 @@ limitations under the License.
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jedib0t/go-pretty/table"
@@ -56,7 +57,7 @@ var recordsWatchCmd = &cobra.Command{
 			lastSeenID := ""
 
 			params := apievents.NewListDeviceEventsParams()
-			setFilter(cmd, params.SetUser, params.SetEventName)
+			setFilter(cmd, params.SetEventName, params.SetUser)
 			resp, err := global.Client.DeviceEvents.ListDeviceEvents(params, global.AuthWriter)
 			if err != nil {
 				innerError = err
@@ -82,7 +83,7 @@ var recordsWatchCmd = &cobra.Command{
 			for page := int64(1); ; page++ {
 				params := apievents.NewListDeviceEventsParams()
 				params.SetPage(&page)
-				setFilter(cmd, params.SetUser, params.SetEventName)
+				setFilter(cmd, params.SetEventName, params.SetUser)
 				resp, err := global.Client.DeviceEvents.ListDeviceEvents(params, global.AuthWriter)
 				if err != nil {
 					innerError = err
@@ -122,17 +123,20 @@ var recordsWatchCmd = &cobra.Command{
 		}()
 
 		// we are the consumer thread
+		isFirst := true
 		for record := range recordChan {
 			tw := table.NewWriter()
 			tw.Style().Format.Header = text.FormatDefault
-			tw.Style().Options.DrawBorder = false
-			/*tw.AppendHeader(table.Row{
-				"ID",
-				"Name",
-				"User",
-				"Date",
-			})*/
-			user := "?"
+
+			if isFirst {
+				tw.AppendHeader(table.Row{
+					"ID",
+					"Name",
+					"User",
+					"Date",
+				})
+			}
+			user := "Unknown"
 			if record.User != nil {
 				user = record.User.Name
 			}
@@ -142,8 +146,46 @@ var recordsWatchCmd = &cobra.Command{
 				user,
 				record.Date,
 			})
-			tw.SetAllowedColumnLengths([]int{38, 30, 30, 30})
-			cmd.Println(tw.Render())
+
+			// fix column width so it looks consistent across "tables"
+			tw.SetColumnConfigs([]table.ColumnConfig{
+				table.ColumnConfig{
+					Number:   1,
+					WidthMin: 38,
+					WidthMax: 38,
+				},
+				table.ColumnConfig{
+					Number:   2,
+					WidthMin: 25,
+					WidthMax: 25,
+				},
+				table.ColumnConfig{
+					Number:   3,
+					WidthMin: 20,
+					WidthMax: 20,
+				},
+				table.ColumnConfig{
+					Number:   4,
+					WidthMin: 24,
+					WidthMax: 24,
+				},
+			})
+
+			isTable, result, err := renderWatchOutput(cmd, record, tw)
+			if err != nil {
+				return err
+			}
+
+			if isTable {
+				if !isFirst {
+					//remove top border
+					result = result[strings.Index(result, "\n")+1 : len(result)]
+				}
+				result = result[0:strings.LastIndex(result, "\n")]
+			}
+
+			cmd.Println(result)
+			isFirst = false
 		}
 		if innerError != nil {
 			return processErrorResponse(innerError)
@@ -165,8 +207,6 @@ func init() {
 	// is called directly, e.g.:
 	// recordsWatchCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	initPaginationFlags(recordsWatchCmd)
-	initSortFlags(recordsWatchCmd)
 	initFilterFlags(recordsWatchCmd,
 		filterType{"event_name", "[]string"},
 		filterType{"user", "string"})
