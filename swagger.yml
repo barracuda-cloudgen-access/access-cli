@@ -768,7 +768,8 @@ paths:
       - in: path
         name: "id"
         required: true
-        type: integer
+        type: string
+        format: uuid
         description: "The ID of the resource to retrieve"
       responses:
         200:
