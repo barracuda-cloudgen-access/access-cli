@@ -105,7 +105,7 @@ func processErrorResponse(err error) error {
 	case *apievents.ListDeviceEventsUnauthorized:
 		return fmt.Errorf(strings.Join(r.Payload.Errors, "\n"))
 	case *apievents.GetDeviceEventNotFound:
-		return fmt.Errorf("event not found")
+		return fmt.Errorf("record not found")
 
 	default:
 		return err
