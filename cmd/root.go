@@ -88,6 +88,8 @@ func init() {
 	rootCmd.PersistentFlags().IntVarP(&global.VerboseLevel, "verbose", "v", 0, "verbose output level, higher levels are more verbose")
 
 	rootCmd.PersistentFlags().SetNormalizeFunc(aliasNormalizeFunc)
+
+	rootCmd.SetOut(os.Stdout)
 }
 
 func aliasNormalizeFunc(f *pflag.FlagSet, name string) pflag.NormalizedName {
