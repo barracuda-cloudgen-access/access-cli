@@ -59,7 +59,7 @@ jobs:
 
     - name: Test version command
       # we do NOT want to find ??? (hence the ! operator, defined in posix)
-      run: ! ./fyde-cli version | grep -q ???
+      run: "! ./fyde-cli version | grep -q ???"
     
     - name: Lint
       run: go vet ./...
