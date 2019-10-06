@@ -1450,8 +1450,13 @@ paths:
         name: "id"
         required: true
         type: string
-        format: uuid
         description: "The ID of the event to retrieve"
+      - in: query
+        name: "date"
+        required: true
+        type: string
+        format: date-time
+        description: "The date of the event to retrieve"
       responses:
         200:
           description: "Event info"
