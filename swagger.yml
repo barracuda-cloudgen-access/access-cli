@@ -631,6 +631,13 @@ paths:
                         format: email
                       phone_number:
                         type: string
+                      # we must still include these two because go-swagger is bad at merging allOf
+                      id:
+                        type: integer
+                        example: 23
+                      name:
+                        type: string
+                        example: "John Doe"
         401:
           description: "unauthorized: invalid credentials or missing authentication headers"
           schema:
