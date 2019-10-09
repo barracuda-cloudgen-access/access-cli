@@ -57,12 +57,12 @@ jobs:
     - name: Prepare Linux amd64 archive
       run: |
         "${HOME}/go/bin/gox" -osarch="linux/amd64" -tags="release" -ldflags="$(${HOME}/go/bin/govvv -flags)" -output="fyde-cli"
-        tar -czvf fyde-cli_${GITHUB_REF}_linux_amd64.tar.gz fyde-cli README.md
+        tar -czvf fyde-cli_${GITHUB_REF}_linux-amd64.tar.gz fyde-cli README.md
         rm fyde-cli
 
     - name: Upload Linux amd64 binary to release
-      uses: Shopify/upload-to-release
+      uses: Shopify/upload-to-release@1.0.0
       with:
-        name: fyde-cli_${GITHUB_REF}_linux_amd64.tar.gz
-        path: fyde-cli_${GITHUB_REF}_linux_amd64.tar.gz
+        name: fyde-cli_${GITHUB_REF}_linux-amd64.tar.gz
+        path: fyde-cli_${GITHUB_REF}_linux-amd64.tar.gz
         repo-token: ${{ secrets.GITHUB_TOKEN }}
