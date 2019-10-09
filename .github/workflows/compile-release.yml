@@ -60,7 +60,8 @@ jobs:
       env:
         TAGNAME: ${{ steps.tagName.outputs.tag }}
       run: |
-        "${HOME}/go/bin/gox" -osarch="linux/amd64" -tags="release" -ldflags="$(${HOME}/go/bin/govvv -flags)" -output="fyde-cli"
+        git status --porcelain
+        "${HOME}/go/bin/gox" -osarch="linux/amd64" -tags="release" -ldflags="$(${HOME}/go/bin/govvv -flags -version=${TAGNAME})" -output="fyde-cli"
         tar -czvf fyde-cli_${TAGNAME}_linux-amd64.tar.gz fyde-cli README.md
         rm fyde-cli
 
