@@ -15,6 +15,9 @@ jobs:
       with:
         go-version: 1.13
       id: go
+    
+    - name: Add go/bin to path
+      run: echo ::add-path::"${HOME}/go/bin"
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1
@@ -43,7 +46,7 @@ jobs:
       
     - name: Generate client code from swagger specification
       run: |
-        "${HOME}/go/bin/swagger" generate client -f swagger.yml
+        swagger generate client -f swagger.yml
 
     - name: Get dependencies
       run: |
@@ -56,12 +59,23 @@ jobs:
     - name: Install gox
       run: go install github.com/mitchellh/gox
 
+    - name: Prepare linker flags
+      env:
+        TAGNAME: ${{ steps.tagName.outputs.tag }}
+      run: |
+        echo ::set-env name=LDFLAGS::$(govvv -flags -version=${TAGNAME})
+
+    - name: Compile for target platforms
+      env:
+        TAGNAME: ${{ steps.tagName.outputs.tag }}
+      run: |
+        gox -osarch="linux/amd64 linux/arm darwin/amd64 windows/amd64" -tags="release" -ldflags="${LDFLAGS}"
+
     - name: Prepare Linux amd64 archive
       env:
         TAGNAME: ${{ steps.tagName.outputs.tag }}
       run: |
-        git status --porcelain
-        "${HOME}/go/bin/gox" -osarch="linux/amd64" -tags="release" -ldflags="$(${HOME}/go/bin/govvv -flags -version=${TAGNAME})" -output="fyde-cli"
+        mv fyde-cli_linux_amd64 fyde-cli
         tar -czvf fyde-cli_${TAGNAME}_linux-amd64.tar.gz fyde-cli README.md
         rm fyde-cli
 
