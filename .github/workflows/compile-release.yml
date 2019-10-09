@@ -59,10 +59,12 @@ jobs:
     - name: Compile for target platforms and produce archives
       env:
         TAGNAME: ${{ steps.tagName.outputs.tag }}
+      shell: bash
       run: |
         # remove uncommitted changes
         git checkout go.mod go.sum
-        LDFLAGS=$("${HOME}/go/bin/govvv" -flags -version ${TAGNAME})
+        LDFLAGS=$("${HOME}/go/bin/govvv" -version ${TAGNAME} -flags)
+        echo ${TAGNAME}
         echo ${LDFLAGS}
         "${HOME}/go/bin/gox" -osarch="linux/amd64 linux/arm darwin/amd64 windows/amd64" -tags="release" -ldflags="${LDFLAGS}"
 
