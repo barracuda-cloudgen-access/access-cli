@@ -60,7 +60,9 @@ jobs:
       env:
         TAGNAME: ${{ steps.tagName.outputs.tag }}
       run: |
-        LDFLAGS=$("${HOME}/go/bin/govvv" -flags -version=${TAGNAME})
+        # remove uncommitted changes
+        git checkout go.mod go.sum
+        LDFLAGS=$("${HOME}/go/bin/govvv" -flags -version ${TAGNAME})
         "${HOME}/go/bin/gox" -osarch="linux/amd64 linux/arm darwin/amd64 windows/amd64" -tags="release" -ldflags="${LDFLAGS}"
 
     - name: Prepare Linux amd64 archive
