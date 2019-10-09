@@ -82,7 +82,7 @@ jobs:
       env:
         TAGNAME: ${{ steps.tagName.outputs.tag }}
       run: |
-        mv fyde-cli_linux_arm fyde-cli
+        mv fyde-cli_linux-arm fyde-cli
         tar -czvf fyde-cli_${TAGNAME}_linux-arm.tar.gz fyde-cli README.md
         rm fyde-cli
 
