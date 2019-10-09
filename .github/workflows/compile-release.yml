@@ -57,11 +57,11 @@ jobs:
       run: go install github.com/mitchellh/gox
 
     - name: Prepare Linux amd64 archive
-      with:
-        tagname: ${{ steps.tagName.outputs.tag }}
+      env:
+        TAGNAME: ${{ steps.tagName.outputs.tag }}
       run: |
         "${HOME}/go/bin/gox" -osarch="linux/amd64" -tags="release" -ldflags="$(${HOME}/go/bin/govvv -flags)" -output="fyde-cli"
-        tar -czvf fyde-cli_${INPUT_TAGNAME}_linux-amd64.tar.gz fyde-cli README.md
+        tar -czvf fyde-cli_${TAGNAME}_linux-amd64.tar.gz fyde-cli README.md
         rm fyde-cli
 
     - name: Upload Linux amd64 binary to release
