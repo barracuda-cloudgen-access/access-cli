@@ -15,9 +15,6 @@ jobs:
       with:
         go-version: 1.13
       id: go
-    
-    - name: Add go/bin to path
-      run: echo ::add-path::"${HOME}/go/bin"
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1
@@ -46,7 +43,7 @@ jobs:
       
     - name: Generate client code from swagger specification
       run: |
-        swagger generate client -f swagger.yml
+        "${HOME}/go/bin/swagger" generate client -f swagger.yml
 
     - name: Get dependencies
       run: |
@@ -59,17 +56,12 @@ jobs:
     - name: Install gox
       run: go install github.com/mitchellh/gox
 
-    - name: Prepare linker flags
+    - name: Compile for target platforms and produce archives
       env:
         TAGNAME: ${{ steps.tagName.outputs.tag }}
       run: |
-        echo ::set-env name=LDFLAGS::$(govvv -flags -version=${TAGNAME})
-
-    - name: Compile for target platforms
-      env:
-        TAGNAME: ${{ steps.tagName.outputs.tag }}
-      run: |
-        gox -osarch="linux/amd64 linux/arm darwin/amd64 windows/amd64" -tags="release" -ldflags="${LDFLAGS}"
+        LDFLAGS=$("${HOME}/go/bin/govvv" -flags -version=${TAGNAME})
+        "${HOME}/go/bin/gox" -osarch="linux/amd64 linux/arm darwin/amd64 windows/amd64" -tags="release" -ldflags="${LDFLAGS}"
 
     - name: Prepare Linux amd64 archive
       env:
@@ -79,9 +71,54 @@ jobs:
         tar -czvf fyde-cli_${TAGNAME}_linux-amd64.tar.gz fyde-cli README.md
         rm fyde-cli
 
-    - name: Upload Linux amd64 binary to release
+    - name: Upload Linux amd64 archive to release
       uses: Shopify/upload-to-release@1.0.0
       with:
         name: fyde-cli_${{ steps.tagName.outputs.tag }}_linux-amd64.tar.gz
         path: fyde-cli_${{ steps.tagName.outputs.tag }}_linux-amd64.tar.gz
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Prepare Linux arm archive
+      env:
+        TAGNAME: ${{ steps.tagName.outputs.tag }}
+      run: |
+        mv fyde-cli_linux_arm fyde-cli
+        tar -czvf fyde-cli_${TAGNAME}_linux-arm.tar.gz fyde-cli README.md
+        rm fyde-cli
+
+    - name: Upload Linux arm archive to release
+      uses: Shopify/upload-to-release@1.0.0
+      with:
+        name: fyde-cli_${{ steps.tagName.outputs.tag }}_linux-arm.tar.gz
+        path: fyde-cli_${{ steps.tagName.outputs.tag }}_linux-arm.tar.gz
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Prepare macOS amd64 archive
+      env:
+        TAGNAME: ${{ steps.tagName.outputs.tag }}
+      run: |
+        mv fyde-cli_darwin_amd64 fyde-cli
+        tar -czvf fyde-cli_${TAGNAME}_macOS-amd64.tar.gz fyde-cli README.md
+        rm fyde-cli
+
+    - name: Upload macOS amd64 archive to release
+      uses: Shopify/upload-to-release@1.0.0
+      with:
+        name: fyde-cli_${{ steps.tagName.outputs.tag }}_macOS-amd64.tar.gz
+        path: fyde-cli_${{ steps.tagName.outputs.tag }}_macOS-amd64.tar.gz
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Prepare Windows amd64 archive
+      env:
+        TAGNAME: ${{ steps.tagName.outputs.tag }}
+      run: |
+        mv fyde-cli_windows_amd64.exe fyde-cli.exe
+        tar -czvf fyde-cli_${TAGNAME}_windows-amd64.tar.gz fyde-cli.exe README.md
+        rm fyde-cli.exe
+
+    - name: Upload Windows amd64 archive to release
+      uses: Shopify/upload-to-release@1.0.0
+      with:
+        name: fyde-cli_${{ steps.tagName.outputs.tag }}_windows-amd64.tar.gz
+        path: fyde-cli_${{ steps.tagName.outputs.tag }}_windows-amd64.tar.gz
         repo-token: ${{ secrets.GITHUB_TOKEN }}
