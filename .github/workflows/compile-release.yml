@@ -1,0 +1,68 @@
+name: Compile release artifacts
+on:
+  release:
+    types: [published]
+jobs:
+  build-release:
+    name: Build release
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v1
+
+    - name: Install govvv
+      run: go install github.com/ahmetb/govvv
+
+    - name: Install go-swagger 5499abf2a8c86a57f3a8112aca47a624f609689e
+      run: |
+        swaggerdir=$(mktemp -d) 
+        git clone https://github.com/go-swagger/go-swagger "$swaggerdir" 
+        cd "$swaggerdir"
+        git checkout 5499abf2a8c86a57f3a8112aca47a624f609689e
+        go install ./cmd/swagger
+    
+    - name: Change directory
+      run: |
+        WORKDIR="${HOME}/go/src/github.com/${GITHUB_REPOSITORY}"
+
+        # Go can only find dependencies if they're under $GOPATH/src.
+        # GitHub Actions mounts your repository outside of $GOPATH.
+        # So symlink the repository into $GOPATH, and then cd to it.
+        mkdir -p "$(dirname "${WORKDIR}")"
+        ln -s "${PWD}" "${WORKDIR}"
+        cd "${WORKDIR}"
+      
+    - name: Generate client code from swagger specification
+      run: |
+        "${HOME}/go/bin/swagger" generate client -f swagger.yml
+
+    - name: Get dependencies
+      run: |
+        go get -v -t -d ./...
+        if [ -f Gopkg.toml ]; then
+            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+            dep ensure
+        fi
+
+    - name: Install gox
+      run: go install github.com/mitchellh/gox
+
+    - name: Prepare Linux amd64 archive
+      run: |
+        "${HOME}/go/bin/gox" -osarch="linux/amd64" -tags="release" -ldflags="$(${HOME}/go/bin/govvv -flags)" -output="fyde-cli"
+        tar -czvf fyde-cli_${GITHUB_REF}_linux_amd64.tar.gz fyde-cli README.md
+        rm fyde-cli
+
+    - name: Upload Linux amd64 binary to release
+      uses: Shopify/upload-to-release
+      with:
+        name: fyde-cli_${GITHUB_REF}_linux_amd64.tar.gz
+        path: fyde-cli_${GITHUB_REF}_linux_amd64.tar.gz
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
