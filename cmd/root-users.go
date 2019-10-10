@@ -25,9 +25,6 @@ import (
 var usersCmd = &cobra.Command{
 	Use:   "users",
 	Short: "Operations on users",
-	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
-	},
 }
 
 func init() {

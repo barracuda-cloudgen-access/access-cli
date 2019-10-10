@@ -25,9 +25,6 @@ import (
 var resourcesCmd = &cobra.Command{
 	Use:   "resources",
 	Short: "Operations on resources",
-	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
-	},
 }
 
 func init() {

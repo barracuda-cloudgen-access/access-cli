@@ -25,9 +25,6 @@ import (
 var proxiesCmd = &cobra.Command{
 	Use:   "proxies",
 	Short: "Operations on proxies",
-	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
-	},
 }
 
 func init() {

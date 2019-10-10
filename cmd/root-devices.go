@@ -25,9 +25,6 @@ import (
 var devicesCmd = &cobra.Command{
 	Use:   "devices",
 	Short: "Operations on devices",
-	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
-	},
 }
 
 func init() {

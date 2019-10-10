@@ -25,9 +25,6 @@ import (
 var recordsCmd = &cobra.Command{
 	Use:   "records",
 	Short: "Operations on records",
-	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
-	},
 }
 
 func init() {
