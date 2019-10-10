@@ -91,6 +91,19 @@ jobs:
         name: fyde-cli_${{ steps.tagName.outputs.tag }}_linux-arm.tar.gz
         path: fyde-cli_${{ steps.tagName.outputs.tag }}_linux-arm.tar.gz
         repo-token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Prepare Linux arm64 archive
+      run: |
+        mv fyde-cli_linux_arm64 fyde-cli
+        tar -czvf fyde-cli_${GITHUB_TAG_NAME}_linux-arm64.tar.gz fyde-cli README.md LICENSE
+        rm fyde-cli
+
+    - name: Upload Linux arm64 archive to release
+      uses: Shopify/upload-to-release@1.0.0
+      with:
+        name: fyde-cli_${{ steps.tagName.outputs.tag }}_linux-arm64.tar.gz
+        path: fyde-cli_${{ steps.tagName.outputs.tag }}_linux-arm64.tar.gz
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Prepare macOS amd64 archive
       run: |
