@@ -1,7 +1,7 @@
 Fyde CLI client [![Go Report Card](https://goreportcard.com/badge/github.com/fyde/fyde-cli)](https://goreportcard.com/report/github.com/fyde/fyde-cli) [![license](https://img.shields.io/github/license/fyde/fyde-cli.svg)](https://github.com/fyde/fyde-cli/blob/master/LICENSE)
 ===============
 
-Cross-platform command line client for Fyde Enterprise Console APIs.
+Cross-platform command line client for [Fyde Enterprise Console](https://fyde.github.io/docs/fyde-enterprise-console) APIs.
 
 ## Overview
 
@@ -14,7 +14,7 @@ You can use it in other architectures by compiling from source.
 
 ## Features
 
-The goal for this project is to implement most operations possible with the web version of the Fyde Enterprise Console, enabling batch mode for certain operations (like adding multiple users from a CSV file or a JSON dump).
+The goal for this project is to implement most operations possible with the web version of the [Fyde Enterprise Console](https://fyde.github.io/docs/fyde-enterprise-console), enabling batch mode for certain operations (like adding multiple users from a CSV file or a JSON dump).
 
 Currently, the fyde-cli is at an early development stage.
 Only read-only operations are implemented:
