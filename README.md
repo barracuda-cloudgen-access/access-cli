@@ -103,7 +103,7 @@ fyde-cli supports different output formats for different use cases:
 
  - Table, for interactive usage (`--output=table`)
  - CSV (`--output=csv`)
- - JSON (`--output=json` or `--output-json-pretty`)
+ - JSON (`--output=json` or `--output=json-pretty`)
 
 By default, when an interactive terminal is detected, `table` output is used.
 Otherwise, `json` is used.
