@@ -64,7 +64,7 @@ jobs:
         "${HOME}/go/bin/govvv" -version ${GITHUB_TAG_NAME} -flags
         LDFLAGS=$("${HOME}/go/bin/govvv" -version ${GITHUB_TAG_NAME} -flags)
         echo ${LDFLAGS}
-        "${HOME}/go/bin/gox" -osarch="linux/amd64 linux/arm darwin/amd64 windows/amd64" -tags="release" -ldflags="${LDFLAGS}"
+        "${HOME}/go/bin/gox" -osarch="linux/amd64 linux/arm linux/arm64 darwin/amd64 windows/amd64" -tags="release" -ldflags="${LDFLAGS}"
 
     - name: Prepare Linux amd64 archive
       run: |
