@@ -69,7 +69,7 @@ jobs:
     - name: Prepare Linux amd64 archive
       run: |
         mv fyde-cli_linux_amd64 fyde-cli
-        tar -czvf fyde-cli_${GITHUB_TAG_NAME}_linux-amd64.tar.gz fyde-cli README.md
+        tar -czvf fyde-cli_${GITHUB_TAG_NAME}_linux-amd64.tar.gz fyde-cli README.md LICENSE
         rm fyde-cli
 
     - name: Upload Linux amd64 archive to release
@@ -82,7 +82,7 @@ jobs:
     - name: Prepare Linux arm archive
       run: |
         mv fyde-cli_linux_arm fyde-cli
-        tar -czvf fyde-cli_${GITHUB_TAG_NAME}_linux-arm.tar.gz fyde-cli README.md
+        tar -czvf fyde-cli_${GITHUB_TAG_NAME}_linux-arm.tar.gz fyde-cli README.md LICENSE
         rm fyde-cli
 
     - name: Upload Linux arm archive to release
@@ -95,7 +95,7 @@ jobs:
     - name: Prepare macOS amd64 archive
       run: |
         mv fyde-cli_darwin_amd64 fyde-cli
-        tar -czvf fyde-cli_${GITHUB_TAG_NAME}_macOS-amd64.tar.gz fyde-cli README.md
+        tar -czvf fyde-cli_${GITHUB_TAG_NAME}_macOS-amd64.tar.gz fyde-cli README.md LICENSE
         rm fyde-cli
 
     - name: Upload macOS amd64 archive to release
@@ -108,7 +108,7 @@ jobs:
     - name: Prepare Windows amd64 archive
       run: |
         mv fyde-cli_windows_amd64.exe fyde-cli.exe
-        tar -czvf fyde-cli_${GITHUB_TAG_NAME}_windows-amd64.tar.gz fyde-cli.exe README.md
+        tar -czvf fyde-cli_${GITHUB_TAG_NAME}_windows-amd64.tar.gz fyde-cli.exe README.md LICENSE
         rm fyde-cli.exe
 
     - name: Upload Windows amd64 archive to release
