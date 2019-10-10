@@ -1,16 +1,6 @@
 // Package cmd implements fyde-cli commands
 package cmd
 
-import (
-	"bytes"
-	"io/ioutil"
-	"strings"
-	"testing"
-
-	"github.com/nbio/st"
-	"gopkg.in/h2non/gock.v1"
-)
-
 /*
 Copyright © 2019 Fyde, Inc. <hello@fyde.com>
 
@@ -26,6 +16,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+import (
+	"bytes"
+	"io/ioutil"
+	"strings"
+	"testing"
+
+	"github.com/nbio/st"
+	"gopkg.in/h2non/gock.v1"
+)
 
 func TestLogin(t *testing.T) {
 	defer gock.Off()
