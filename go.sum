@@ -115,7 +115,6 @@ github.com/motemen/go-nuts v0.0.0-20190725124253-1d2432db96b0 h1:CnSVrlMNAZMWI1+
 github.com/motemen/go-nuts v0.0.0-20190725124253-1d2432db96b0/go.mod h1:vfh/NPxHgDwggXit20W1llPsXcz39xJ7I8vo7kVrOCk=
 github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 h1:W6apQkHrMkS0Muv8G/TipAy/FJl/rCYT0+EuS8+Z0z4=
 github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32/go.mod h1:9wM+0iRr9ahx58uYLpLIr5fm8diHn0JbqRycJi6w0Ms=
-github.com/oNaiPs/fyde-cli v0.0.0-20191004153538-a4e581b6a3ca h1:duWAPCdVcj0sD+L9riHfILrh5PvBj2NdUQgIYxn8WgA=
 github.com/pborman/uuid v1.2.0/go.mod h1:X/NO0urCmaxf9VXbdlT7C2Yzkj2IKimNn4k+gtPdI/k=
 github.com/pelletier/go-toml v1.2.0 h1:T5zMGML61Wp+FlcbWjRDT7yAxhJNAiPPLOFECq181zc=
 github.com/pelletier/go-toml v1.2.0/go.mod h1:5z9KED0ma1S8pY6P1sdut58dfprrGBbd/94hg7ilaic=
