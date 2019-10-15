@@ -1611,7 +1611,46 @@ paths:
           description: "unauthorized: invalid credentials or missing authentication headers"
           schema:
             $ref: "#/definitions/GenericUnauthorizedResponse"
-
+  /asset_sources/{id}:
+    patch:
+      tags:
+        - "asset_sources"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Enable/disable asset source"
+      operationId: "editAssetSource"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: string
+        format: uuid
+        description: "The ID of the asset source to edit"
+      - in: body
+        name: "asset_source"
+        description: "Asset source information to modify"
+        required: true
+        schema:
+          type: object
+          properties:
+            asset_source:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+      responses:
+        200:
+          description: "Asset source edited"
+          schema:
+            $ref: "#/definitions/AssetSource"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "Asset source not found"
 
 securityDefinitions:
   uid:
