@@ -31,6 +31,8 @@ tags:
     url: "https://fydeinc.github.io/docs/fyde-enterprise-console/add-resource/"
 - name: "asset_sources"
   description: "Operations on asset sources"
+- name: "assets"
+  description: "Operations on assets"
 - name: "device_events"
   description: "Operations on device events"
 - name: "devices"
@@ -1468,6 +1470,147 @@ paths:
             $ref: "#/definitions/GenericUnauthorizedResponse"
         404:
           description: "Proxy not found"
+  /assets:
+    get:
+      tags:
+      - "assets"
+      summary: "List assets"
+      operationId: "listAssets"
+      produces:
+      - "application/json"
+      parameters:
+      - $ref: '#/parameters/sortParam'
+      - $ref: '#/parameters/pageParam'
+      - $ref: '#/parameters/perPageParam'
+      - in: query
+        name: "category"
+        description: "Restrict category of the returned assets"
+        required: false
+        type: string
+        enum: [blacklist, whitelist]
+      responses:
+        200:
+          description: "successful operation"
+          headers:
+            total:
+              description: "Total number of items (for pagination)"
+              type: integer
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Asset"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+    post:
+      tags:
+        - "assets"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Create asset"
+      operationId: "createAsset"
+      parameters:
+      - in: "body"
+        name: "asset"
+        description: "Information about the asset to create"
+        required: true
+        schema:
+          type: object
+          properties:
+            category:
+              type: string
+              example: "domain"
+            asset_source_id:
+              type: string
+              format: uuid
+            asset_source_name:
+              type: string
+            name:
+              type: string
+              example: "example.com"
+      responses:
+        201:
+          description: "Asset created"
+          schema:
+            $ref: "#/definitions/Asset"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+  /assets/{id}:
+    get:
+      tags:
+        - "assets"
+      produces:
+      - "application/json"
+      summary: "Retrieve information about an asset"
+      operationId: "getAsset"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the asset to retrieve"
+      responses:
+        200:
+          description: "Asset info"
+          schema:
+            $ref: "#/definitions/Asset"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "asset not found"
+    delete:
+      tags:
+        - "assets"
+      summary: "Delete asset"
+      operationId: "deleteAsset"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the asset to delete"
+      responses:
+        204:
+          description: "Asset deleted"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
+        404:
+          description: "asset not found"
+  /asset_sources:
+    get:
+      tags:
+      - "asset_sources"
+      summary: "List asset sources"
+      operationId: "listAssetSources"
+      produces:
+      - "application/json"
+      parameters:
+      - $ref: '#/parameters/pageParam'
+      - $ref: '#/parameters/perPageParam'
+      responses:
+        200:
+          description: "successful operation"
+          headers:
+            total:
+              description: "Total number of items (for pagination)"
+              type: integer
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/AssetSource"
+        401:
+          description: "unauthorized: invalid credentials or missing authentication headers"
+          schema:
+            $ref: "#/definitions/GenericUnauthorizedResponse"
 
 
 securityDefinitions:
@@ -2050,6 +2193,65 @@ definitions:
             type: integer
           name:
             type: string
+  Asset:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 23
+      name:
+        type: string
+        example: "example.com"
+      category:
+        type: string
+        example: "domain"
+      asset_source_id:
+        type: string
+        format: uuid
+      updated_at:
+        type: string
+        format: date-time
+      created_at:
+        type: string
+        format: date-time
+  AssetSource:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      tenant_id:
+        type: string
+        format: uuid
+      rule_id:
+        type: integer
+      name:
+        type: string
+        example: "whitelist"
+      enabled:
+        type: boolean
+      read_only:
+        type: boolean
+      read_only_count:
+        type: integer
+        x-nullable: true
+      modified_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      created_at:
+        type: string
+        format: date-time
+      category:
+        type: string
+        x-nullable: true
+      subcategory:
+        type: string
+        x-nullable: true
+      assets_count:
+        type: integer
 
   GenericUnauthorizedResponse:
     type: object
