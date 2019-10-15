@@ -49,7 +49,7 @@ func TestLogin(t *testing.T) {
 	cmd.SetErr(buf)
 	cmd.SetArgs([]string{
 		"login",
-		"--username=test@example.com",
+		"--email=test@example.com",
 		"--password=testpw",
 	})
 	err := cmd.Execute()
