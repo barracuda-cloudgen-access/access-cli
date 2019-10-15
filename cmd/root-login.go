@@ -23,8 +23,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/howeyc/gopass"
 	"github.com/fyde/fyde-cli/models"
+	"github.com/howeyc/gopass"
 	"github.com/spf13/cobra"
 
 	apiauth "github.com/fyde/fyde-cli/client/auth"
@@ -38,7 +38,7 @@ var loginCmd = &cobra.Command{
 	PreRunE: preRunCheckEndpoint,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// ignoring errors, as we'll just ask for these if they are blank
-		username, _ := cmd.Flags().GetString("username")
+		email, _ := cmd.Flags().GetString("email")
 		password, _ := cmd.Flags().GetString("password")
 
 		passwordfd, err := cmd.Flags().GetInt("password-fd")
@@ -62,10 +62,10 @@ var loginCmd = &cobra.Command{
 			}
 		}
 
-		// read username from terminal, if not obtained by other means
-		if username == "" {
-			cmd.Print("Username: ")
-			i, err := fmt.Scanln(&username)
+		// read email from terminal, if not obtained by other means
+		if email == "" {
+			cmd.Print("Email address: ")
+			i, err := fmt.Scanln(&email)
 			if i == 0 || err != nil {
 				return err
 			}
@@ -84,7 +84,7 @@ var loginCmd = &cobra.Command{
 		// send sign-in request
 		params := apiauth.NewSignInParams()
 		params.WithBody(&models.SignInRequest{
-			Email:    username,
+			Email:    email,
 			Password: password,
 		})
 		signInResponse, err := global.Client.Auth.SignIn(params)
@@ -114,7 +114,7 @@ var loginCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(loginCmd)
 
-	loginCmd.Flags().StringP("username", "u", "", "username to use when logging in")
+	loginCmd.Flags().StringP("email", "e", "", "email address to use when logging in")
 	loginCmd.Flags().IntP("password-fd", "d", -1, "read password from file descriptor, terminated by end of file, '\\r' or '\\n'.")
 	loginCmd.Flags().StringP("password", "p", "", "password to use when logging in. Note that the password can be viewed by other processes. Prefer --password-fd instead.")
 
