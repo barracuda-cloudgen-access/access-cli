@@ -126,9 +126,7 @@ paths:
           schema:
             $ref: "#/definitions/PasswordChangeResponse"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
     post:
       # TODO this POST auth/password appears to be deprecated, always returns 404
       tags:
@@ -199,9 +197,7 @@ paths:
                     type: integer
                     example: 2
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
     post:
       tags:
         - "users"
@@ -253,9 +249,7 @@ paths:
                     items:
                       type: object
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
   /users/{id}:
     get:
       tags:
@@ -283,11 +277,9 @@ paths:
                     items:
                       $ref: "#/definitions/DevicePartial"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "user not found"
+          $ref: "#/responses/NotFound"
     patch:
       tags:
         - "users"
@@ -341,11 +333,9 @@ paths:
                     items:
                       $ref: "#/definitions/DevicePartial"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "user not found"
+          $ref: "#/responses/NotFound"
         
     delete:
       tags:
@@ -362,11 +352,9 @@ paths:
         204:
           description: "User deleted"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "user not found"
+          $ref: "#/responses/NotFound"
   /groups:
     get:
       tags:
@@ -406,9 +394,7 @@ paths:
                         type: integer
                         example: 1
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
     post:
       tags:
         - "groups"
@@ -457,9 +443,7 @@ paths:
                           type: string
                           example: "John Doe"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
   /groups/{id}:
     get:
       tags:
@@ -494,11 +478,9 @@ paths:
                           type: string
                           example: "John Doe"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "group not found"
+          $ref: "#/responses/NotFound"
     patch:
       tags:
         - "groups"
@@ -543,11 +525,9 @@ paths:
                           type: string
                           example: "John Doe"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "group not found"
+          $ref: "#/responses/NotFound"
     delete:
       tags:
         - "groups"
@@ -563,11 +543,9 @@ paths:
         204:
           description: "Group deleted"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "group not found"
+          $ref: "#/responses/NotFound"
   /devices:
     get:
       tags:
@@ -592,9 +570,7 @@ paths:
             items:
               $ref: "#/definitions/Device"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
   /devices/{id}:
     get:
       tags:
@@ -641,11 +617,9 @@ paths:
                         type: string
                         example: "John Doe"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "device not found"
+          $ref: "#/responses/NotFound"
   /access_resources:
     get:
       tags:
@@ -693,9 +667,7 @@ paths:
                       type: string
                       format: uuid
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
     post:
       tags:
         - "access_resources"
@@ -755,9 +727,7 @@ paths:
           schema:
             $ref: "#/definitions/AccessResource"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
   /access_resources/{id}:
     get:
       tags:
@@ -796,11 +766,9 @@ paths:
                       granted:
                         type: integer
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "resource not found"
+          $ref: "#/responses/NotFound"
     patch:
       tags:
         - "access_resources"
@@ -854,11 +822,9 @@ paths:
                   access_proxy_name:
                     type: string
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "resource not found"
+          $ref: "#/responses/NotFound"
     delete:
       tags:
         - "access_resources"
@@ -875,11 +841,9 @@ paths:
         204:
           description: "Resource deleted"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "resource not found"
+          $ref: "#/responses/NotFound"
   /access_policies:
     get:
       tags:
@@ -909,9 +873,7 @@ paths:
                     access_resources_count:
                       type: integer
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
     post:
       tags:
         - "access_policies"
@@ -987,9 +949,7 @@ paths:
                           type: string
                           x-nullable: true
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
   /access_policies/{id}:
     get:
       tags:
@@ -1043,11 +1003,9 @@ paths:
                           type: string
                           x-nullable: true
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "policy not found"
+          $ref: "#/responses/NotFound"
     patch:
       tags:
         - "access_policies"
@@ -1128,11 +1086,9 @@ paths:
                           type: string
                           x-nullable: true
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "policy not found"
+          $ref: "#/responses/NotFound"
     delete:
       tags:
         - "access_policies"
@@ -1148,11 +1104,9 @@ paths:
         204:
           description: "Policy deleted"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "policy not found"
+          $ref: "#/responses/NotFound"
   /access_proxies:
     get:
       tags:
@@ -1184,9 +1138,7 @@ paths:
                     access_resources_count:
                       type: integer
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
     post:
       tags:
         - "access_proxies"
@@ -1241,9 +1193,7 @@ paths:
                 type: string
                 enum: [proxy_pending, proxy_enabled]
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
   /access_proxies/{id}:
     get:
       tags:
@@ -1289,11 +1239,9 @@ paths:
                             type: string
                             format: date-time
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "Proxy not found"
+          $ref: "#/responses/NotFound"
     patch:
       tags:
         - "access_proxies"
@@ -1373,11 +1321,9 @@ paths:
                       type: string
                       format: date-time
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "Proxy not found"
+          $ref: "#/responses/NotFound"
     delete:
       tags:
         - "access_proxies"
@@ -1394,11 +1340,9 @@ paths:
         204:
           description: "Proxy deleted"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "Proxy not found"
+          $ref: "#/responses/NotFound"
   /device_events:
     get:
       tags:
@@ -1436,9 +1380,7 @@ paths:
             items:
               $ref: "#/definitions/DeviceEventListItem"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
   /device_events/{id}:
     get:
       tags:
@@ -1465,11 +1407,9 @@ paths:
           schema:
             $ref: "#/definitions/DeviceEvent"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "Proxy not found"
+          $ref: "#/responses/NotFound"
   /assets:
     get:
       tags:
@@ -1500,9 +1440,7 @@ paths:
             items:
               $ref: "#/definitions/Asset"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
     post:
       tags:
         - "assets"
@@ -1537,9 +1475,7 @@ paths:
           schema:
             $ref: "#/definitions/Asset"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
   /assets/{id}:
     get:
       tags:
@@ -1560,11 +1496,9 @@ paths:
           schema:
             $ref: "#/definitions/Asset"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "asset not found"
+          $ref: "#/responses/NotFound"
     delete:
       tags:
         - "assets"
@@ -1580,11 +1514,9 @@ paths:
         204:
           description: "Asset deleted"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "asset not found"
+          $ref: "#/responses/NotFound"
   /asset_sources:
     get:
       tags:
@@ -1608,9 +1540,7 @@ paths:
             items:
               $ref: "#/definitions/AssetSource"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
   /asset_sources/{id}:
     patch:
       tags:
@@ -1648,11 +1578,9 @@ paths:
           schema:
             $ref: "#/definitions/AssetSource"
         401:
-          description: "unauthorized: invalid credentials or missing authentication headers"
-          schema:
-            $ref: "#/definitions/GenericUnauthorizedResponse"
+          $ref: "#/responses/Unauthorized"
         404:
-          description: "Asset source not found"
+          $ref: "#/responses/NotFound"
 
 securityDefinitions:
   uid:
@@ -2294,7 +2222,7 @@ definitions:
       assets_count:
         type: integer
 
-  GenericUnauthorizedResponse:
+  GenericErrorResponse:
     type: object
     properties:
       success:
@@ -2305,6 +2233,19 @@ definitions:
         items:
           type: string
           example: "Unauthorized"
+  
+  NotFoundResponse: {}
+
+responses:
+  NotFound:
+    description: "the specified item was not found"
+    schema:
+      $ref: "#/definitions/NotFoundResponse"
+
+  Unauthorized:
+    description: "unauthorized: invalid credentials or missing authentication headers"
+    schema:
+      $ref: "#/definitions/GenericErrorResponse"
 externalDocs:
   description: "Find out more about Fyde"
   url: "https://fydeinc.github.io/docs/"

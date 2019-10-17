@@ -23,14 +23,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	apipolicies "github.com/fyde/fyde-cli/client/access_policies"
-	apiproxies "github.com/fyde/fyde-cli/client/access_proxies"
-	apiresources "github.com/fyde/fyde-cli/client/access_resources"
-	apisources "github.com/fyde/fyde-cli/client/asset_sources"
-	apievents "github.com/fyde/fyde-cli/client/device_events"
-	apidevices "github.com/fyde/fyde-cli/client/devices"
-	apigroups "github.com/fyde/fyde-cli/client/groups"
-	apiusers "github.com/fyde/fyde-cli/client/users"
+	"github.com/fyde/fyde-cli/models"
 )
 
 func preRunCheckEndpoint(cmd *cobra.Command, args []string) error {
@@ -63,55 +56,19 @@ func preRunCheckAuth(cmd *cobra.Command, args []string) error {
 }
 
 func processErrorResponse(err error) error {
-	// TODO prepare for other error response types
-	// (maybe use reflection if we can always get the Payload from within the error type)
+	type genericErrorResponse interface {
+		GetPayload() *models.GenericErrorResponse
+	}
+
+	type notFoundResponse interface {
+		GetPayload() models.NotFoundResponse
+	}
+
 	switch r := err.(type) {
-	// user errors
-	case *apiusers.GetUserNotFound:
-		return fmt.Errorf("user not found")
-	case *apiusers.ListUsersUnauthorized:
-		return fmt.Errorf(strings.Join(r.Payload.Errors, "\n"))
-
-	// group errors
-	case *apigroups.GetGroupNotFound:
-		return fmt.Errorf("group not found")
-	case *apigroups.ListGroupsUnauthorized:
-		return fmt.Errorf(strings.Join(r.Payload.Errors, "\n"))
-
-	// device errors
-	case *apidevices.ListDevicesUnauthorized:
-		return fmt.Errorf(strings.Join(r.Payload.Errors, "\n"))
-	case *apidevices.GetDeviceNotFound:
-		return fmt.Errorf("device not found")
-
-	// resource errors
-	case *apiresources.ListResourcesUnauthorized:
-		return fmt.Errorf(strings.Join(r.Payload.Errors, "\n"))
-	case *apiresources.GetResourceNotFound:
-		return fmt.Errorf("resource not found")
-
-	// proxy errors
-	case *apiproxies.ListProxiesUnauthorized:
-		return fmt.Errorf(strings.Join(r.Payload.Errors, "\n"))
-	case *apiproxies.GetProxyNotFound:
-		return fmt.Errorf("proxy not found")
-
-	// policy errors
-	case *apipolicies.ListPoliciesUnauthorized:
-		return fmt.Errorf(strings.Join(r.Payload.Errors, "\n"))
-	case *apipolicies.GetPolicyNotFound:
-		return fmt.Errorf("policy not found")
-
-	// device event errors
-	case *apievents.ListDeviceEventsUnauthorized:
-		return fmt.Errorf(strings.Join(r.Payload.Errors, "\n"))
-	case *apievents.GetDeviceEventNotFound:
-		return fmt.Errorf("record not found")
-
-	// source errors
-	case *apisources.EditAssetSourceNotFound:
-		return fmt.Errorf("source not found")
-
+	case genericErrorResponse:
+		return fmt.Errorf(strings.Join(r.GetPayload().Errors, "\n"))
+	case notFoundResponse:
+		return fmt.Errorf("not found")
 	default:
 		return err
 	}
