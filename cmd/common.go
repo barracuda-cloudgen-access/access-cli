@@ -26,6 +26,7 @@ import (
 	apipolicies "github.com/fyde/fyde-cli/client/access_policies"
 	apiproxies "github.com/fyde/fyde-cli/client/access_proxies"
 	apiresources "github.com/fyde/fyde-cli/client/access_resources"
+	apisources "github.com/fyde/fyde-cli/client/asset_sources"
 	apievents "github.com/fyde/fyde-cli/client/device_events"
 	apidevices "github.com/fyde/fyde-cli/client/devices"
 	apigroups "github.com/fyde/fyde-cli/client/groups"
@@ -107,6 +108,10 @@ func processErrorResponse(err error) error {
 	case *apievents.GetDeviceEventNotFound:
 		return fmt.Errorf("record not found")
 
+	// source errors
+	case *apisources.EditAssetSourceNotFound:
+		return fmt.Errorf("source not found")
+
 	default:
 		return err
 	}
@@ -140,6 +145,13 @@ func preRunFlagChecks(cmd *cobra.Command, args []string) error {
 
 	if _, ok := cmd.Annotations[flagInitOutput]; ok {
 		err := preRunFlagCheckOutput(cmd, args)
+		if err != nil {
+			return err
+		}
+	}
+
+	if _, ok := cmd.Annotations[flagInitLoopControl]; ok {
+		err := preRunFlagCheckLoopControl(cmd, args)
 		if err != nil {
 			return err
 		}

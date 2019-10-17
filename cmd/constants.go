@@ -40,10 +40,11 @@ const (
 	// DefaultEndpoint is the default endpoint used by the client
 	DefaultEndpoint = "enterprise.fyde.com"
 
-	flagInitFilter     = "filter_flags_init"
-	flagInitPagination = "pagination_flags_init"
-	flagInitSort       = "sort_flags_init"
-	flagInitOutput     = "output_flags_init"
+	flagInitFilter      = "filter_flags_init"
+	flagInitPagination  = "pagination_flags_init"
+	flagInitSort        = "sort_flags_init"
+	flagInitOutput      = "output_flags_init"
+	flagInitLoopControl = "loop_control_flags_init"
 
 	authMethodBearerToken = "bearerToken"
 )
