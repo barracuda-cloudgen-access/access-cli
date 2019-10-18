@@ -48,6 +48,7 @@ type globalInfo struct {
 	WriteFiles   bool
 	FetchPerPage int
 	FilterData   map[*cobra.Command]*filterData
+	InputData    map[*cobra.Command]*inputData
 }
 
 var global globalInfo

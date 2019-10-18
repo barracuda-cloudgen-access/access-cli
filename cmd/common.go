@@ -107,6 +107,13 @@ func preRunFlagChecks(cmd *cobra.Command, args []string) error {
 		}
 	}
 
+	if _, ok := cmd.Annotations[flagInitInput]; ok {
+		err := preRunFlagCheckInput(cmd, args)
+		if err != nil {
+			return err
+		}
+	}
+
 	if _, ok := cmd.Annotations[flagInitLoopControl]; ok {
 		err := preRunFlagCheckLoopControl(cmd, args)
 		if err != nil {

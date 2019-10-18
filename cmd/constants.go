@@ -44,6 +44,7 @@ const (
 	flagInitPagination  = "pagination_flags_init"
 	flagInitSort        = "sort_flags_init"
 	flagInitOutput      = "output_flags_init"
+	flagInitInput       = "input_flags_init"
 	flagInitLoopControl = "loop_control_flags_init"
 
 	authMethodBearerToken = "bearerToken"

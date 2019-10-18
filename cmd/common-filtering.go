@@ -80,56 +80,48 @@ func setFilter(cmd *cobra.Command, filterApplyFuncs ...interface{}) {
 	}
 	for i, filterType := range data.types {
 		flagName := fmt.Sprintf("filter-%s", filterType.name)
-		switch f := filterApplyFuncs[i].(type) {
-		// add more types, as needed. don't forget to add in initFilterFlags too
-		case func(int):
-			d, err := cmd.Flags().GetInt(flagName)
-			if err == nil {
-				f(d)
-			}
-		case func(*int):
-			d, err := cmd.Flags().GetInt(flagName)
-			if err == nil {
-				f(&d)
-			}
-		case func(string):
-			d, err := cmd.Flags().GetString(flagName)
-			if err == nil {
-				f(d)
-			}
-		case func(*string):
-			d, err := cmd.Flags().GetString(flagName)
-			if err == nil {
-				f(&d)
-			}
-		case func([]int):
-			d, err := cmd.Flags().GetIntSlice(flagName)
-			if err == nil {
-				f(d)
-			}
-		case func([]int64):
-			d, err := cmd.Flags().GetIntSlice(flagName)
-			if err == nil {
-				dconv := funk.Map(d, func(x int) int64 {
-					return int64(x)
-				}).([]int64)
-				f(dconv)
-			}
-		case func([]string):
-			d, err := cmd.Flags().GetStringSlice(flagName)
-			if err == nil {
-				f(d)
-			}
-		case func([]strfmt.UUID):
-			d, err := cmd.Flags().GetStringSlice(flagName)
-			if err == nil {
-				dconv := funk.Map(d, func(x string) strfmt.UUID {
-					return strfmt.UUID(x)
-				}).([]strfmt.UUID)
-				f(dconv)
-			}
-		default:
-			panic(fmt.Errorf("setFilter called with inadequate function in parameters (function is %T for filter vartype %s)", filterApplyFuncs[i], filterType.vartype))
+		d, err := getFlagValue(cmd, filterType.vartype, flagName)
+		if err != nil {
+			continue
 		}
+
+		callApplyFunc(filterApplyFuncs[i], d, filterType.vartype)
+	}
+}
+
+func callApplyFunc(f, value interface{}, varType string) {
+	switch f := f.(type) {
+	// add more types, as needed. don't forget to add in initFilterFlags too
+	case func(bool):
+		f(value.(bool))
+	case func(*bool):
+		dd := value.(bool)
+		f(&dd)
+	case func(int):
+		f(value.(int))
+	case func(*int):
+		dd := value.(int)
+		f(&dd)
+	case func(string):
+		f(value.(string))
+	case func(*string):
+		dd := value.(string)
+		f(&dd)
+	case func([]int):
+		f(value.([]int))
+	case func([]int64):
+		dconv := funk.Map(value, func(x int) int64 {
+			return int64(x)
+		}).([]int64)
+		f(dconv)
+	case func([]string):
+		f(value.([]string))
+	case func([]strfmt.UUID):
+		dconv := funk.Map(value, func(x string) strfmt.UUID {
+			return strfmt.UUID(x)
+		}).([]strfmt.UUID)
+		f(dconv)
+	default:
+		panic(fmt.Errorf("callApplyFunc called with inadequate function in parameters (function is %T for vartype %s)", f, varType))
 	}
 }
