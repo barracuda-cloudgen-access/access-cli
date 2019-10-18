@@ -18,9 +18,11 @@ limitations under the License.
 */
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
+	"os"
 	"reflect"
 
 	"github.com/mitchellh/mapstructure"
@@ -183,16 +185,17 @@ func forAllInputFromFile(cmd *cobra.Command, do func(values []interface{}) error
 		return err
 	}
 
-	fileBytes, err := ioutil.ReadFile(inputFile)
+	reader, err := os.Open(inputFile)
 	if err != nil {
 		return err
 	}
+	defer reader.Close()
 
 	switch inputFormat {
 	case "json":
-		return forAllInputFromJSON(cmd, do, fileBytes)
+		return forAllInputFromJSON(cmd, do, reader)
 	case "csv":
-		return fmt.Errorf("CSV import not yet implemented")
+		return forAllInputFromCSV(cmd, do, reader)
 	}
 	return nil
 }
@@ -201,16 +204,56 @@ type wholeObjectFlagType struct{}
 
 var wholeObjectFlag = wholeObjectFlagType{}
 
-func forAllInputFromJSON(cmd *cobra.Command, do func(values []interface{}) error, data []byte) error {
+func forAllInputFromJSON(cmd *cobra.Command, do func(values []interface{}) error, reader io.Reader) error {
 	records := make([]interface{}, 0)
 
-	err := json.Unmarshal(data, &records)
+	err := json.NewDecoder(reader).Decode(&records)
 	if err != nil {
 		return err
 	}
 
 	for _, record := range records {
 		err = do([]interface{}{wholeObjectFlag, record})
+		if err != nil {
+			if loopControlContinueOnError(cmd) {
+				cmd.PrintErrln(processErrorResponse(err))
+				continue
+			}
+			return err
+		}
+	}
+	return nil
+}
+
+func forAllInputFromCSV(cmd *cobra.Command, do func(values []interface{}) error, reader io.Reader) error {
+	r := csv.NewReader(reader)
+
+	header, err := r.Read()
+	if err == io.EOF {
+		return fmt.Errorf("CSV file is missing header")
+	}
+	if err != nil {
+		return err
+	}
+
+	for lineNumber := 1; ; lineNumber++ {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		if len(record) != len(header) {
+			return fmt.Errorf("record %d is malformed", lineNumber)
+		}
+
+		m := make(map[string]interface{})
+		for i := range record {
+			m[header[i]] = record[i]
+		}
+
+		err = do([]interface{}{wholeObjectFlag, m})
 		if err != nil {
 			if loopControlContinueOnError(cmd) {
 				cmd.PrintErrln(processErrorResponse(err))
@@ -229,7 +272,7 @@ func placeInputValues(cmd *cobra.Command, values []interface{}, object interface
 	data := global.InputData[cmd]
 
 	if len(values) == 2 && values[0] == wholeObjectFlag {
-		return mapstructure.Decode(values[1], object)
+		return mapstructure.WeakDecode(values[1], object)
 	}
 
 	for i, field := range data.fields {
