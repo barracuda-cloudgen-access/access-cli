@@ -18,15 +18,9 @@ limitations under the License.
 */
 
 import (
-	"strings"
-
-	"github.com/jedib0t/go-pretty/table"
-	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
-	"github.com/thoas/go-funk"
 
 	apiusers "github.com/fyde/fyde-cli/client/users"
-	"github.com/fyde/fyde-cli/models"
 )
 
 // usersListCmd represents the list command
@@ -67,33 +61,10 @@ var usersListCmd = &cobra.Command{
 		}
 		completePayload = completePayload[cutStart:cutEnd]
 
-		tw := table.NewWriter()
-		tw.Style().Format.Header = text.FormatDefault
-		tw.AppendHeader(table.Row{
-			"ID",
-			"Name",
-			"Email",
-			"Groups",
-			"Enabled",
-			"Status",
-			"EnrollmentStatus",
-		})
-		tw.SetAllowedColumnLengths([]int{15, 30, 30, 30, 10, 15, 16})
+		tw := userBuildTableWriter()
 
 		for _, item := range completePayload {
-			groups := strings.Join(funk.Map(item.Groups, func(g *models.UserGroupsItems0) string {
-				return g.Name
-			}).([]string), ",")
-
-			tw.AppendRow(table.Row{
-				item.ID,
-				item.Name,
-				item.Email,
-				groups,
-				item.Enabled,
-				item.Status,
-				item.EnrollmentStatus,
-			})
+			userTableWriterAppend(tw, item.User)
 		}
 
 		result, err := renderListOutput(cmd, completePayload, tw, total)

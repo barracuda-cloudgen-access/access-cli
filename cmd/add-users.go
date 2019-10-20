@@ -22,6 +22,7 @@ import (
 	"github.com/spf13/cobra"
 
 	apiusers "github.com/fyde/fyde-cli/client/users"
+	"github.com/fyde/fyde-cli/models"
 )
 
 // usersAddCmd represents the get command
@@ -42,7 +43,11 @@ var usersAddCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
+		tw := userBuildTableWriter()
+		createdList := []*models.User{}
+		total := 0
 		err := forAllInput(cmd, func(values []interface{}) error {
+			total++ // this is the total of successful+failures, must increment before failure
 			user := &apiusers.CreateUserParamsBodyUser{}
 			err := placeInputValues(cmd, values, user,
 				func(s string) { user.Name = s },
@@ -62,14 +67,16 @@ var usersAddCmd = &cobra.Command{
 			if err != nil {
 				return err
 			}
-
-			cmd.Println("User", resp.Payload.ID, "created")
+			createdList = append(createdList, &resp.Payload.User)
+			userTableWriterAppend(tw, resp.Payload.User)
 			return nil
 		})
 		if err != nil {
 			return processErrorResponse(err)
 		}
-		return nil
+		result, err := renderListOutput(cmd, createdList, tw, total)
+		cmd.Println(result)
+		return err
 	},
 }
 

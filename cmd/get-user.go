@@ -66,37 +66,45 @@ var userGetCmd = &cobra.Command{
 			return processErrorResponse(err)
 		}
 
-		tw := table.NewWriter()
-		tw.Style().Format.Header = text.FormatDefault
-		tw.AppendHeader(table.Row{
-			"ID",
-			"Name",
-			"Email",
-			"Groups",
-			"Enabled",
-			"Status",
-			"EnrollmentStatus",
-		})
-		tw.SetAllowedColumnLengths([]int{15, 30, 30, 30, 10, 15, 16})
-
-		groups := strings.Join(funk.Map(resp.Payload.Groups, func(g *models.UserGroupsItems0) string {
-			return g.Name
-		}).([]string), ",")
-
-		tw.AppendRow(table.Row{
-			resp.Payload.ID,
-			resp.Payload.Name,
-			resp.Payload.Email,
-			groups,
-			resp.Payload.Enabled,
-			resp.Payload.Status,
-			resp.Payload.EnrollmentStatus,
-		})
+		tw := userBuildTableWriter()
+		userTableWriterAppend(tw, resp.Payload.User)
 
 		result, err := renderListOutput(cmd, resp.Payload, tw, 1)
 		cmd.Println(result)
 		return err
 	},
+}
+
+func userBuildTableWriter() table.Writer {
+	tw := table.NewWriter()
+	tw.Style().Format.Header = text.FormatDefault
+	tw.AppendHeader(table.Row{
+		"ID",
+		"Name",
+		"Email",
+		"Groups",
+		"Enabled",
+		"Status",
+		"EnrollmentStatus",
+	})
+	tw.SetAllowedColumnLengths([]int{15, 30, 30, 30, 10, 15, 16})
+	return tw
+}
+
+func userTableWriterAppend(tw table.Writer, user models.User) {
+	groups := strings.Join(funk.Map(user.Groups, func(g *models.UserGroupsItems0) string {
+		return g.Name
+	}).([]string), ",")
+
+	tw.AppendRow(table.Row{
+		user.ID,
+		user.Name,
+		user.Email,
+		groups,
+		user.Enabled,
+		user.Status,
+		user.EnrollmentStatus,
+	})
 }
 
 func init() {
