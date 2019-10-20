@@ -50,6 +50,7 @@ var resourcesListCmd = &cobra.Command{
 		params := apiresources.NewListResourcesParams()
 		setSort(cmd, params)
 		setFilter(cmd, params.SetPolicyID, params.SetProxyID)
+		setSearchQuery(cmd, params)
 		completePayload := []*apiresources.ListResourcesOKBodyItems0{}
 		total := 0
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
@@ -117,5 +118,6 @@ func init() {
 	initFilterFlags(resourcesListCmd,
 		filterType{"policy", "[]int"},
 		filterType{"proxy", "[]string"})
+	initSearchFlags(resourcesListCmd)
 	initOutputFlags(resourcesListCmd)
 }
