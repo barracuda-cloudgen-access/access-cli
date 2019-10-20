@@ -179,6 +179,7 @@ paths:
       - $ref: '#/parameters/sortParam'
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
+      - $ref: '#/parameters/searchParam'
       responses:
         200:
           description: "successful operation"
@@ -1619,6 +1620,12 @@ parameters:
     name: per_page
     description: "Number of items to return per page"
     type: integer
+    required: false
+  searchParam:
+    in: query
+    name: q
+    description: "Full-text search query"
+    type: string
     required: false
 definitions:
   SignInRequest:
