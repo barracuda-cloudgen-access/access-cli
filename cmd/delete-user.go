@@ -59,17 +59,26 @@ var userDeleteCmd = &cobra.Command{
 				return err
 			}
 		}
+
+		delete := func(ids []int64) error {
+			params := apiusers.NewDeleteUserParams()
+			params.SetID(userIDs)
+
+			_, err = global.Client.Users.DeleteUser(params, global.AuthWriter)
+			if err != nil {
+				return processErrorResponse(err)
+			}
+			return nil
+		}
+
 		if loopControlContinueOnError(cmd) {
 			// then we must delete individually, because on a request for multiple deletions,
 			// the server does nothing if one fails
 			i := 0
 			for _, userID := range userIDs {
-				params := apiusers.NewDeleteUserParams()
-				params.SetID([]int64{userID})
-
-				_, err = global.Client.Users.DeleteUser(params, global.AuthWriter)
+				err = delete([]int64{userID})
 				if err != nil {
-					cmd.PrintErrln(processErrorResponse(err))
+					cmd.PrintErrln(err)
 				} else {
 					// only keep successful deletions in list of userIDs
 					// this rewrites the array in place and lets us "delete" as we iterate
@@ -81,12 +90,9 @@ var userDeleteCmd = &cobra.Command{
 			// remove junk left at end of slice
 			userIDs = userIDs[:i]
 		} else {
-			params := apiusers.NewDeleteUserParams()
-			params.SetID(userIDs)
-
-			_, err = global.Client.Users.DeleteUser(params, global.AuthWriter)
+			err = delete(userIDs)
 			if err != nil {
-				return processErrorResponse(err)
+				return err
 			}
 		}
 
