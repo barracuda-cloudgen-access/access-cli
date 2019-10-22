@@ -18,12 +18,14 @@ limitations under the License.
 */
 
 import (
+	"bufio"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"reflect"
+	"strings"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cobra"
@@ -154,23 +156,7 @@ func forAllInput(cmd *cobra.Command,
 
 		if !cmd.Flags().Changed(field.FlagName) && field.Mandatory {
 			// user did not supply the field value in a flag, must ask interactively
-			cmd.Printf("%s: ", field.Name)
-			for {
-				d = reflect.New(reflect.TypeOf(field.DefaultValue)).Elem().Addr().Interface()
-				i, err := fmt.Scanln(d)
-				if err != nil {
-					panic(err)
-				}
-				// the rest of our code doesn't expect a pointer
-				d = reflect.ValueOf(d).Elem().Interface()
-				if i != 0 && field.Validator != nil {
-					if !field.Validator(d) {
-						cmd.Println("invalid value")
-						continue
-					}
-				}
-				break
-			}
+			d = interactivelyReadField(cmd, field)
 		} else {
 			d, err = getFlagValue(cmd, field.VarType, field.FlagName)
 			if err != nil {
@@ -189,6 +175,48 @@ func forAllInput(cmd *cobra.Command,
 		return err
 	}
 	return nil
+}
+
+func interactivelyReadField(cmd *cobra.Command, field inputField) interface{} {
+	in := bufio.NewReader(os.Stdin)
+	cmd.Printf("%s: ", field.Name)
+	for {
+		line, err := in.ReadString('\n')
+		if err != nil {
+			cmd.Println("error:", err)
+			cmd.Printf("%s must be provided: ", field.Name)
+			continue
+		}
+		line = strings.TrimRight(line, "\t\n\v\f\r")
+		if len(line) == 0 {
+			cmd.Printf("%s must be provided: ", field.Name)
+			continue
+		}
+		if field.VarType == "string" {
+			// we want fmt.Scanln's "magic" automatic types behavior, but we don't want the part where it stops at spaces
+			line = strings.ReplaceAll(line, " ", "\uF8FF")
+		}
+		d := reflect.New(reflect.TypeOf(field.DefaultValue)).Elem().Addr().Interface()
+		i, err := fmt.Sscanln(line, d)
+		if err != nil {
+			cmd.Println("error:", err)
+			cmd.Printf("%s must be provided: ", field.Name)
+			continue
+		}
+		// the rest of our code doesn't expect a pointer
+		d = reflect.ValueOf(d).Elem().Interface()
+		if field.VarType == "string" {
+			// undo "magic" transformation above
+			d = strings.ReplaceAll(d.(string), "\uF8FF", " ")
+		}
+		if i != 0 && field.Validator != nil {
+			if !field.Validator(d) {
+				cmd.Println("invalid value")
+				continue
+			}
+		}
+		return d
+	}
 }
 
 func forAllInputFromFile(cmd *cobra.Command,
