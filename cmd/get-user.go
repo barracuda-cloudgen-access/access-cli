@@ -107,6 +107,18 @@ func userTableWriterAppend(tw table.Writer, user models.User) {
 	})
 }
 
+func userTableWriterAppendError(tw table.Writer, err error) {
+	tw.AppendRow(table.Row{
+		"[ERROR]",
+		processErrorResponse(err),
+		"-",
+		"-",
+		"-",
+		"-",
+		"-",
+	})
+}
+
 func init() {
 	usersCmd.AddCommand(userGetCmd)
 

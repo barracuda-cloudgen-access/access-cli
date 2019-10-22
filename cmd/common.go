@@ -56,19 +56,29 @@ func preRunCheckAuth(cmd *cobra.Command, args []string) error {
 }
 
 func processErrorResponse(err error) error {
-	type genericErrorResponse interface {
-		GetPayload() *models.GenericErrorResponse
+	type unauthorizedResponse interface {
+		GetPayload() *models.UnauthorizedResponse
 	}
 
 	type notFoundResponse interface {
 		GetPayload() models.NotFoundResponse
 	}
 
+	type unprocessableEntityResponse interface {
+		GetPayload() models.UnprocessableEntityResponse
+	}
+
 	switch r := err.(type) {
-	case genericErrorResponse:
+	case unauthorizedResponse:
 		return fmt.Errorf(strings.Join(r.GetPayload().Errors, "\n"))
 	case notFoundResponse:
 		return fmt.Errorf("not found")
+	case unprocessableEntityResponse:
+		msgs := []string{}
+		for k, v := range r.GetPayload() {
+			msgs = append(msgs, fmt.Sprintf("%s %s", k, strings.Join(v, ", ")))
+		}
+		return fmt.Errorf(strings.Join(msgs, "\n"))
 	default:
 		return err
 	}

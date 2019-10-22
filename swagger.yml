@@ -251,6 +251,8 @@ paths:
                       type: object
         401:
           $ref: "#/responses/Unauthorized"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /users/{id}:
     get:
       tags:
@@ -2230,7 +2232,7 @@ definitions:
       assets_count:
         type: integer
 
-  GenericErrorResponse:
+  UnauthorizedResponse:
     type: object
     properties:
       success:
@@ -2241,6 +2243,13 @@ definitions:
         items:
           type: string
           example: "Unauthorized"
+
+  UnprocessableEntityResponse:
+    type: object
+    additionalProperties:
+      type: array
+      items:
+        type: string
   
   NotFoundResponse: {}
 
@@ -2253,7 +2262,12 @@ responses:
   Unauthorized:
     description: "unauthorized: invalid credentials or missing authentication headers"
     schema:
-      $ref: "#/definitions/GenericErrorResponse"
+      $ref: "#/definitions/UnauthorizedResponse"
+  
+  UnprocessableEntity:
+    description: "unprocessable entity"
+    schema:
+      $ref: "#/definitions/UnprocessableEntityResponse"
 externalDocs:
   description: "Find out more about Fyde"
   url: "https://fydeinc.github.io/docs/"

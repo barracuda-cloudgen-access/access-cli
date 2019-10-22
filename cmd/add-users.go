@@ -70,6 +70,9 @@ var usersAddCmd = &cobra.Command{
 			createdList = append(createdList, &resp.Payload.User)
 			userTableWriterAppend(tw, resp.Payload.User)
 			return nil
+		}, func(err error) {
+			createdList = append(createdList, nil)
+			userTableWriterAppendError(tw, err)
 		})
 		if err != nil {
 			return processErrorResponse(err)
