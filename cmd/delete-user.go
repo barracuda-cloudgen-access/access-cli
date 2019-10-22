@@ -20,8 +20,10 @@ limitations under the License.
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/thoas/go-funk"
 
 	apiusers "github.com/fyde/fyde-cli/client/users"
 )
@@ -29,7 +31,7 @@ import (
 // userDeleteCmd represents the delete command
 var userDeleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "delete user",
+	Short: "Delete users",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {
@@ -48,26 +50,53 @@ var userDeleteCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		for _, arg := range args {
-			params := apiusers.NewDeleteUserParams()
-
-			userID, err := strconv.ParseInt(arg, 10, 64)
+		userIDs := make([]int64, len(args))
+		var err error
+		for i, arg := range args {
+			userIDs[i], err = strconv.ParseInt(arg, 10, 64)
 			if err != nil {
 				return err
 			}
-			params.SetID(userID)
+		}
+		if loopControlContinueOnError(cmd) {
+			// then we must delete individually, because on a request for multiple deletions,
+			// the server does nothing if one fails
+			i := 0
+			for _, userID := range userIDs {
+				params := apiusers.NewDeleteUserParams()
+				params.SetID([]int64{userID})
+
+				_, err = global.Client.Users.DeleteUser(params, global.AuthWriter)
+				if err != nil {
+					cmd.PrintErrln(processErrorResponse(err))
+				} else {
+					// only keep successful deletions in list of userIDs
+					// this rewrites the array in place and lets us "delete" as we iterate
+					// (junk is removed after the loop)
+					userIDs[i] = userID
+					i++
+				}
+			}
+			// remove junk left at end of slice
+			userIDs = userIDs[:i]
+		} else {
+			params := apiusers.NewDeleteUserParams()
+			params.SetID(userIDs)
 
 			_, err = global.Client.Users.DeleteUser(params, global.AuthWriter)
 			if err != nil {
-				if loopControlContinueOnError(cmd) {
-					cmd.PrintErrln(processErrorResponse(err))
-					continue
-				}
 				return processErrorResponse(err)
 			}
-
-			cmd.Println("User", userID, "deleted")
 		}
+
+		cmd.Println("Users",
+			strings.Join(
+				funk.Map(
+					userIDs,
+					func(i int64) string {
+						return strconv.Itoa(int(i))
+					}).([]string),
+				", "), "deleted")
 		return nil
 	},
 }

@@ -349,8 +349,11 @@ paths:
       - in: path
         name: "id"
         required: true
-        type: integer
-        description: "The ID of the user to delete"
+        type: array
+        collectionFormat: csv
+        items:
+          type: integer
+        description: "The IDs of the users to delete, comma-separated"
       responses:
         204:
           description: "User deleted"
@@ -358,6 +361,8 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /groups:
     get:
       tags:
