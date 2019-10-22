@@ -248,16 +248,19 @@ func forAllInputFromFile(cmd *cobra.Command,
 	return nil
 }
 
-type wholeObjectFlagType struct{}
+type wholeObjectFlagType int
 
-var wholeObjectFlag = wholeObjectFlagType{}
+const (
+	wholeObjectFlag wholeObjectFlagType = iota
+	wholeJSONObjectFlag
+)
 
 func forAllInputFromJSON(cmd *cobra.Command,
 	do func(values []interface{}) (interface{}, error),
 	printSuccess func(interface{}),
 	doOnError func(error),
 	reader io.Reader) error {
-	records := make([]interface{}, 0)
+	records := make([]json.RawMessage, 0)
 
 	err := json.NewDecoder(reader).Decode(&records)
 	if err != nil {
@@ -265,7 +268,7 @@ func forAllInputFromJSON(cmd *cobra.Command,
 	}
 
 	for _, record := range records {
-		r, err := do([]interface{}{wholeObjectFlag, record})
+		r, err := do([]interface{}{wholeJSONObjectFlag, record})
 		if err != nil {
 			if !loopControlContinueOnError(cmd) {
 				return err
@@ -332,8 +335,13 @@ func placeInputValues(cmd *cobra.Command, values []interface{}, object interface
 	}
 	data := global.InputData[cmd]
 
-	if len(values) == 2 && values[0] == wholeObjectFlag {
-		return mapstructure.WeakDecode(values[1], object)
+	if len(values) == 2 {
+		switch values[0] {
+		case wholeObjectFlag:
+			return mapstructure.WeakDecode(values[1], object)
+		case wholeJSONObjectFlag:
+			return json.Unmarshal(values[1].(json.RawMessage), object)
+		}
 	}
 
 	for i, field := range data.fields {
