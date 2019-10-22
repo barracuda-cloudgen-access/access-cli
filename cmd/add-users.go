@@ -47,34 +47,37 @@ var usersAddCmd = &cobra.Command{
 		tw := userBuildTableWriter()
 		createdList := []*models.User{}
 		total := 0
-		err := forAllInput(cmd, func(values []interface{}) error {
-			total++ // this is the total of successful+failures, must increment before failure
-			user := &apiusers.CreateUserParamsBodyUser{}
-			err := placeInputValues(cmd, values, user,
-				func(s string) { user.Name = s },
-				func(s string) { user.Email = strfmt.Email(s) },
-				func(s string) { user.PhoneNumber = s },
-				func(s []int64) { user.GroupIds = s },
-				func(s bool) { user.Enabled = s },
-				func(s bool) { user.SendEmailInvitation = s })
-			if err != nil {
-				return err
-			}
-			body := apiusers.CreateUserBody{User: user}
-			params := apiusers.NewCreateUserParams()
-			params.SetUser(body)
+		err := forAllInput(cmd,
+			func(values []interface{}) (interface{}, error) { // do func
+				total++ // this is the total of successful+failures, must increment before failure
+				user := &apiusers.CreateUserParamsBodyUser{}
+				err := placeInputValues(cmd, values, user,
+					func(s string) { user.Name = s },
+					func(s string) { user.Email = strfmt.Email(s) },
+					func(s string) { user.PhoneNumber = s },
+					func(s []int64) { user.GroupIds = s },
+					func(s bool) { user.Enabled = s },
+					func(s bool) { user.SendEmailInvitation = s })
+				if err != nil {
+					return nil, err
+				}
+				body := apiusers.CreateUserBody{User: user}
+				params := apiusers.NewCreateUserParams()
+				params.SetUser(body)
 
-			resp, err := global.Client.Users.CreateUser(params, global.AuthWriter)
-			if err != nil {
-				return err
-			}
-			createdList = append(createdList, &resp.Payload.User)
-			userTableWriterAppend(tw, resp.Payload.User)
-			return nil
-		}, func(err error) {
-			createdList = append(createdList, nil)
-			userTableWriterAppendError(tw, err)
-		})
+				resp, err := global.Client.Users.CreateUser(params, global.AuthWriter)
+				if err != nil {
+					return nil, err
+				}
+				return resp.Payload.User, nil
+			}, func(data interface{}) { // printSuccess func
+				user := data.(models.User)
+				createdList = append(createdList, &user)
+				userTableWriterAppend(tw, user)
+			}, func(err error) { // doOnError func
+				createdList = append(createdList, nil)
+				userTableWriterAppendError(tw, err)
+			})
 		if err != nil {
 			return processErrorResponse(err)
 		}

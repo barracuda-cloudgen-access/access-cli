@@ -46,7 +46,7 @@ func preRunFlagCheckOutput(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	if !funk.Contains([]string{"table", "json", "json-pretty", "csv", "none"}, output) {
+	if !funk.Contains([]string{"table", "json", "json-pretty", "csv"}, output) {
 		return fmt.Errorf("invalid output format %s", output)
 	}
 	return nil
@@ -83,8 +83,6 @@ func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Wr
 		return renderJSON(data)
 	case "json-pretty":
 		return renderPrettyJSON(data)
-	case "none":
-		return "", nil
 	default:
 		return "", fmt.Errorf("unsupported output format %s", outputFormat)
 	}

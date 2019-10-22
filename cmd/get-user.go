@@ -87,6 +87,14 @@ func userBuildTableWriter() table.Writer {
 		"Status",
 		"EnrollmentStatus",
 	})
+	tw.SetAlign([]text.Align{
+		text.AlignRight,
+		text.AlignLeft,
+		text.AlignLeft,
+		text.AlignLeft,
+		text.AlignLeft,
+		text.AlignLeft,
+		text.AlignLeft})
 	tw.SetAllowedColumnLengths([]int{15, 30, 30, 30, 10, 15, 16})
 	return tw
 }

@@ -51,8 +51,9 @@ func initInputFlags(cmd *cobra.Command, fields ...inputField) {
 	}
 	cmd.Annotations[flagInitInput] = "yes"
 
-	cmd.Flags().StringP("from-file", "f", "", "File from where to import users")
-	cmd.Flags().StringP("file-format", "i", "json", "Format for the file from where to import users (csv or json)")
+	cmd.Flags().StringP("from-file", "f", "", "file from where to import users")
+	cmd.Flags().StringP("file-format", "i", "json", "format for the file from where to import users (csv or json)")
+	cmd.Flags().Bool("errors-only", false, "only include failed operations in output")
 
 	for _, field := range fields {
 		switch field.VarType {
@@ -126,18 +127,25 @@ func getFlagValue(cmd *cobra.Command, varType, flagName string) (interface{}, er
 	return value, err
 }
 
-func forAllInput(cmd *cobra.Command, do func(values []interface{}) error, doOnError func(error)) error {
+func forAllInput(cmd *cobra.Command,
+	do func(values []interface{}) (interface{}, error),
+	printSuccess func(interface{}),
+	doOnError func(error)) error {
 	if _, ok := cmd.Annotations[flagInitInput]; !ok {
 		panic("forAllInput called for command where input flags were not initialized. This is a bug!")
 	}
 	data := global.InputData[cmd]
+
+	if errorsOnly, err := cmd.Flags().GetBool("errors-only"); err == nil && errorsOnly {
+		printSuccess = nil
+	}
 
 	fromFile, err := cmd.Flags().GetString("from-file")
 	if err != nil {
 		return err
 	}
 	if fromFile != "" {
-		return forAllInputFromFile(cmd, do, doOnError)
+		return forAllInputFromFile(cmd, do, printSuccess, doOnError)
 	}
 
 	values := make([]interface{}, len(data.fields))
@@ -171,9 +179,11 @@ func forAllInput(cmd *cobra.Command, do func(values []interface{}) error, doOnEr
 		}
 		values[i] = d
 	}
-	err = do(values)
+	r, err := do(values)
 	if doOnError != nil && err != nil {
 		doOnError(err)
+	} else if printSuccess != nil {
+		printSuccess(r)
 	}
 	if !loopControlContinueOnError(cmd) {
 		return err
@@ -181,7 +191,10 @@ func forAllInput(cmd *cobra.Command, do func(values []interface{}) error, doOnEr
 	return nil
 }
 
-func forAllInputFromFile(cmd *cobra.Command, do func(values []interface{}) error, doOnError func(error)) error {
+func forAllInputFromFile(cmd *cobra.Command,
+	do func(values []interface{}) (interface{}, error),
+	printSuccess func(interface{}),
+	doOnError func(error)) error {
 	inputFormat, err := cmd.Flags().GetString("file-format")
 	if err != nil {
 		return err
@@ -200,9 +213,9 @@ func forAllInputFromFile(cmd *cobra.Command, do func(values []interface{}) error
 
 	switch inputFormat {
 	case "json":
-		return forAllInputFromJSON(cmd, do, doOnError, reader)
+		return forAllInputFromJSON(cmd, do, printSuccess, doOnError, reader)
 	case "csv":
-		return forAllInputFromCSV(cmd, do, doOnError, reader)
+		return forAllInputFromCSV(cmd, do, printSuccess, doOnError, reader)
 	}
 	return nil
 }
@@ -211,7 +224,11 @@ type wholeObjectFlagType struct{}
 
 var wholeObjectFlag = wholeObjectFlagType{}
 
-func forAllInputFromJSON(cmd *cobra.Command, do func(values []interface{}) error, doOnError func(error), reader io.Reader) error {
+func forAllInputFromJSON(cmd *cobra.Command,
+	do func(values []interface{}) (interface{}, error),
+	printSuccess func(interface{}),
+	doOnError func(error),
+	reader io.Reader) error {
 	records := make([]interface{}, 0)
 
 	err := json.NewDecoder(reader).Decode(&records)
@@ -220,7 +237,7 @@ func forAllInputFromJSON(cmd *cobra.Command, do func(values []interface{}) error
 	}
 
 	for _, record := range records {
-		err = do([]interface{}{wholeObjectFlag, record})
+		r, err := do([]interface{}{wholeObjectFlag, record})
 		if err != nil {
 			if !loopControlContinueOnError(cmd) {
 				return err
@@ -228,12 +245,17 @@ func forAllInputFromJSON(cmd *cobra.Command, do func(values []interface{}) error
 			if doOnError != nil {
 				doOnError(err)
 			}
+		} else if printSuccess != nil {
+			printSuccess(r)
 		}
 	}
 	return nil
 }
 
-func forAllInputFromCSV(cmd *cobra.Command, do func(values []interface{}) error, doOnError func(error), reader io.Reader) error {
+func forAllInputFromCSV(cmd *cobra.Command, do func(values []interface{}) (interface{}, error),
+	printSuccess func(interface{}),
+	doOnError func(error),
+	reader io.Reader) error {
 	r := csv.NewReader(reader)
 
 	header, err := r.Read()
@@ -261,7 +283,7 @@ func forAllInputFromCSV(cmd *cobra.Command, do func(values []interface{}) error,
 			m[header[i]] = record[i]
 		}
 
-		err = do([]interface{}{wholeObjectFlag, m})
+		res, err := do([]interface{}{wholeObjectFlag, m})
 		if err != nil {
 			if !loopControlContinueOnError(cmd) {
 				return err
@@ -269,6 +291,8 @@ func forAllInputFromCSV(cmd *cobra.Command, do func(values []interface{}) error,
 			if doOnError != nil {
 				doOnError(err)
 			}
+		} else if printSuccess != nil {
+			printSuccess(res)
 		}
 	}
 	return nil
