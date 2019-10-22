@@ -27,8 +27,9 @@ import (
 
 // groupsListCmd represents the list command
 var groupsListCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List groups",
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Short:   "List groups",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {

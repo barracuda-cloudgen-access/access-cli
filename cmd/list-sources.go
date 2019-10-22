@@ -30,8 +30,9 @@ import (
 
 // sourcesListCmd represents the list command
 var sourcesListCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List sources",
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Short:   "List sources",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {

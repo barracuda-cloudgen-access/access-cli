@@ -28,8 +28,9 @@ import (
 
 // devicesListCmd represents the list command
 var devicesListCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List devices",
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Short:   "List devices",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {

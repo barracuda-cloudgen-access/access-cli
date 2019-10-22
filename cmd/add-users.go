@@ -27,8 +27,9 @@ import (
 
 // usersAddCmd represents the get command
 var usersAddCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Add users",
+	Use:     "add",
+	Aliases: []string{"create", "new"},
+	Short:   "Add users",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {

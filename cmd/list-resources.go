@@ -31,8 +31,9 @@ import (
 
 // resourcesListCmd represents the list command
 var resourcesListCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List resources",
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Short:   "List resources",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {

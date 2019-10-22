@@ -30,8 +30,9 @@ import (
 
 // userDeleteCmd represents the delete command
 var userDeleteCmd = &cobra.Command{
-	Use:   "delete",
-	Short: "Delete users",
+	Use:     "delete",
+	Aliases: []string{"remove", "rm"},
+	Short:   "Delete users",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {

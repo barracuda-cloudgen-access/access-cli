@@ -29,8 +29,9 @@ import (
 
 // proxiesListCmd represents the list command
 var proxiesListCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List proxies",
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Short:   "List proxies",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {

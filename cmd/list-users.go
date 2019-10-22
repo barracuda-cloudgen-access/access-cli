@@ -25,8 +25,9 @@ import (
 
 // usersListCmd represents the list command
 var usersListCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List users",
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Short:   "List users",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {

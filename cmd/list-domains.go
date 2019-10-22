@@ -28,8 +28,9 @@ import (
 
 // domainsListCmd represents the list command
 var domainsListCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List domains",
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Short:   "List domains",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {

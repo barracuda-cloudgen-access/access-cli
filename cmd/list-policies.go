@@ -27,8 +27,9 @@ import (
 
 // policiesListCmd represents the list command
 var policiesListCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List policies",
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Short:   "List policies",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {
