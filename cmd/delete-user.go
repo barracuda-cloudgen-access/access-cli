@@ -62,7 +62,7 @@ var userDeleteCmd = &cobra.Command{
 
 		delete := func(ids []int64) error {
 			params := apiusers.NewDeleteUserParams()
-			params.SetID(userIDs)
+			params.SetID(ids)
 
 			_, err = global.Client.Users.DeleteUser(params, global.AuthWriter)
 			if err != nil {
