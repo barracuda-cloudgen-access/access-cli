@@ -307,6 +307,8 @@ paths:
           properties:
             user:
               type: object
+              required:
+                - enabled
               properties:
                 email:
                   type: string

@@ -52,11 +52,14 @@ var usersEditCmd = &cobra.Command{
 				total++ // this is the total of successful+failures, must increment before failure
 				params := apiusers.NewEditUserParams()
 				// IDs are not part of the request body, so we use this workaround
+				enabledDefault := true
 				user := &struct {
 					*apiusers.EditUserParamsBodyUser
 					ID int64 `json:"id"`
 				}{
-					EditUserParamsBodyUser: &apiusers.EditUserParamsBodyUser{},
+					EditUserParamsBodyUser: &apiusers.EditUserParamsBodyUser{
+						Enabled: &enabledDefault, // the UI on the web console enables by default
+					},
 				}
 				err := placeInputValues(cmd, values, user,
 					func(s int) { user.ID = int64(s) },
@@ -64,7 +67,7 @@ var usersEditCmd = &cobra.Command{
 					func(s string) { user.Email = strfmt.Email(s) },
 					func(s string) { user.PhoneNumber = s },
 					func(s []int64) { user.GroupIds = s },
-					func(s bool) { user.Enabled = s })
+					func(s bool) { user.Enabled = &s })
 				if err != nil {
 					return nil, err
 				}
