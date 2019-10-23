@@ -28,71 +28,63 @@ import (
 
 // sourceEnableCmd represents the enable command
 var sourceEnableCmd = &cobra.Command{
-	Use:     "enable",
-	Short:   "enable source",
-	PreRunE: sourceEnableDisablePreRunEFunc,
+	Use:   "enable",
+	Short: "enable source",
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		err := preRunCheckAuth(cmd, args)
+		if err != nil {
+			return err
+		}
+
+		err = preRunFlagChecks(cmd, args)
+		if err != nil {
+			return err
+		}
+
+		if len(args) == 0 {
+			return fmt.Errorf("missing source ID argument")
+		}
+
+		return nil
+	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return sourceEnableDisableRunEFunc(cmd, args, true)
+		enable := cmd.Use == "enable"
+		for _, arg := range args {
+			params := apisources.NewEditAssetSourceParams()
+			params.SetID(strfmt.UUID(arg))
+			params.SetAssetSource(apisources.EditAssetSourceBody{
+				AssetSource: &apisources.EditAssetSourceParamsBodyAssetSource{
+					Enabled: &enable,
+				},
+			})
+
+			resp, err := global.Client.AssetSources.EditAssetSource(params, global.AuthWriter)
+			if err != nil {
+				if loopControlContinueOnError(cmd) {
+					cmd.PrintErrln(processErrorResponse(err))
+					continue
+				}
+				return processErrorResponse(err)
+			}
+
+			if resp.Payload.Enabled {
+				cmd.Println("Source", resp.Payload.ID, "enabled")
+			} else {
+				cmd.Println("Source", resp.Payload.ID, "disabled")
+			}
+		}
+		return nil
 	},
 }
 
 // sourceDisableCmd represents the disable command
-var sourceDisableCmd = &cobra.Command{
-	Use:     "disable",
-	Short:   "disable source",
-	PreRunE: sourceEnableDisablePreRunEFunc,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return sourceEnableDisableRunEFunc(cmd, args, false)
-	},
-}
-
-func sourceEnableDisablePreRunEFunc(cmd *cobra.Command, args []string) error {
-	err := preRunCheckAuth(cmd, args)
-	if err != nil {
-		return err
-	}
-
-	err = preRunFlagChecks(cmd, args)
-	if err != nil {
-		return err
-	}
-
-	if len(args) == 0 {
-		return fmt.Errorf("missing source ID argument")
-	}
-
-	return nil
-}
-
-func sourceEnableDisableRunEFunc(cmd *cobra.Command, args []string, enable bool) error {
-	for _, arg := range args {
-		params := apisources.NewEditAssetSourceParams()
-		params.SetID(strfmt.UUID(arg))
-		params.SetAssetSource(apisources.EditAssetSourceBody{
-			AssetSource: &apisources.EditAssetSourceParamsBodyAssetSource{
-				Enabled: &enable,
-			},
-		})
-
-		resp, err := global.Client.AssetSources.EditAssetSource(params, global.AuthWriter)
-		if err != nil {
-			if loopControlContinueOnError(cmd) {
-				cmd.PrintErrln(processErrorResponse(err))
-				continue
-			}
-			return processErrorResponse(err)
-		}
-
-		if resp.Payload.Enabled {
-			cmd.Println("Source", resp.Payload.ID, "enabled")
-		} else {
-			cmd.Println("Source", resp.Payload.ID, "disabled")
-		}
-	}
-	return nil
-}
+var sourceDisableCmd *cobra.Command
 
 func init() {
+	disableCmd := *sourceEnableCmd
+	disableCmd.Use = "disable"
+	disableCmd.Short = "disable source"
+	sourceDisableCmd = &disableCmd
 	sourcesCmd.AddCommand(sourceEnableCmd)
 	sourcesCmd.AddCommand(sourceDisableCmd)
 
