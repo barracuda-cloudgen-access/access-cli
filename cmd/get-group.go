@@ -79,9 +79,7 @@ var groupGetCmd = &cobra.Command{
 			len(resp.Payload.Users),
 		})
 
-		result, err := renderListOutput(cmd, resp.Payload, tw, 1)
-		cmd.Println(result)
-		return err
+		return printListOutputAndError(cmd, resp.Payload, tw, 1, err)
 	},
 }
 

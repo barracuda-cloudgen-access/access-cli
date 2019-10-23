@@ -86,9 +86,7 @@ var recordGetCmd = &cobra.Command{
 			resp.Payload.Date.Utc,
 		})
 
-		result, err := renderListOutput(cmd, resp.Payload, tw, 1)
-		cmd.Println(result)
-		return err
+		return printListOutputAndError(cmd, resp.Payload, tw, 1, err)
 	},
 }
 

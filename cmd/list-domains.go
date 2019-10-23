@@ -83,9 +83,7 @@ var domainsListCmd = &cobra.Command{
 			})
 		}
 
-		result, err := renderListOutput(cmd, completePayload, tw, total)
-		cmd.Println(result)
-		return err
+		return printListOutputAndError(cmd, completePayload, tw, total, err)
 	},
 }
 

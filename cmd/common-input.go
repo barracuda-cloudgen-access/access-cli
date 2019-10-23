@@ -320,11 +320,11 @@ func forAllInputFromCSV(cmd *cobra.Command, do func(values []interface{}) (inter
 		values := []interface{}{wholeCSVObjectFlag, m}
 		res, err := do(values)
 		if err != nil {
-			if !loopControlContinueOnError(cmd) {
-				return err
-			}
 			if doOnError != nil {
 				doOnError(err, getIDinputValue(cmd, values))
+			}
+			if !loopControlContinueOnError(cmd) {
+				return err
 			}
 		} else if printSuccess != nil {
 			printSuccess(res)

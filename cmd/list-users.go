@@ -68,9 +68,7 @@ var usersListCmd = &cobra.Command{
 			userTableWriterAppend(tw, item.User)
 		}
 
-		result, err := renderListOutput(cmd, completePayload, tw, total)
-		cmd.Println(result)
-		return err
+		return printListOutputAndError(cmd, completePayload, tw, total, err)
 	},
 }
 

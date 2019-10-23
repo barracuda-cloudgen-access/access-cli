@@ -89,12 +89,7 @@ var usersEditCmd = &cobra.Command{
 				createdList = append(createdList, nil)
 				userTableWriterAppendError(tw, err, id)
 			})
-		if err != nil {
-			return processErrorResponse(err)
-		}
-		result, err := renderListOutput(cmd, createdList, tw, total)
-		cmd.Println(result)
-		return err
+		return printListOutputAndError(cmd, createdList, tw, len(args), err)
 	},
 }
 

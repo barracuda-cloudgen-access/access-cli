@@ -52,6 +52,7 @@ var userEnableCmd = &cobra.Command{
 		enable := cmd.Use == "enable"
 		tw := userBuildTableWriter()
 		createdList := []*models.User{}
+		var loopErr error
 		for _, arg := range args {
 			userID, err := strconv.ParseInt(arg, 10, 64)
 			if err != nil {
@@ -68,19 +69,18 @@ var userEnableCmd = &cobra.Command{
 
 			resp, err := global.Client.Users.EditUser(params, global.AuthWriter)
 			if err != nil {
-				if loopControlContinueOnError(cmd) {
-					createdList = append(createdList, nil)
-					userTableWriterAppendError(tw, err, userID)
-					continue
+				createdList = append(createdList, nil)
+				userTableWriterAppendError(tw, err, userID)
+				if !loopControlContinueOnError(cmd) {
+					loopErr = err
+					break
 				}
-				return processErrorResponse(err)
+				continue
 			}
 			createdList = append(createdList, &resp.Payload.User)
 			userTableWriterAppend(tw, resp.Payload.User)
 		}
-		result, err := renderListOutput(cmd, createdList, tw, len(args))
-		cmd.Println(result)
-		return err
+		return printListOutputAndError(cmd, createdList, tw, len(args), loopErr)
 	},
 }
 

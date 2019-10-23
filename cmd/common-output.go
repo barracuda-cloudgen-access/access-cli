@@ -88,6 +88,15 @@ func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Wr
 	}
 }
 
+func printListOutputAndError(cmd *cobra.Command, data interface{}, tableWriter table.Writer, total int, loopErr error) error {
+	result, err2 := renderListOutput(cmd, data, tableWriter, total)
+	cmd.Println(result)
+	if loopErr != nil {
+		return processErrorResponse(loopErr)
+	}
+	return err2
+}
+
 func renderWatchOutput(cmd *cobra.Command, data interface{}, tableWriter table.Writer) (bool, string, error) {
 	if _, ok := cmd.Annotations[flagInitOutput]; !ok {
 		panic("renderWatchOutput called for command where output flags were not initialized. This is a bug!")
