@@ -85,9 +85,9 @@ var usersEditCmd = &cobra.Command{
 				user := data.(models.User)
 				createdList = append(createdList, &user)
 				userTableWriterAppend(tw, user)
-			}, func(err error) { // doOnError func
+			}, func(err error, id interface{}) { // doOnError func
 				createdList = append(createdList, nil)
-				userTableWriterAppendError(tw, err)
+				userTableWriterAppendError(tw, err, id)
 			})
 		if err != nil {
 			return processErrorResponse(err)
@@ -122,6 +122,8 @@ func init() {
 			VarType:         "int",
 			Mandatory:       true,
 			DefaultValue:    0,
+			IsIDOnError:     true,
+			SchemaName:      "id",
 		},
 		inputField{
 			Name:            "Username",

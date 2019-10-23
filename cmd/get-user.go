@@ -115,9 +115,13 @@ func userTableWriterAppend(tw table.Writer, user models.User) {
 	})
 }
 
-func userTableWriterAppendError(tw table.Writer, err error) {
+func userTableWriterAppendError(tw table.Writer, err error, id interface{}) {
+	idStr := "[ERR]"
+	if id != nil {
+		idStr += fmt.Sprintf(" %v", id)
+	}
 	tw.AppendRow(table.Row{
-		"[ERROR]",
+		idStr,
 		processErrorResponse(err),
 		"-",
 		"-",

@@ -44,6 +44,8 @@ type inputField struct {
 	Validator       func(interface{}) bool
 	VarType         string
 	Mandatory       bool
+	IsIDOnError     bool
+	SchemaName      string // only used if IsIDOnError is true, so that error handling functions can get an identifier for the failing record
 	DefaultValue    interface{}
 }
 
@@ -132,7 +134,7 @@ func getFlagValue(cmd *cobra.Command, varType, flagName string) (interface{}, er
 func forAllInput(cmd *cobra.Command,
 	do func(values []interface{}) (interface{}, error),
 	printSuccess func(interface{}),
-	doOnError func(error)) error {
+	doOnError func(error, interface{})) error {
 	if _, ok := cmd.Annotations[flagInitInput]; !ok {
 		panic("forAllInput called for command where input flags were not initialized. This is a bug!")
 	}
@@ -167,7 +169,7 @@ func forAllInput(cmd *cobra.Command,
 	}
 	r, err := do(values)
 	if doOnError != nil && err != nil {
-		doOnError(err)
+		doOnError(err, getIDinputValue(cmd, values))
 	} else if printSuccess != nil {
 		printSuccess(r)
 	}
@@ -222,7 +224,7 @@ func interactivelyReadField(cmd *cobra.Command, field inputField) interface{} {
 func forAllInputFromFile(cmd *cobra.Command,
 	do func(values []interface{}) (interface{}, error),
 	printSuccess func(interface{}),
-	doOnError func(error)) error {
+	doOnError func(error, interface{})) error {
 	inputFormat, err := cmd.Flags().GetString("file-format")
 	if err != nil {
 		return err
@@ -251,14 +253,14 @@ func forAllInputFromFile(cmd *cobra.Command,
 type wholeObjectFlagType int
 
 const (
-	wholeObjectFlag wholeObjectFlagType = iota
+	wholeCSVObjectFlag wholeObjectFlagType = iota
 	wholeJSONObjectFlag
 )
 
 func forAllInputFromJSON(cmd *cobra.Command,
 	do func(values []interface{}) (interface{}, error),
 	printSuccess func(interface{}),
-	doOnError func(error),
+	doOnError func(error, interface{}),
 	reader io.Reader) error {
 	records := make([]json.RawMessage, 0)
 
@@ -268,13 +270,14 @@ func forAllInputFromJSON(cmd *cobra.Command,
 	}
 
 	for _, record := range records {
-		r, err := do([]interface{}{wholeJSONObjectFlag, record})
+		values := []interface{}{wholeJSONObjectFlag, record}
+		r, err := do(values)
 		if err != nil {
 			if !loopControlContinueOnError(cmd) {
 				return err
 			}
 			if doOnError != nil {
-				doOnError(err)
+				doOnError(err, getIDinputValue(cmd, values))
 			}
 		} else if printSuccess != nil {
 			printSuccess(r)
@@ -285,7 +288,7 @@ func forAllInputFromJSON(cmd *cobra.Command,
 
 func forAllInputFromCSV(cmd *cobra.Command, do func(values []interface{}) (interface{}, error),
 	printSuccess func(interface{}),
-	doOnError func(error),
+	doOnError func(error, interface{}),
 	reader io.Reader) error {
 	r := csv.NewReader(reader)
 
@@ -314,13 +317,14 @@ func forAllInputFromCSV(cmd *cobra.Command, do func(values []interface{}) (inter
 			m[header[i]] = record[i]
 		}
 
-		res, err := do([]interface{}{wholeObjectFlag, m})
+		values := []interface{}{wholeCSVObjectFlag, m}
+		res, err := do(values)
 		if err != nil {
 			if !loopControlContinueOnError(cmd) {
 				return err
 			}
 			if doOnError != nil {
-				doOnError(err)
+				doOnError(err, getIDinputValue(cmd, values))
 			}
 		} else if printSuccess != nil {
 			printSuccess(res)
@@ -335,9 +339,10 @@ func placeInputValues(cmd *cobra.Command, values []interface{}, object interface
 	}
 	data := global.InputData[cmd]
 
+	// deal with values extracted by forAllInputFromJSON/CSV instead of CLI flags
 	if len(values) == 2 {
 		switch values[0] {
-		case wholeObjectFlag:
+		case wholeCSVObjectFlag:
 			return mapstructure.WeakDecode(values[1], object)
 		case wholeJSONObjectFlag:
 			return json.Unmarshal(values[1].(json.RawMessage), object)
@@ -348,4 +353,48 @@ func placeInputValues(cmd *cobra.Command, values []interface{}, object interface
 		callApplyFunc(setterFuncs[i], values[i], field.VarType)
 	}
 	return nil
+}
+
+// the sole purpose of this function is to attempt to recover the ID of an object
+// (of unknown type) in order to be able to tell the user that an error ocurred
+// for that ID
+func getIDinputValue(cmd *cobra.Command, values []interface{}) interface{} {
+	if _, ok := cmd.Annotations[flagInitInput]; !ok {
+		panic("getIdInputValue called for command where input flags were not initialized. This is a bug!")
+	}
+	data := global.InputData[cmd]
+
+	// identify the index of the field that was marked as IsIDOnError
+	indexOfIDfield := func(fields []inputField) int {
+		for i, field := range fields {
+			if field.IsIDOnError {
+				return i
+			}
+		}
+		return -1
+	}
+
+	idIdx := indexOfIDfield(data.fields)
+	if idIdx < 0 {
+		// no field marked as ID on error, we can't help the user pinpoint the failure
+		return nil
+	}
+
+	// deal with values extracted by forAllInputFromJSON/CSV instead of CLI flags
+	if len(values) == 2 {
+		switch values[0] {
+		case wholeCSVObjectFlag:
+			m := values[1].(map[string]interface{})
+			return m[data.fields[idIdx].SchemaName]
+		case wholeJSONObjectFlag:
+			var object map[string]interface{}
+			err := json.Unmarshal(values[1].(json.RawMessage), &object)
+			if err != nil {
+				return err
+			}
+			return object[data.fields[idIdx].SchemaName]
+		}
+	}
+
+	return values[idIdx]
 }
