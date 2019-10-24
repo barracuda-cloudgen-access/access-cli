@@ -54,9 +54,9 @@ var resourcesEditCmd = &cobra.Command{
 				// IDs are not part of the request body, so we use this workaround
 				resource := &struct {
 					models.AccessResource
-					ID             string      `json:"id"`
-					AccessProxyID  strfmt.UUID `json:"access_proxy_id"`
-					AccessPolicyID int64       `json:"access_policy_id"`
+					ID              string      `json:"id"`
+					AccessProxyID   strfmt.UUID `json:"access_proxy_id"`
+					AccessPolicyIds []int64     `json:"access_policy_ids"`
 				}{}
 				err := placeInputValues(cmd, values, resource,
 					func(s string) { resource.ID = s },
@@ -67,7 +67,7 @@ var resourcesEditCmd = &cobra.Command{
 					func(s string) { resource.AccessProxyID = strfmt.UUID(s) },
 					func(s int) {
 						if s >= 0 {
-							resource.AccessPolicyID = int64(s)
+							resource.AccessPolicyIds = []int64{int64(s)}
 						}
 					},
 					func(s string) { resource.Notes = s })
@@ -79,11 +79,7 @@ var resourcesEditCmd = &cobra.Command{
 				body := apiresources.EditResourceBody{}
 				body.AccessResource.AccessResource = resource.AccessResource
 				body.AccessResource.AccessProxyID = resource.AccessProxyID
-				body.AccessResource.AccessPolicies = []*models.AccessResourceAccessPoliciesItems0{
-					&models.AccessResourceAccessPoliciesItems0{
-						ID: resource.AccessPolicyID,
-					},
-				}
+				body.AccessResource.AccessPolicyIds = resource.AccessPolicyIds
 				body.AccessResource.Enabled = true
 				params.SetResource(body)
 
