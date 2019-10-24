@@ -16,11 +16,14 @@ You can use it in other architectures by compiling from source.
 
 The goal for this project is to implement most operations possible with the web version of the [Fyde Enterprise Console](https://fyde.github.io/docs/fyde-enterprise-console), enabling batch mode for certain operations (like adding multiple users from a CSV file or a JSON dump).
 
-Currently, the fyde-cli is at an early development stage.
-Only read-only operations are implemented:
+Currently, fyde-cli is at an early development stage.
+Only the following operations are implemented:
 
  - List users, groups, devices, resources, proxies and policies
  - Get info about specific user, group, device, resource, proxy or policy
+ - Create users and resources, using command line flags or in batch mode, from files
+ - Edit users and resources, using command line flags or in batch mode, from files
+ - Delete users and resources
  - List activity records and get info about specific record
  - Watch activity records as they happen in real-time
 
@@ -95,7 +98,7 @@ Logged in successfully, access token stored in (...)fyde/fyde-cli/auth.yaml
 You can now use other commands. For example, to list users, you can use `fyde-cli users list`.
 
 All commands provide a help text with the available subcommands and flags.
-For example, running `fyde-cli resources` will let you know about the `get` and `list` subcommands, and `fyde-cli resources list --help` will list all available flags for the list resources command, including pagination, sorting and filtering flags.
+For example, running `fyde-cli resources` will let you know about the `get`, `list`, `add`, `edit` and `delete` subcommands, and `fyde-cli resources list --help` will list all available flags for the list resources command, including pagination, sorting and filtering flags.
 
 ### Output formats
 
@@ -110,6 +113,27 @@ Otherwise, `json` is used.
 JSON output generally contains the most information, sometimes including nested objects; CSV output corresponds to a CSV version of the table output.
 
 All output formats are subject to pagination parameters, when those are available.
+
+Certain output options are specific to input-accepting commands input (for record creation or editing):
+ - `--errors-only` - output will be restricted to records whose creation/editing failed
+
+### Input formats
+
+When adding or editing records, fyde-cli can receive input in three different ways:
+
+ - Interactively, through command line flags
+   - Users will be prompted to interactively provide mandatory fields that were not included in the passed flags
+ - From JSON files, using `--from-file=filename.json --file-format=json` (`--file-format=json` is the default and can be omitted)
+   - In this case, fyde-cli will expect a JSON array containing the different records
+ - From CSV files, using `--from-file=filename.csv --file-format=csv`
+   - In this case, fyde-cli will expect a file containing comma-separated values, with one record per line. The first record must be a header mapping each column to the correct record field
+
+### Behavior on error
+
+When creating, editing or deleting multiple records in one go, by default fyde-cli will stop on the first error.
+However, one may want to perform the operation in a "best effort" basis, where fyde-cli will continue processing the remaining records/arguments regardless of previous errors.
+This can be enabled using the `--continue-on-error` flag.
+When this flag is passed, fyde-cli should never exit with a non-zero code.
 
 ## Reporting issues
 
