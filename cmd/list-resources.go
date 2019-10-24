@@ -18,15 +18,9 @@ limitations under the License.
 */
 
 import (
-	"strings"
-
-	"github.com/jedib0t/go-pretty/table"
-	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
-	"github.com/thoas/go-funk"
 
 	apiresources "github.com/fyde/fyde-cli/client/access_resources"
-	"github.com/fyde/fyde-cli/models"
 )
 
 // resourcesListCmd represents the list command
@@ -68,31 +62,10 @@ var resourcesListCmd = &cobra.Command{
 		}
 		completePayload = completePayload[cutStart:cutEnd]
 
-		tw := table.NewWriter()
-		tw.Style().Format.Header = text.FormatDefault
-		tw.AppendHeader(table.Row{
-			"ID",
-			"Name",
-			"Public host",
-			"Access policy",
-			"Port ext:int",
-			"Access Proxy",
-		})
-		tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 30, 36})
+		tw := resourceBuildTableWriter()
 
 		for _, item := range completePayload {
-			accessPolicies := strings.Join(funk.Map(item.AccessPolicies, func(g *models.AccessResourceAccessPoliciesItems0) string {
-				return g.Name
-			}).([]string), ",")
-
-			tw.AppendRow(table.Row{
-				item.ID,
-				item.Name,
-				item.PublicHost,
-				accessPolicies,
-				strings.Join(item.Ports, ","),
-				item.AccessProxyID,
-			})
+			resourceTableWriterAppend(tw, item.AccessResource, item.AccessProxyID)
 		}
 
 		return printListOutputAndError(cmd, completePayload, tw, total, err)

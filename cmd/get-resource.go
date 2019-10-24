@@ -61,33 +61,56 @@ var resourceGetCmd = &cobra.Command{
 			return processErrorResponse(err)
 		}
 
-		tw := table.NewWriter()
-		tw.Style().Format.Header = text.FormatDefault
-		tw.AppendHeader(table.Row{
-			"ID",
-			"Name",
-			"Public host",
-			"Access policy",
-			"Port ext:int",
-			"Access Proxy",
-		})
-		tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 30, 36})
-
-		accessPolicies := strings.Join(funk.Map(resp.Payload.AccessPolicies, func(g *models.AccessResourceAccessPoliciesItems0) string {
-			return g.Name
-		}).([]string), ",")
-
-		tw.AppendRow(table.Row{
-			resp.Payload.ID,
-			resp.Payload.Name,
-			resp.Payload.PublicHost,
-			accessPolicies,
-			strings.Join(resp.Payload.Ports, ","),
-			resp.Payload.AccessProxyName,
-		})
+		tw := resourceBuildTableWriter()
+		resourceTableWriterAppend(tw, resp.Payload.AccessResource, resp.Payload.AccessProxyName)
 
 		return printListOutputAndError(cmd, resp.Payload, tw, 1, err)
 	},
+}
+
+func resourceBuildTableWriter() table.Writer {
+	tw := table.NewWriter()
+	tw.Style().Format.Header = text.FormatDefault
+	tw.AppendHeader(table.Row{
+		"ID",
+		"Name",
+		"Public host",
+		"Access policy",
+		"Port ext:int",
+		"Access Proxy",
+	})
+	tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 30, 36})
+	return tw
+}
+
+func resourceTableWriterAppend(tw table.Writer, resource models.AccessResource, accessProxy interface{}) {
+	accessPolicies := strings.Join(funk.Map(resource.AccessPolicies, func(g *models.AccessResourceAccessPoliciesItems0) string {
+		return g.Name
+	}).([]string), ",")
+
+	tw.AppendRow(table.Row{
+		resource.ID,
+		resource.Name,
+		resource.PublicHost,
+		accessPolicies,
+		strings.Join(resource.Ports, ","),
+		accessProxy,
+	})
+}
+
+func resourceTableWriterAppendError(tw table.Writer, err error, id interface{}) {
+	idStr := "[ERR]"
+	if id != nil {
+		idStr += fmt.Sprintf(" %v", id)
+	}
+	tw.AppendRow(table.Row{
+		idStr,
+		processErrorResponse(err),
+		"-",
+		"-",
+		"-",
+		"-",
+	})
 }
 
 func init() {
