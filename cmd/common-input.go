@@ -50,6 +50,21 @@ type inputField struct {
 	DefaultValue    interface{}
 }
 
+type inputEntry struct {
+	Type    wholeObjectType
+	CSVdata interface{}
+	JSON    json.RawMessage
+	Values  []interface{}
+}
+
+type wholeObjectType int
+
+const (
+	wholeCSVObject wholeObjectType = iota
+	wholeJSONObject
+	individualValues
+)
+
 func initInputFlags(cmd *cobra.Command, fields ...inputField) {
 	if cmd.Annotations == nil {
 		cmd.Annotations = make(map[string]string)
@@ -133,7 +148,7 @@ func getFlagValue(cmd *cobra.Command, varType, flagName string) (interface{}, er
 }
 
 func forAllInput(cmd *cobra.Command,
-	do func(values []interface{}) (interface{}, error),
+	do func(entry *inputEntry) (interface{}, error),
 	printSuccess func(interface{}),
 	doOnError func(error, interface{})) error {
 	if _, ok := cmd.Annotations[flagInitInput]; !ok {
@@ -153,7 +168,10 @@ func forAllInput(cmd *cobra.Command,
 		return forAllInputFromFile(cmd, do, printSuccess, doOnError)
 	}
 
-	values := make([]interface{}, len(data.fields))
+	entry := &inputEntry{
+		Type:   individualValues,
+		Values: make([]interface{}, len(data.fields)),
+	}
 	for i, field := range data.fields {
 		var d interface{}
 
@@ -166,11 +184,11 @@ func forAllInput(cmd *cobra.Command,
 				continue
 			}
 		}
-		values[i] = d
+		entry.Values[i] = d
 	}
-	r, err := do(values)
+	r, err := do(entry)
 	if doOnError != nil && err != nil {
-		doOnError(err, getIDinputValue(cmd, values))
+		doOnError(err, getIDinputValue(cmd, entry))
 	} else if printSuccess != nil {
 		printSuccess(r)
 	}
@@ -254,7 +272,7 @@ func interactivelyReadField(cmd *cobra.Command, field inputField) interface{} {
 }
 
 func forAllInputFromFile(cmd *cobra.Command,
-	do func(values []interface{}) (interface{}, error),
+	do func(entry *inputEntry) (interface{}, error),
 	printSuccess func(interface{}),
 	doOnError func(error, interface{})) error {
 	inputFormat, err := cmd.Flags().GetString("file-format")
@@ -282,15 +300,8 @@ func forAllInputFromFile(cmd *cobra.Command,
 	return nil
 }
 
-type wholeObjectFlagType int
-
-const (
-	wholeCSVObjectFlag wholeObjectFlagType = iota
-	wholeJSONObjectFlag
-)
-
 func forAllInputFromJSON(cmd *cobra.Command,
-	do func(values []interface{}) (interface{}, error),
+	do func(entry *inputEntry) (interface{}, error),
 	printSuccess func(interface{}),
 	doOnError func(error, interface{}),
 	reader io.Reader) error {
@@ -302,14 +313,17 @@ func forAllInputFromJSON(cmd *cobra.Command,
 	}
 
 	for _, record := range records {
-		values := []interface{}{wholeJSONObjectFlag, record}
-		r, err := do(values)
+		entry := &inputEntry{
+			Type: wholeJSONObject,
+			JSON: record,
+		}
+		r, err := do(entry)
 		if err != nil {
 			if !loopControlContinueOnError(cmd) {
 				return err
 			}
 			if doOnError != nil {
-				doOnError(err, getIDinputValue(cmd, values))
+				doOnError(err, getIDinputValue(cmd, entry))
 			}
 		} else if printSuccess != nil {
 			printSuccess(r)
@@ -318,7 +332,8 @@ func forAllInputFromJSON(cmd *cobra.Command,
 	return nil
 }
 
-func forAllInputFromCSV(cmd *cobra.Command, do func(values []interface{}) (interface{}, error),
+func forAllInputFromCSV(cmd *cobra.Command,
+	do func(entry *inputEntry) (interface{}, error),
 	printSuccess func(interface{}),
 	doOnError func(error, interface{}),
 	reader io.Reader) error {
@@ -349,11 +364,14 @@ func forAllInputFromCSV(cmd *cobra.Command, do func(values []interface{}) (inter
 			m[header[i]] = record[i]
 		}
 
-		values := []interface{}{wholeCSVObjectFlag, m}
-		res, err := do(values)
+		entry := &inputEntry{
+			Type:    wholeCSVObject,
+			CSVdata: m,
+		}
+		res, err := do(entry)
 		if err != nil {
 			if doOnError != nil {
-				doOnError(err, getIDinputValue(cmd, values))
+				doOnError(err, getIDinputValue(cmd, entry))
 			}
 			if !loopControlContinueOnError(cmd) {
 				return err
@@ -365,32 +383,33 @@ func forAllInputFromCSV(cmd *cobra.Command, do func(values []interface{}) (inter
 	return nil
 }
 
-func placeInputValues(cmd *cobra.Command, values []interface{}, object interface{}, setterFuncs ...interface{}) error {
+func placeInputValues(cmd *cobra.Command,
+	entry *inputEntry,
+	object interface{},
+	setterFuncs ...interface{}) error {
 	if _, ok := cmd.Annotations[flagInitInput]; !ok {
 		panic("forAllInput called for command where input flags were not initialized. This is a bug!")
 	}
 	data := global.InputData[cmd]
 
-	// deal with values extracted by forAllInputFromJSON/CSV instead of CLI flags
-	if len(values) == 2 {
-		switch values[0] {
-		case wholeCSVObjectFlag:
-			return mapstructure.WeakDecode(values[1], object)
-		case wholeJSONObjectFlag:
-			return json.Unmarshal(values[1].(json.RawMessage), object)
+	switch entry.Type {
+	case individualValues:
+		for i, field := range data.fields {
+			callApplyFunc(setterFuncs[i], entry.Values[i], field.VarType)
 		}
+		return nil
+	case wholeJSONObject:
+		return json.Unmarshal(entry.JSON, object)
+	case wholeCSVObject:
+		return mapstructure.WeakDecode(entry.CSVdata, object)
 	}
-
-	for i, field := range data.fields {
-		callApplyFunc(setterFuncs[i], values[i], field.VarType)
-	}
-	return nil
+	return fmt.Errorf("unknown input entry type")
 }
 
 // the sole purpose of this function is to attempt to recover the ID of an object
 // (of unknown type) in order to be able to tell the user that an error ocurred
 // for that ID
-func getIDinputValue(cmd *cobra.Command, values []interface{}) interface{} {
+func getIDinputValue(cmd *cobra.Command, entry *inputEntry) interface{} {
 	if _, ok := cmd.Annotations[flagInitInput]; !ok {
 		panic("getIdInputValue called for command where input flags were not initialized. This is a bug!")
 	}
@@ -412,21 +431,19 @@ func getIDinputValue(cmd *cobra.Command, values []interface{}) interface{} {
 		return nil
 	}
 
-	// deal with values extracted by forAllInputFromJSON/CSV instead of CLI flags
-	if len(values) == 2 {
-		switch values[0] {
-		case wholeCSVObjectFlag:
-			m := values[1].(map[string]interface{})
-			return m[data.fields[idIdx].SchemaName]
-		case wholeJSONObjectFlag:
-			var object map[string]interface{}
-			err := json.Unmarshal(values[1].(json.RawMessage), &object)
-			if err != nil {
-				return err
-			}
-			return object[data.fields[idIdx].SchemaName]
+	switch entry.Type {
+	case individualValues:
+		return entry.Values[idIdx]
+	case wholeJSONObject:
+		var object map[string]interface{}
+		err := json.Unmarshal(entry.JSON, &object)
+		if err != nil {
+			return err
 		}
+		return object[data.fields[idIdx].SchemaName]
+	case wholeCSVObject:
+		m := entry.CSVdata.(map[string]interface{})
+		return m[data.fields[idIdx].SchemaName]
 	}
-
-	return values[idIdx]
+	return nil
 }

@@ -48,7 +48,7 @@ var usersEditCmd = &cobra.Command{
 		createdList := []*models.User{}
 		total := 0
 		err := forAllInput(cmd,
-			func(values []interface{}) (interface{}, error) { // do func
+			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				params := apiusers.NewEditUserParams()
 				// IDs are not part of the request body, so we use this workaround

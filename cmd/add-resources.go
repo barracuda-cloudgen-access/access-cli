@@ -48,7 +48,7 @@ var resourcesAddCmd = &cobra.Command{
 		createdList := []*models.AccessResource{}
 		total := 0
 		err := forAllInput(cmd,
-			func(values []interface{}) (interface{}, error) { // do func
+			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				resource := &apiresources.CreateResourceParamsBodyAccessResource{}
 				resource.Enabled = true
