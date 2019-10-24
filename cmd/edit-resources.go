@@ -25,11 +25,11 @@ import (
 	"github.com/fyde/fyde-cli/models"
 )
 
-// resourcesAddCmd represents the get command
-var resourcesAddCmd = &cobra.Command{
-	Use:     "add",
-	Aliases: []string{"create", "new"},
-	Short:   "Add resources",
+// resourcesEditCmd represents the get command
+var resourcesEditCmd = &cobra.Command{
+	Use:                "edit",
+	Short:              "Edit resources",
+	FParseErrWhitelist: cobra.FParseErrWhitelist{},
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {
@@ -50,9 +50,16 @@ var resourcesAddCmd = &cobra.Command{
 		err := forAllInput(cmd,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
-				resource := &apiresources.CreateResourceParamsBodyAccessResource{}
-				resource.Enabled = true
+				params := apiresources.NewEditResourceParams()
+				// IDs are not part of the request body, so we use this workaround
+				resource := &struct {
+					models.AccessResource
+					ID             string      `json:"id"`
+					AccessProxyID  strfmt.UUID `json:"access_proxy_id"`
+					AccessPolicyID int64       `json:"access_policy_id"`
+				}{}
 				err := placeInputValues(cmd, values, resource,
+					func(s string) { resource.ID = s },
 					func(s string) { resource.Name = s },
 					func(s string) { resource.PublicHost = s },
 					func(s string) { resource.InternalHost = s },
@@ -60,24 +67,33 @@ var resourcesAddCmd = &cobra.Command{
 					func(s string) { resource.AccessProxyID = strfmt.UUID(s) },
 					func(s int) {
 						if s >= 0 {
-							resource.AccessPolicyIds = []int64{int64(s)}
+							resource.AccessPolicyID = int64(s)
 						}
 					},
 					func(s string) { resource.Notes = s })
 				if err != nil {
 					return nil, err
 				}
-				body := apiresources.CreateResourceBody{AccessResource: resource}
-				params := apiresources.NewCreateResourceParams()
+				// here, map the ID from the "fake request body" to the correct place
+				params.SetID(strfmt.UUID(resource.ID))
+				body := apiresources.EditResourceBody{}
+				body.AccessResource.AccessResource = resource.AccessResource
+				body.AccessResource.AccessProxyID = resource.AccessProxyID
+				body.AccessResource.AccessPolicies = []*models.AccessResourceAccessPoliciesItems0{
+					&models.AccessResourceAccessPoliciesItems0{
+						ID: resource.AccessPolicyID,
+					},
+				}
+				body.AccessResource.Enabled = true
 				params.SetResource(body)
 
-				resp, err := global.Client.AccessResources.CreateResource(params, global.AuthWriter)
+				resp, err := global.Client.AccessResources.EditResource(params, global.AuthWriter)
 				if err != nil {
 					return nil, err
 				}
 				return resp.Payload, nil
 			}, func(data interface{}) { // printSuccess func
-				resp := data.(*apiresources.CreateResourceCreatedBody)
+				resp := data.(*apiresources.EditResourceOKBody)
 				createdList = append(createdList, &resp.AccessResource)
 				resourceTableWriterAppend(tw, resp.AccessResource, resp.AccessProxyName)
 			}, func(err error, id interface{}) { // doOnError func
@@ -89,52 +105,61 @@ var resourcesAddCmd = &cobra.Command{
 }
 
 func init() {
-	resourcesCmd.AddCommand(resourcesAddCmd)
+	resourcesCmd.AddCommand(resourcesEditCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// resourcesAddCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// resourcesEditCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// resourcesAddCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// resourcesEditCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	initOutputFlags(resourcesAddCmd)
-	initLoopControlFlags(resourcesAddCmd)
+	initOutputFlags(resourcesEditCmd)
+	initLoopControlFlags(resourcesEditCmd)
 
-	initInputFlags(resourcesAddCmd,
+	initInputFlags(resourcesEditCmd,
 		inputField{
-			Name:            "Name",
-			FlagName:        "name",
-			FlagDescription: "specify the name for the created resource",
+			Name:            "ID",
+			FlagName:        "id",
+			FlagDescription: "specify the ID of the resource to edit",
 			VarType:         "string",
 			Mandatory:       true,
 			DefaultValue:    "",
 			IsIDOnError:     true,
+			SchemaName:      "id",
+		},
+		inputField{
+			Name:            "Name",
+			FlagName:        "name",
+			FlagDescription: "specify the new name for the resource",
+			VarType:         "string",
+			Mandatory:       false,
+			DefaultValue:    "",
 			SchemaName:      "name",
 		},
 		inputField{
 			Name:            "Public host",
 			FlagName:        "public-host",
-			FlagDescription: "specify the public host for the created resource",
+			FlagDescription: "specify the new public host for the resource",
 			VarType:         "string",
-			Mandatory:       true,
+			Mandatory:       false,
 			DefaultValue:    "",
 		},
 		inputField{
 			Name:            "Resource host",
 			FlagName:        "resource-host",
-			FlagDescription: "specify the resource host for the created resource",
+			FlagDescription: "specify the new resource host for the resource",
 			VarType:         "string",
-			Mandatory:       true,
+			Mandatory:       false,
 			DefaultValue:    "",
 		},
 		inputField{
 			Name:            "Port mappings",
 			FlagName:        "ports",
-			FlagDescription: "specify the port mappings (external:internal) for the created resource",
+			FlagDescription: "specify the new port mappings (external:internal) for the resource",
 			VarType:         "[]string",
 			Mandatory:       true,
 			DefaultValue:    []string{},
@@ -142,15 +167,15 @@ func init() {
 		inputField{
 			Name:            "Proxy",
 			FlagName:        "proxy",
-			FlagDescription: "specify the proxy ID for the created resource",
+			FlagDescription: "specify the new proxy ID for the resource",
 			VarType:         "string",
-			Mandatory:       true,
+			Mandatory:       false,
 			DefaultValue:    "",
 		},
 		inputField{
 			Name:            "Policy",
 			FlagName:        "policy",
-			FlagDescription: "specify the policy ID for the created resource",
+			FlagDescription: "specify the new policy ID for the resource",
 			VarType:         "int",
 			Mandatory:       false,
 			DefaultValue:    -1,

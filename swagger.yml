@@ -819,6 +819,9 @@ paths:
               - $ref: "#/definitions/AccessResource"
               - type: object
                 properties:
+                  access_proxy_id:
+                    type: string
+                    format: uuid
                   access_proxy_name:
                     type: string
                   last_access_at:
@@ -847,6 +850,8 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
     delete:
       tags:
         - "access_resources"
