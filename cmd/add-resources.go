@@ -51,13 +51,18 @@ var resourcesAddCmd = &cobra.Command{
 			func(values []interface{}) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				resource := &apiresources.CreateResourceParamsBodyAccessResource{}
+				resource.Enabled = true
 				err := placeInputValues(cmd, values, resource,
 					func(s string) { resource.Name = s },
 					func(s string) { resource.PublicHost = s },
 					func(s string) { resource.InternalHost = s },
 					func(s []string) { resource.Ports = s },
 					func(s string) { resource.AccessProxyID = strfmt.UUID(s) },
-					func(s int) { resource.AccessPolicyIds = []int64{int64(s)} })
+					func(s int) {
+						if s >= 0 {
+							resource.AccessPolicyIds = []int64{int64(s)}
+						}
+					})
 				if err != nil {
 					return nil, err
 				}
@@ -71,9 +76,9 @@ var resourcesAddCmd = &cobra.Command{
 				}
 				return resp.Payload, nil
 			}, func(data interface{}) { // printSuccess func
-				resource := data.(models.AccessResource)
-				createdList = append(createdList, &resource)
-				resourceTableWriterAppend(tw, resource, "???")
+				resp := data.(*apiresources.CreateResourceCreatedBody)
+				createdList = append(createdList, &resp.AccessResource)
+				resourceTableWriterAppend(tw, resp.AccessResource, resp.AccessProxyName)
 			}, func(err error, id interface{}) { // doOnError func
 				createdList = append(createdList, nil)
 				resourceTableWriterAppendError(tw, err, id)
@@ -147,6 +152,6 @@ func init() {
 			FlagDescription: "specify the policy ID for the created resource",
 			VarType:         "int",
 			Mandatory:       false,
-			DefaultValue:    0,
+			DefaultValue:    -1,
 		})
 }
