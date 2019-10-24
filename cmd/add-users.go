@@ -78,7 +78,7 @@ var usersAddCmd = &cobra.Command{
 				createdList = append(createdList, nil)
 				userTableWriterAppendError(tw, err, id)
 			})
-		return printListOutputAndError(cmd, createdList, tw, len(args), err)
+		return printListOutputAndError(cmd, createdList, tw, total, err)
 	},
 }
 

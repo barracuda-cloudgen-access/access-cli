@@ -100,7 +100,7 @@ var resourcesEditCmd = &cobra.Command{
 				createdList = append(createdList, nil)
 				resourceTableWriterAppendError(tw, err, id)
 			})
-		return printListOutputAndError(cmd, createdList, tw, len(args), err)
+		return printListOutputAndError(cmd, createdList, tw, total, err)
 	},
 }
 
