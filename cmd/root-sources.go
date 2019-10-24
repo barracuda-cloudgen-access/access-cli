@@ -23,8 +23,9 @@ import (
 
 // sourcesCmd represents the sources command
 var sourcesCmd = &cobra.Command{
-	Use:   "sources",
-	Short: "Operations on sources",
+	Use:     "sources",
+	Aliases: []string{"source"},
+	Short:   "Operations on sources",
 }
 
 func init() {

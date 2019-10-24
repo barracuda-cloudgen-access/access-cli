@@ -23,8 +23,9 @@ import (
 
 // usersCmd represents the users command
 var usersCmd = &cobra.Command{
-	Use:   "users",
-	Short: "Operations on users",
+	Use:     "users",
+	Aliases: []string{"user"},
+	Short:   "Operations on users",
 }
 
 func init() {

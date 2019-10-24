@@ -23,8 +23,9 @@ import (
 
 // recordsCmd represents the records command
 var recordsCmd = &cobra.Command{
-	Use:   "records",
-	Short: "Operations on records",
+	Use:     "records",
+	Aliases: []string{"record"},
+	Short:   "Operations on records",
 }
 
 func init() {

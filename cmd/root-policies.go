@@ -23,8 +23,9 @@ import (
 
 // policiesCmd represents the policies command
 var policiesCmd = &cobra.Command{
-	Use:   "policies",
-	Short: "Operations on policies",
+	Use:     "policies",
+	Aliases: []string{"policy"},
+	Short:   "Operations on policies",
 }
 
 func init() {

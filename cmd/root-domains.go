@@ -23,8 +23,9 @@ import (
 
 // domainsCmd represents the domains command
 var domainsCmd = &cobra.Command{
-	Use:   "domains",
-	Short: "Operations on domains",
+	Use:     "domains",
+	Aliases: []string{"domain"},
+	Short:   "Operations on domains",
 }
 
 func init() {

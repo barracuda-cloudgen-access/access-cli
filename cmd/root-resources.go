@@ -23,8 +23,9 @@ import (
 
 // resourcesCmd represents the resources command
 var resourcesCmd = &cobra.Command{
-	Use:   "resources",
-	Short: "Operations on resources",
+	Use:     "resources",
+	Aliases: []string{"resource"},
+	Short:   "Operations on resources",
 }
 
 func init() {

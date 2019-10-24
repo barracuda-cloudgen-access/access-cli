@@ -23,8 +23,9 @@ import (
 
 // groupsCmd represents the groups command
 var groupsCmd = &cobra.Command{
-	Use:   "groups",
-	Short: "Operations on groups",
+	Use:     "groups",
+	Aliases: []string{"group"},
+	Short:   "Operations on groups",
 }
 
 func init() {

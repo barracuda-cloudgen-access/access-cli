@@ -23,8 +23,9 @@ import (
 
 // devicesCmd represents the devices command
 var devicesCmd = &cobra.Command{
-	Use:   "devices",
-	Short: "Operations on devices",
+	Use:     "devices",
+	Aliases: []string{"device"},
+	Short:   "Operations on devices",
 }
 
 func init() {
