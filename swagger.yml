@@ -736,9 +736,18 @@ paths:
         201:
           description: "Resource created"
           schema:
-            $ref: "#/definitions/AccessResource"
+            allOf:
+                - $ref: "#/definitions/AccessResource"
+                - type: object
+                  properties:
+                    access_proxy_name:
+                      type: string
         401:
           $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /access_resources/{id}:
     get:
       tags:
