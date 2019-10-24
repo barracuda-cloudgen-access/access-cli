@@ -822,20 +822,10 @@ paths:
                   access_proxy_id:
                     type: string
                     format: uuid
-                  access_proxy_name:
-                    type: string
-                  last_access_at:
-                    # TODO guessing it's a string
-                    type: string
-                    x-nullable: true
-                    format: date-time
-                  access_count:
-                    type: object
-                    properties:
-                      denied:
-                        type: integer
-                      granted:
-                        type: integer
+                  access_policy_ids:
+                    type: array
+                    items:
+                      type: integer
       responses:
         200:
           description: "Resource edited"
