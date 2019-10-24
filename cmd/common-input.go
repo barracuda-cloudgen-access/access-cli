@@ -25,6 +25,7 @@ import (
 	"io"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
@@ -194,11 +195,20 @@ func interactivelyReadField(cmd *cobra.Command, field inputField) interface{} {
 			cmd.Printf("%s must be provided: ", field.Name)
 			continue
 		}
-		if field.VarType == "string" {
+		if field.VarType == "string" || field.VarType == "[]string" {
 			// we want fmt.Scanln's "magic" automatic types behavior, but we don't want the part where it stops at spaces
 			line = strings.ReplaceAll(line, " ", "\uF8FF")
 		}
-		d := reflect.New(reflect.TypeOf(field.DefaultValue)).Elem().Addr().Interface()
+		var d interface{}
+		switch field.VarType {
+		case "[]string", "[]int":
+			// treat slices as string arrays, and convert back later
+			s := ""
+			spointer := &s
+			d = spointer
+		default:
+			d = reflect.New(reflect.TypeOf(field.DefaultValue)).Elem().Addr().Interface()
+		}
 		i, err := fmt.Sscanln(line, d)
 		if err != nil {
 			cmd.Println("error:", err)
@@ -207,9 +217,31 @@ func interactivelyReadField(cmd *cobra.Command, field inputField) interface{} {
 		}
 		// the rest of our code doesn't expect a pointer
 		d = reflect.ValueOf(d).Elem().Interface()
-		if field.VarType == "string" {
+		if field.VarType == "string" || field.VarType == "[]string" {
 			// undo "magic" transformation above
 			d = strings.ReplaceAll(d.(string), "\uF8FF", " ")
+		}
+		// convert strings to slices, if applicable
+		switch field.VarType {
+		case "[]string":
+			s := d.(string)
+			d = strings.Split(s, ",")
+		case "[]int":
+			s := d.(string)
+			slice := strings.Split(s, ",")
+			intSlice := make([]int, len(slice))
+			for i, e := range slice {
+				intSlice[i], err = strconv.Atoi(e)
+				if err != nil {
+					break
+				}
+			}
+			if err != nil {
+				cmd.Println("error:", err)
+				cmd.Printf("%s must be provided: ", field.Name)
+				continue
+			}
+			d = intSlice
 		}
 		if i != 0 && field.Validator != nil {
 			if !field.Validator(d) {
