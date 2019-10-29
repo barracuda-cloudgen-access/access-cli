@@ -401,9 +401,28 @@ func placeInputValues(cmd *cobra.Command,
 	case wholeJSONObject:
 		return json.Unmarshal(entry.JSON, object)
 	case wholeCSVObject:
-		return mapstructure.WeakDecode(entry.CSVdata, object)
+		config := &mapstructure.DecoderConfig{
+			DecodeHook:       csvMapstructureDecodeHook,
+			WeaklyTypedInput: true,
+			Result:           object,
+		}
+		decoder, err := mapstructure.NewDecoder(config)
+		if err != nil {
+			return err
+		}
+		return decoder.Decode(entry.CSVdata)
 	}
 	return fmt.Errorf("unknown input entry type")
+}
+
+func csvMapstructureDecodeHook(from reflect.Type, to reflect.Type, data interface{}) (interface{}, error) {
+	if from.Kind() != reflect.String || to.Kind() != reflect.Slice {
+		return data, nil
+	}
+	s := data.(string)
+	s = strings.TrimLeft(s, "[")
+	s = strings.TrimRight(s, "]")
+	return strings.Split(s, ","), nil
 }
 
 // the sole purpose of this function is to attempt to recover the ID of an object
