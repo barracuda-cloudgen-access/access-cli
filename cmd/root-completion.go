@@ -42,6 +42,10 @@ To configure your bash shell to load completions for each session add to your ba
 # ~/.bashrc or ~/.profile
 . <(fyde-cli completion bash)`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if global.VerboseLevel > 0 {
+			cmd.PrintErrln("This command must be called with verbose level 0")
+			return
+		}
 		rootCmd.GenBashCompletion(os.Stdout)
 	},
 }
@@ -57,6 +61,10 @@ fyde-cli completion zsh
 The generated completion script should be put somewhere in your $fpath named _fyde-cli.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
+		if global.VerboseLevel > 0 {
+			cmd.PrintErrln("This command must be called with verbose level 0")
+			return
+		}
 		rootCmd.GenZshCompletion(os.Stdout)
 	},
 }
@@ -71,6 +79,10 @@ var psCompletionCmd = &cobra.Command{
 fyde-cli completion ps
 `,
 	Run: func(cmd *cobra.Command, args []string) {
+		if global.VerboseLevel > 0 {
+			cmd.PrintErrln("This command must be called with verbose level 0")
+			return
+		}
 		rootCmd.GenPowerShellCompletion(os.Stdout)
 	},
 }
