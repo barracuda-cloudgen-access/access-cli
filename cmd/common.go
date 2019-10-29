@@ -65,7 +65,7 @@ func processErrorResponse(err error) error {
 	}
 
 	type unprocessableEntityResponse interface {
-		GetPayload() models.UnprocessableEntityResponse
+		GetPayload() *models.UnprocessableEntityResponse
 	}
 
 	switch r := err.(type) {
@@ -75,7 +75,10 @@ func processErrorResponse(err error) error {
 		return fmt.Errorf("not found")
 	case unprocessableEntityResponse:
 		msgs := []string{}
-		for k, v := range r.GetPayload() {
+		if r.GetPayload().Error != "" {
+			msgs = []string{r.GetPayload().Error}
+		}
+		for k, v := range r.GetPayload().UnprocessableEntityResponse {
 			msgs = append(msgs, fmt.Sprintf("%s %s", k, strings.Join(v, ", ")))
 		}
 		return fmt.Errorf(strings.Join(msgs, "\n"))
