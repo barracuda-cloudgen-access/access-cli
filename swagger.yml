@@ -2262,6 +2262,9 @@ definitions:
 
   UnprocessableEntityResponse:
     type: object
+    properties:
+      error:
+        type: string
     additionalProperties:
       type: array
       items:
