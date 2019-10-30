@@ -28,6 +28,7 @@ import (
 
 func preRunCheckEndpoint(cmd *cobra.Command, args []string) error {
 	if authViper.GetString(ckeyAuthEndpoint) == "" || global.Client == nil {
+		cmd.SilenceUsage = true
 		return fmt.Errorf("endpoint not set! Run `%s endpoint [hostname]` first", ApplicationName)
 	}
 
@@ -45,10 +46,13 @@ func preRunCheckAuth(cmd *cobra.Command, args []string) error {
 		if authViper.GetString(ckeyAuthAccessToken) == "" ||
 			authViper.GetString(ckeyAuthClient) == "" ||
 			authViper.GetString(ckeyAuthUID) == "" {
+			cmd.SilenceUsage = true
 			return fmt.Errorf("not logged in! Run `%s login` first", ApplicationName)
 		}
 	case "":
+		fallthrough
 	default:
+		cmd.SilenceUsage = true
 		return fmt.Errorf("not logged in! Run `%s login` first", ApplicationName)
 	}
 
