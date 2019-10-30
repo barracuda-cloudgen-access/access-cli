@@ -114,6 +114,8 @@ var loginCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(loginCmd)
 
+	loginCmd.Flags().SortFlags = false
+
 	loginCmd.Flags().StringP("email", "e", "", "email address to use when logging in")
 	loginCmd.Flags().IntP("password-fd", "d", -1, "read password from file descriptor, terminated by end of file, '\\r' or '\\n'.")
 	loginCmd.Flags().StringP("password", "p", "", "password to use when logging in. Note that the password can be viewed by other processes. Prefer --password-fd instead.")

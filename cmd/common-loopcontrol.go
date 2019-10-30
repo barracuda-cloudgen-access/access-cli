@@ -20,6 +20,7 @@ limitations under the License.
 import "github.com/spf13/cobra"
 
 func initLoopControlFlags(cmd *cobra.Command) {
+	cmd.Flags().SortFlags = false
 	if cmd.Annotations == nil {
 		cmd.Annotations = make(map[string]string)
 	}

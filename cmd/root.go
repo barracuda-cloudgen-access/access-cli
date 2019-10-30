@@ -74,6 +74,7 @@ func Execute(versionInfo *VersionInformation) {
 }
 
 func init() {
+	rootCmd.PersistentFlags().SortFlags = false
 	cobra.OnInitialize(initConfig)
 	cobra.OnInitialize(initAuthConfig)
 	cobra.OnInitialize(initClient)

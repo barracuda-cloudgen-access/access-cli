@@ -31,6 +31,7 @@ type pageable interface {
 }
 
 func initPaginationFlags(cmd *cobra.Command) {
+	cmd.Flags().SortFlags = false
 	if cmd.Annotations == nil {
 		cmd.Annotations = make(map[string]string)
 	}

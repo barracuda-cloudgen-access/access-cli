@@ -66,6 +66,7 @@ const (
 )
 
 func initInputFlags(cmd *cobra.Command, fields ...inputField) {
+	cmd.Flags().SortFlags = false
 	if cmd.Annotations == nil {
 		cmd.Annotations = make(map[string]string)
 	}
