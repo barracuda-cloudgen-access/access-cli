@@ -89,7 +89,7 @@ var loginCmd = &cobra.Command{
 		})
 		signInResponse, err := global.Client.Auth.SignIn(params)
 		if err != nil {
-			return err
+			return processErrorResponse(err)
 		}
 
 		// store access tokens

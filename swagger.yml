@@ -91,18 +91,7 @@ paths:
               type: string
               description: Authentication - User ID
         401:
-          description: "unauthorized: invalid credentials"
-          schema:
-            type: object
-            properties:
-              success:
-                type: boolean
-                example: false
-              errors:
-                type: array
-                items:
-                  type: string
-                  example: "Invalid login credentials. Please try again."
+          $ref: "#/responses/Unauthorized"
   /auth/password:
     put:
       tags:
