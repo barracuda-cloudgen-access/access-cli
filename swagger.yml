@@ -621,8 +621,11 @@ paths:
       - in: path
         name: "id"
         required: true
-        type: integer
-        description: "The ID of the group to delete"
+        type: array
+        collectionFormat: csv
+        items:
+          type: integer
+        description: "The IDs of the groups to delete"
       responses:
         204:
           description: "Group deleted"
