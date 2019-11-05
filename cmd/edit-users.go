@@ -27,9 +27,8 @@ import (
 
 // usersEditCmd represents the get command
 var usersEditCmd = &cobra.Command{
-	Use:                "edit",
-	Short:              "Edit users",
-	FParseErrWhitelist: cobra.FParseErrWhitelist{},
+	Use:   "edit",
+	Short: "Edit users",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {
