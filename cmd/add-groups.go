@@ -18,6 +18,8 @@ limitations under the License.
 */
 
 import (
+	"regexp"
+
 	"github.com/spf13/cobra"
 
 	apigroups "github.com/fyde/fyde-cli/client/groups"
@@ -51,7 +53,8 @@ var groupsAddCmd = &cobra.Command{
 				group := &apigroups.CreateGroupParamsBodyGroup{}
 				err := placeInputValues(cmd, values, group,
 					func(s string) { group.Name = s },
-					func(s string) { group.Description = s })
+					func(s string) { group.Description = s },
+					func(s string) { group.Color = s })
 				if err != nil {
 					return nil, err
 				}
@@ -110,5 +113,23 @@ func init() {
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",
+		},
+		inputField{
+			Name:            "Color",
+			FlagName:        "color",
+			FlagDescription: "specify the color for the created group",
+			VarType:         "string",
+			Mandatory:       false,
+			DefaultValue:    "",
+			Validator:       validateHTMLHexColor,
 		})
+}
+
+func validateHTMLHexColor(input interface{}) bool {
+	c, ok := input.(string)
+	if !ok {
+		return false
+	}
+	matched, err := regexp.MatchString(`#[0-9a-fA-F]{6}`, c)
+	return err == nil && matched
 }

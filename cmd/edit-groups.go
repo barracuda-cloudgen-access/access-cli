@@ -59,7 +59,8 @@ var groupsEditCmd = &cobra.Command{
 				err := placeInputValues(cmd, values, group,
 					func(s int) { group.ID = int64(s) },
 					func(s string) { group.Name = s },
-					func(s string) { group.Description = s })
+					func(s string) { group.Description = s },
+					func(s string) { group.Color = s })
 				if err != nil {
 					return nil, err
 				}
@@ -127,5 +128,14 @@ func init() {
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",
+		},
+		inputField{
+			Name:            "Color",
+			FlagName:        "color",
+			FlagDescription: "specify the new color for the group",
+			VarType:         "string",
+			Mandatory:       false,
+			DefaultValue:    "",
+			Validator:       validateHTMLHexColor,
 		})
 }
