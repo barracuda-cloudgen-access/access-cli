@@ -100,6 +100,8 @@ func forAllPages(cmd *cobra.Command, params pageable, do func() (int, int64, err
 		return 0, 0, err
 	}
 
+	cmd.SilenceUsage = true
+
 	if listAll {
 		rangeStart = 0
 		rangeEnd = math.MaxInt64
