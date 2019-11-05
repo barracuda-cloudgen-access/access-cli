@@ -18,8 +18,6 @@ limitations under the License.
 */
 
 import (
-	"github.com/jedib0t/go-pretty/table"
-	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
 	apigroups "github.com/fyde/fyde-cli/client/groups"
@@ -62,24 +60,10 @@ var groupsListCmd = &cobra.Command{
 		}
 		completePayload = completePayload[cutStart:cutEnd]
 
-		tw := table.NewWriter()
-		tw.Style().Format.Header = text.FormatDefault
-		tw.AppendHeader(table.Row{
-			"ID",
-			"Name",
-			"Description",
-			"Enrolled users",
-			"Total users",
-		})
+		tw := groupBuildTableWriter()
 
 		for _, item := range completePayload {
-			tw.AppendRow(table.Row{
-				item.ID,
-				item.DisplayName,
-				item.Description,
-				item.TotalUsers.Enrolled,
-				item.TotalUsers.Enrolled + item.TotalUsers.Pending + item.TotalUsers.Unenrolled,
-			})
+			groupTableWriterAppendFromMultiple(tw, item)
 		}
 
 		return printListOutputAndError(cmd, completePayload, tw, total, err)

@@ -26,6 +26,7 @@ import (
 	"github.com/spf13/cobra"
 
 	apigroups "github.com/fyde/fyde-cli/client/groups"
+	"github.com/fyde/fyde-cli/models"
 )
 
 // groupGetCmd represents the get command
@@ -63,24 +64,66 @@ var groupGetCmd = &cobra.Command{
 			return processErrorResponse(err)
 		}
 
-		tw := table.NewWriter()
-		tw.Style().Format.Header = text.FormatDefault
-		tw.AppendHeader(table.Row{
-			"ID",
-			"Name",
-			"Description",
-			"Total users",
-		})
-
-		tw.AppendRow(table.Row{
-			resp.Payload.ID,
-			resp.Payload.DisplayName,
-			resp.Payload.Description,
-			len(resp.Payload.Users),
-		})
+		tw := groupBuildTableWriter()
+		groupTableWriterAppendFromSingle(tw, resp.Payload.Group, len(resp.Payload.Users))
 
 		return printListOutputAndError(cmd, resp.Payload, tw, 1, err)
 	},
+}
+
+func groupBuildTableWriter() table.Writer {
+	tw := table.NewWriter()
+	tw.Style().Format.Header = text.FormatDefault
+	tw.AppendHeader(table.Row{
+		"ID",
+		"Name",
+		"Description",
+		"Enrolled users",
+		"Total users",
+	})
+	tw.SetAlign([]text.Align{
+		text.AlignRight,
+		text.AlignLeft,
+		text.AlignLeft,
+		text.AlignLeft,
+		text.AlignLeft,
+	})
+	tw.SetAllowedColumnLengths([]int{15, 30, 30, 15, 15})
+	return tw
+}
+
+func groupTableWriterAppendFromSingle(tw table.Writer, group models.Group, users int) {
+	tw.AppendRow(table.Row{
+		group.ID,
+		group.DisplayName,
+		group.Description,
+		"?",
+		users,
+	})
+}
+
+func groupTableWriterAppendFromMultiple(tw table.Writer, item *apigroups.ListGroupsOKBodyItems0) {
+	tw.AppendRow(table.Row{
+		item.ID,
+		item.DisplayName,
+		item.Description,
+		item.TotalUsers.Enrolled,
+		item.TotalUsers.Enrolled + item.TotalUsers.Pending + item.TotalUsers.Unenrolled,
+	})
+}
+
+func groupTableWriterAppendError(tw table.Writer, err error, id interface{}) {
+	idStr := "[ERR]"
+	if id != nil {
+		idStr += fmt.Sprintf(" %v", id)
+	}
+	tw.AppendRow(table.Row{
+		idStr,
+		processErrorResponse(err),
+		"-",
+		"-",
+		"-",
+	})
 }
 
 func init() {
