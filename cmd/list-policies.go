@@ -18,8 +18,6 @@ limitations under the License.
 */
 
 import (
-	"github.com/jedib0t/go-pretty/table"
-	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
 	apipolicies "github.com/fyde/fyde-cli/client/access_policies"
@@ -62,23 +60,10 @@ var policiesListCmd = &cobra.Command{
 		}
 		completePayload = completePayload[cutStart:cutEnd]
 
-		tw := table.NewWriter()
-		tw.Style().Format.Header = text.FormatDefault
-		tw.AppendHeader(table.Row{
-			"ID",
-			"Name",
-			"Resources",
-			"Created",
-		})
-		tw.SetAllowedColumnLengths([]int{12, 30, 12, 30})
+		tw := policyBuildTableWriter()
 
 		for _, item := range completePayload {
-			tw.AppendRow(table.Row{
-				item.ID,
-				item.Name,
-				item.AccessResourcesCount,
-				item.CreatedAt,
-			})
+			policyTableWriterAppend(tw, item.AccessPolicy, item.AccessResourcesCount)
 		}
 
 		return printListOutputAndError(cmd, completePayload, tw, total, err)
