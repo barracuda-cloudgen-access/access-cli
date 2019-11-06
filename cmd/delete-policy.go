@@ -20,10 +20,8 @@ limitations under the License.
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/thoas/go-funk"
 
 	apipolicies "github.com/fyde/fyde-cli/client/access_policies"
 )
@@ -96,14 +94,7 @@ var policyDeleteCmd = &cobra.Command{
 			}
 		}
 
-		cmd.Println("Policies",
-			strings.Join(
-				funk.Map(
-					policyIDs,
-					func(i int64) string {
-						return strconv.Itoa(int(i))
-					}).([]string),
-				", "), "deleted")
+		printMultiOpOutput(cmd, "Policy", policyIDs, "deleted")
 		return nil
 	},
 }

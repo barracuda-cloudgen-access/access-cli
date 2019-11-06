@@ -19,7 +19,6 @@ limitations under the License.
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
@@ -91,7 +90,7 @@ var resourceDeleteCmd = &cobra.Command{
 			}
 		}
 
-		cmd.Println("Resources", strings.Join(args, ", "), "deleted")
+		printMultiOpOutput(cmd, "Resource", resourceIDs, "deleted")
 		return nil
 	},
 }

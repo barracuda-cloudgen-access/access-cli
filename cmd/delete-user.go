@@ -20,10 +20,8 @@ limitations under the License.
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/thoas/go-funk"
 
 	apiusers "github.com/fyde/fyde-cli/client/users"
 )
@@ -96,14 +94,7 @@ var userDeleteCmd = &cobra.Command{
 			}
 		}
 
-		cmd.Println("Users",
-			strings.Join(
-				funk.Map(
-					userIDs,
-					func(i int64) string {
-						return strconv.Itoa(int(i))
-					}).([]string),
-				", "), "deleted")
+		printMultiOpOutput(cmd, "User", userIDs, "deleted")
 		return nil
 	},
 }

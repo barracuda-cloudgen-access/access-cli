@@ -20,10 +20,8 @@ limitations under the License.
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/thoas/go-funk"
 
 	apigroups "github.com/fyde/fyde-cli/client/groups"
 )
@@ -96,14 +94,7 @@ var groupDeleteCmd = &cobra.Command{
 			}
 		}
 
-		cmd.Println("Groups",
-			strings.Join(
-				funk.Map(
-					groupIDs,
-					func(i int64) string {
-						return strconv.Itoa(int(i))
-					}).([]string),
-				", "), "deleted")
+		printMultiOpOutput(cmd, "Group", groupIDs, "deleted")
 		return nil
 	},
 }
