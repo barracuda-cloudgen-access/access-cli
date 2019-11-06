@@ -1193,8 +1193,11 @@ paths:
       - in: path
         name: "id"
         required: true
-        type: integer
-        description: "The ID of the policy to delete"
+        type: array
+        collectionFormat: csv
+        items:
+          type: integer
+        description: "The IDs of the policies to delete, comma-separated"
       responses:
         204:
           description: "Policy deleted"
@@ -1202,6 +1205,8 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /access_proxies:
     get:
       tags:
