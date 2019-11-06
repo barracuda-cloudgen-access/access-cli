@@ -2167,8 +2167,7 @@ definitions:
           hardware_model:
             type: string
           id:
-            type: string
-            format: uuid
+            type: integer
           os:
             type: object
             properties:
@@ -2244,8 +2243,7 @@ definitions:
           hardware_model:
             type: string
           id:
-            type: string
-            format: uuid
+            type: integer
           os:
             type: object
             properties:
