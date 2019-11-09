@@ -21,9 +21,9 @@ Only the following operations are implemented:
 
  - List users, groups, devices, resources, proxies and policies
  - Get info about specific user, group, device, resource, proxy or policy
- - Create users and resources, using command line flags or in batch mode, from files
- - Edit users and resources, using command line flags or in batch mode, from files
- - Delete users and resources
+ - Create users, groups, resources and policies, using command line flags or in batch mode, from files
+ - Edit users, groups, resources and policies, using command line flags or in batch mode, from files
+ - Delete users, groups, resources and policies
  - List activity records and get info about specific record
  - Watch activity records as they happen in real-time
 
