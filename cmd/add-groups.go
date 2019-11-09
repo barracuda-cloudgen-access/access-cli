@@ -117,7 +117,7 @@ func init() {
 		inputField{
 			Name:            "Color",
 			FlagName:        "color",
-			FlagDescription: "specify the color for the created group",
+			FlagDescription: "specify the color for the created group  (hexadecimal #RRGGBB format)",
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",

@@ -132,7 +132,7 @@ func init() {
 		inputField{
 			Name:            "Color",
 			FlagName:        "color",
-			FlagDescription: "specify the new color for the group",
+			FlagDescription: "specify the new color for the group (hexadecimal #RRGGBB format)",
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",
