@@ -41,6 +41,8 @@ var endpointSetCmd = &cobra.Command{
 		authViper.Set(ckeyAuthUID, "")
 		authViper.Set(ckeyAuthMethod, "")
 		authViper.Set(ckeyAuthEndpoint, args[0])
+		insecureSkipVerify, _ := cmd.Flags().GetBool("insecure-skip-verify")
+		authViper.Set(ckeyAuthSkipTLSVerify, insecureSkipVerify)
 		if global.WriteFiles {
 			err := authViper.WriteConfig()
 			if err != nil {
@@ -48,10 +50,15 @@ var endpointSetCmd = &cobra.Command{
 			}
 		}
 		cmd.Printf("Endpoint changed. Credentials cleared, please login again using `%s login`\n", ApplicationName)
+		if insecureSkipVerify {
+			cmd.Println("WARNING: TLS certificate verification is being skipped for the endpoint. THIS IS INSECURE.")
+		}
 		return nil
 	},
 }
 
 func init() {
 	endpointCmd.AddCommand(endpointSetCmd)
+
+	endpointSetCmd.Flags().Bool("insecure-skip-verify", false, "Skip TLS certificate verification for the endpoint. INSECURE, only use if you know what you are doing")
 }

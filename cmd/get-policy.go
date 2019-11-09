@@ -26,6 +26,7 @@ import (
 	"github.com/spf13/cobra"
 
 	apipolicies "github.com/fyde/fyde-cli/client/access_policies"
+	"github.com/fyde/fyde-cli/models"
 )
 
 // policyGetCmd represents the get command
@@ -63,25 +64,52 @@ var policyGetCmd = &cobra.Command{
 			return processErrorResponse(err)
 		}
 
-		tw := table.NewWriter()
-		tw.Style().Format.Header = text.FormatDefault
-		tw.AppendHeader(table.Row{
-			"ID",
-			"Name",
-			"Resources",
-			"Created",
-		})
-		tw.SetAllowedColumnLengths([]int{12, 30, 12, 30})
-
-		tw.AppendRow(table.Row{
-			resp.Payload.ID,
-			resp.Payload.Name,
-			len(resp.Payload.AccessResources),
-			resp.Payload.CreatedAt,
-		})
+		tw := policyBuildTableWriter()
+		policyTableWriterAppend(tw, resp.Payload.AccessPolicy, len(resp.Payload.AccessResources))
 
 		return printListOutputAndError(cmd, resp.Payload, tw, 1, err)
 	},
+}
+
+func policyBuildTableWriter() table.Writer {
+	tw := table.NewWriter()
+	tw.Style().Format.Header = text.FormatDefault
+	tw.AppendHeader(table.Row{
+		"ID",
+		"Name",
+		"Resources",
+		"Created",
+	})
+	tw.SetAlign([]text.Align{
+		text.AlignRight,
+		text.AlignLeft,
+		text.AlignLeft,
+		text.AlignLeft,
+	})
+	tw.SetAllowedColumnLengths([]int{12, 30, 12, 30})
+	return tw
+}
+
+func policyTableWriterAppend(tw table.Writer, policy models.AccessPolicy, accessResourcesCount interface{}) {
+	tw.AppendRow(table.Row{
+		policy.ID,
+		policy.Name,
+		accessResourcesCount,
+		policy.CreatedAt,
+	})
+}
+
+func policyTableWriterAppendError(tw table.Writer, err error, id interface{}) {
+	idStr := "[ERR]"
+	if id != nil {
+		idStr += fmt.Sprintf(" %v", id)
+	}
+	tw.AppendRow(table.Row{
+		idStr,
+		processErrorResponse(err),
+		"-",
+		"-",
+	})
 }
 
 func init() {

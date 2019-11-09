@@ -18,17 +18,16 @@ limitations under the License.
 */
 
 import (
-	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
-	apiusers "github.com/fyde/fyde-cli/client/users"
+	apigroups "github.com/fyde/fyde-cli/client/groups"
 	"github.com/fyde/fyde-cli/models"
 )
 
-// usersEditCmd represents the get command
-var usersEditCmd = &cobra.Command{
+// groupsEditCmd represents the get command
+var groupsEditCmd = &cobra.Command{
 	Use:   "edit",
-	Short: "Edit users",
+	Short: "Edit groups",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {
@@ -43,76 +42,71 @@ var usersEditCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		tw := userBuildTableWriter()
-		createdList := []*models.User{}
+		tw := groupBuildTableWriter()
+		createdList := []*apigroups.EditGroupOKBody{}
 		total := 0
 		err := forAllInput(cmd,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
-				params := apiusers.NewEditUserParams()
+				params := apigroups.NewEditGroupParams()
 				// IDs are not part of the request body, so we use this workaround
-				enabledDefault := true
-				user := &struct {
-					*apiusers.EditUserParamsBodyUser
+				group := &struct {
+					*models.Group
 					ID int64 `json:"id"`
 				}{
-					EditUserParamsBodyUser: &apiusers.EditUserParamsBodyUser{
-						Enabled: &enabledDefault, // the UI on the web console enables by default
-					},
+					Group: &models.Group{},
 				}
-				err := placeInputValues(cmd, values, user,
-					func(s int) { user.ID = int64(s) },
-					func(s string) { user.Name = s },
-					func(s string) { user.Email = strfmt.Email(s) },
-					func(s string) { user.PhoneNumber = s },
-					func(s []int64) { user.GroupIds = s },
-					func(s bool) { user.Enabled = &s })
+				err := placeInputValues(cmd, values, group,
+					func(s int) { group.ID = int64(s) },
+					func(s string) { group.Name = s },
+					func(s string) { group.Description = s },
+					func(s string) { group.Color = s })
 				if err != nil {
 					return nil, err
 				}
 				// here, map the ID from the "fake request body" to the correct place
-				params.SetID(user.ID)
-				body := apiusers.EditUserBody{User: user.EditUserParamsBodyUser}
-				params.SetUser(body)
+				params.SetID(group.ID)
+				body := apigroups.EditGroupBody{Group: group.Group}
+				params.SetGroup(body)
 
-				resp, err := global.Client.Users.EditUser(params, global.AuthWriter)
+				resp, err := global.Client.Groups.EditGroup(params, global.AuthWriter)
 				if err != nil {
 					return nil, err
 				}
-				return resp.Payload.User, nil
+				return resp.Payload, nil
 			}, func(data interface{}) { // printSuccess func
-				user := data.(models.User)
-				createdList = append(createdList, &user)
-				userTableWriterAppend(tw, user)
+				group := data.(*apigroups.EditGroupOKBody)
+				createdList = append(createdList, group)
+				groupTableWriterAppendFromSingle(tw, group.Group, len(group.Users))
 			}, func(err error, id interface{}) { // doOnError func
 				createdList = append(createdList, nil)
-				userTableWriterAppendError(tw, err, id)
+				groupTableWriterAppendError(tw, err, id)
 			})
 		return printListOutputAndError(cmd, createdList, tw, total, err)
 	},
 }
 
 func init() {
-	usersCmd.AddCommand(usersEditCmd)
+	groupsCmd.AddCommand(groupsEditCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// usersEditCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// groupsEditCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// usersEditCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// groupsEditCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	initOutputFlags(usersEditCmd)
-	initLoopControlFlags(usersEditCmd)
+	initOutputFlags(groupsEditCmd)
+	initLoopControlFlags(groupsEditCmd)
 
-	initInputFlags(usersEditCmd,
+	initInputFlags(groupsEditCmd,
 		inputField{
 			Name:            "ID",
 			FlagName:        "id",
-			FlagDescription: "specify the ID of the user to edit",
+			FlagDescription: "specify the ID of the group to edit",
 			VarType:         "int",
 			Mandatory:       true,
 			DefaultValue:    0,
@@ -120,43 +114,28 @@ func init() {
 			SchemaName:      "id",
 		},
 		inputField{
-			Name:            "Username",
-			FlagName:        "username",
-			FlagDescription: "specify the new username for the user",
+			Name:            "Name",
+			FlagName:        "name",
+			FlagDescription: "specify the new name for the group",
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",
 		},
 		inputField{
-			Name:            "Email",
-			FlagName:        "email",
-			FlagDescription: "specify the new email for the user",
+			Name:            "Description",
+			FlagName:        "description",
+			FlagDescription: "specify the new description for the group",
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",
 		},
 		inputField{
-			Name:            "Phone",
-			FlagName:        "phone",
-			FlagDescription: "specify the new phone for the user",
+			Name:            "Color",
+			FlagName:        "color",
+			FlagDescription: "specify the new color for the group (hexadecimal #RRGGBB format)",
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",
-		},
-		inputField{
-			Name:            "Groups",
-			FlagName:        "groups",
-			FlagDescription: "specify the new group IDs for the user",
-			VarType:         "[]int",
-			Mandatory:       false,
-			DefaultValue:    []int{},
-		},
-		inputField{
-			Name:            "Enabled",
-			FlagName:        "enabled",
-			FlagDescription: "whether the user is enabled",
-			VarType:         "bool",
-			Mandatory:       false,
-			DefaultValue:    true,
+			Validator:       validateHTMLHexColor,
 		})
 }

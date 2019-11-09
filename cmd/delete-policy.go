@@ -19,18 +19,18 @@ limitations under the License.
 
 import (
 	"fmt"
+	"strconv"
 
-	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
-	apiresources "github.com/fyde/fyde-cli/client/access_resources"
+	apipolicies "github.com/fyde/fyde-cli/client/access_policies"
 )
 
-// resourceDeleteCmd represents the delete command
-var resourceDeleteCmd = &cobra.Command{
+// policyDeleteCmd represents the delete command
+var policyDeleteCmd = &cobra.Command{
 	Use:     "delete",
 	Aliases: []string{"remove", "rm"},
-	Short:   "Delete resources",
+	Short:   "Delete policies",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {
@@ -43,22 +43,26 @@ var resourceDeleteCmd = &cobra.Command{
 		}
 
 		if len(args) == 0 {
-			return fmt.Errorf("missing resource ID argument")
+			return fmt.Errorf("missing policy ID argument")
 		}
 
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		resourceIDs := make([]strfmt.UUID, len(args))
+		policyIDs := make([]int64, len(args))
+		var err error
 		for i, arg := range args {
-			resourceIDs[i] = strfmt.UUID(arg)
+			policyIDs[i], err = strconv.ParseInt(arg, 10, 64)
+			if err != nil {
+				return err
+			}
 		}
 
-		delete := func(ids []strfmt.UUID) error {
-			params := apiresources.NewDeleteResourceParams()
+		delete := func(ids []int64) error {
+			params := apipolicies.NewDeletePolicyParams()
 			params.SetID(ids)
 
-			_, err := global.Client.AccessResources.DeleteResource(params, global.AuthWriter)
+			_, err = global.Client.AccessPolicies.DeletePolicy(params, global.AuthWriter)
 			if err != nil {
 				return processErrorResponse(err)
 			}
@@ -69,44 +73,44 @@ var resourceDeleteCmd = &cobra.Command{
 			// then we must delete individually, because on a request for multiple deletions,
 			// the server does nothing if one fails
 			i := 0
-			for _, resourceID := range resourceIDs {
-				err := delete([]strfmt.UUID{resourceID})
+			for _, policyID := range policyIDs {
+				err = delete([]int64{policyID})
 				if err != nil {
 					cmd.PrintErrln(err)
 				} else {
-					// only keep successful deletions in list of resourceIDs
+					// only keep successful deletions in list of policyIDs
 					// this rewrites the array in place and lets us "delete" as we iterate
 					// (junk is removed after the loop)
-					resourceIDs[i] = resourceID
+					policyIDs[i] = policyID
 					i++
 				}
 			}
 			// remove junk left at end of slice
-			resourceIDs = resourceIDs[:i]
+			policyIDs = policyIDs[:i]
 		} else {
-			err := delete(resourceIDs)
+			err = delete(policyIDs)
 			if err != nil {
 				return err
 			}
 		}
 
-		printMultiOpOutput(cmd, "Resource", resourceIDs, "deleted")
+		printMultiOpOutput(cmd, "Policy", policyIDs, "deleted")
 		return nil
 	},
 }
 
 func init() {
-	resourcesCmd.AddCommand(resourceDeleteCmd)
+	policiesCmd.AddCommand(policyDeleteCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// resourceDeleteCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// policyDeleteCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// resourceDeleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// policyDeleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	initLoopControlFlags(resourceDeleteCmd)
+	initLoopControlFlags(policyDeleteCmd)
 }

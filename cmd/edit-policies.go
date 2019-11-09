@@ -21,14 +21,13 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
-	apiusers "github.com/fyde/fyde-cli/client/users"
-	"github.com/fyde/fyde-cli/models"
+	apipolicies "github.com/fyde/fyde-cli/client/access_policies"
 )
 
-// usersEditCmd represents the get command
-var usersEditCmd = &cobra.Command{
+// policiesEditCmd represents the get command
+var policiesEditCmd = &cobra.Command{
 	Use:   "edit",
-	Short: "Edit users",
+	Short: "Edit policies",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {
@@ -43,76 +42,71 @@ var usersEditCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		tw := userBuildTableWriter()
-		createdList := []*models.User{}
+		tw := policyBuildTableWriter()
+		createdList := []*apipolicies.EditPolicyOKBody{}
 		total := 0
 		err := forAllInput(cmd,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
-				params := apiusers.NewEditUserParams()
+				params := apipolicies.NewEditPolicyParams()
 				// IDs are not part of the request body, so we use this workaround
-				enabledDefault := true
-				user := &struct {
-					*apiusers.EditUserParamsBodyUser
+				policy := &struct {
+					*apipolicies.EditPolicyParamsBodyAccessPolicy
 					ID int64 `json:"id"`
 				}{
-					EditUserParamsBodyUser: &apiusers.EditUserParamsBodyUser{
-						Enabled: &enabledDefault, // the UI on the web console enables by default
-					},
+					EditPolicyParamsBodyAccessPolicy: &apipolicies.EditPolicyParamsBodyAccessPolicy{},
 				}
-				err := placeInputValues(cmd, values, user,
-					func(s int) { user.ID = int64(s) },
-					func(s string) { user.Name = s },
-					func(s string) { user.Email = strfmt.Email(s) },
-					func(s string) { user.PhoneNumber = s },
-					func(s []int64) { user.GroupIds = s },
-					func(s bool) { user.Enabled = &s })
+				err := placeInputValues(cmd, values, policy,
+					func(s int) { policy.ID = int64(s) },
+					func(s string) { policy.Name = s },
+					func(s []strfmt.UUID) { policy.AccessResourceIds = s },
+					func(s []int64) { policy.GroupIds = s })
 				if err != nil {
 					return nil, err
 				}
 				// here, map the ID from the "fake request body" to the correct place
-				params.SetID(user.ID)
-				body := apiusers.EditUserBody{User: user.EditUserParamsBodyUser}
-				params.SetUser(body)
+				params.SetID(policy.ID)
+				body := apipolicies.EditPolicyBody{AccessPolicy: policy.EditPolicyParamsBodyAccessPolicy}
+				params.SetPolicy(body)
 
-				resp, err := global.Client.Users.EditUser(params, global.AuthWriter)
+				resp, err := global.Client.AccessPolicies.EditPolicy(params, global.AuthWriter)
 				if err != nil {
 					return nil, err
 				}
-				return resp.Payload.User, nil
+				return resp.Payload, nil
 			}, func(data interface{}) { // printSuccess func
-				user := data.(models.User)
-				createdList = append(createdList, &user)
-				userTableWriterAppend(tw, user)
+				policy := data.(*apipolicies.EditPolicyOKBody)
+				createdList = append(createdList, policy)
+				policyTableWriterAppend(tw, policy.AccessPolicy, len(policy.AccessResources))
 			}, func(err error, id interface{}) { // doOnError func
 				createdList = append(createdList, nil)
-				userTableWriterAppendError(tw, err, id)
+				policyTableWriterAppendError(tw, err, id)
 			})
 		return printListOutputAndError(cmd, createdList, tw, total, err)
 	},
 }
 
 func init() {
-	usersCmd.AddCommand(usersEditCmd)
+	policiesCmd.AddCommand(policiesEditCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// usersEditCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// policiesEditCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// usersEditCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// policiesEditCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	initOutputFlags(usersEditCmd)
-	initLoopControlFlags(usersEditCmd)
+	initOutputFlags(policiesEditCmd)
+	initLoopControlFlags(policiesEditCmd)
 
-	initInputFlags(usersEditCmd,
+	initInputFlags(policiesEditCmd,
 		inputField{
 			Name:            "ID",
 			FlagName:        "id",
-			FlagDescription: "specify the ID of the user to edit",
+			FlagDescription: "specify the ID of the policy to edit",
 			VarType:         "int",
 			Mandatory:       true,
 			DefaultValue:    0,
@@ -120,43 +114,29 @@ func init() {
 			SchemaName:      "id",
 		},
 		inputField{
-			Name:            "Username",
-			FlagName:        "username",
-			FlagDescription: "specify the new username for the user",
+			Name:            "Name",
+			FlagName:        "name",
+			FlagDescription: "specify the new name for the policy",
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",
+			IsIDOnError:     true,
+			SchemaName:      "name",
 		},
 		inputField{
-			Name:            "Email",
-			FlagName:        "email",
-			FlagDescription: "specify the new email for the user",
-			VarType:         "string",
+			Name:            "Resources",
+			FlagName:        "resources",
+			FlagDescription: "specify the new resources for the policy",
+			VarType:         "[]string",
 			Mandatory:       false,
-			DefaultValue:    "",
-		},
-		inputField{
-			Name:            "Phone",
-			FlagName:        "phone",
-			FlagDescription: "specify the new phone for the user",
-			VarType:         "string",
-			Mandatory:       false,
-			DefaultValue:    "",
+			DefaultValue:    []string{},
 		},
 		inputField{
 			Name:            "Groups",
 			FlagName:        "groups",
-			FlagDescription: "specify the new group IDs for the user",
+			FlagDescription: "specify the new groups for the policy",
 			VarType:         "[]int",
 			Mandatory:       false,
 			DefaultValue:    []int{},
-		},
-		inputField{
-			Name:            "Enabled",
-			FlagName:        "enabled",
-			FlagDescription: "whether the user is enabled",
-			VarType:         "bool",
-			Mandatory:       false,
-			DefaultValue:    true,
 		})
 }

@@ -18,7 +18,9 @@ limitations under the License.
 */
 
 import (
+	"crypto/tls"
 	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
 
@@ -74,6 +76,7 @@ func Execute(versionInfo *VersionInformation) {
 }
 
 func init() {
+	rootCmd.PersistentFlags().SortFlags = false
 	cobra.OnInitialize(initConfig)
 	cobra.OnInitialize(initAuthConfig)
 	cobra.OnInitialize(initClient)
@@ -113,10 +116,28 @@ func initClient() {
 	if endpoint == "" {
 		return
 	}
+
+	transport := http.DefaultTransport
+
+	insecureSkipVerify := authViper.GetBool(ckeyAuthSkipTLSVerify)
+	if insecureSkipVerify {
+		fmt.Fprintln(os.Stderr, "WARNING: TLS certificate verification is being skipped for the endpoint. THIS IS INSECURE.")
+		transport = &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		}
+	}
+
 	global.Transport = httptransport.New(endpoint, "/api/v1", nil)
 	if global.VerboseLevel > 1 {
-		global.Transport.Transport = &loghttp.Transport{}
+		// wrap transport in loghttp
+		transport = &loghttp.Transport{
+			Transport: transport,
+		}
 	}
+	global.Transport.Transport = transport
+
 	if global.VerboseLevel > 2 {
 		global.Transport.SetDebug(true)
 	}

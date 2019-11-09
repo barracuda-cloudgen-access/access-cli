@@ -91,18 +91,7 @@ paths:
               type: string
               description: Authentication - User ID
         401:
-          description: "unauthorized: invalid credentials"
-          schema:
-            type: object
-            properties:
-              success:
-                type: boolean
-                example: false
-              errors:
-                type: array
-                items:
-                  type: string
-                  example: "Invalid login credentials. Please try again."
+          $ref: "#/responses/Unauthorized"
   /auth/password:
     put:
       tags:
@@ -367,6 +356,89 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
+  /users/{id}/enrollment:
+    post:
+      tags:
+        - "users"
+      summary: "Generate user enrollment link"
+      operationId: "generateEnrollmentLink"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the user for which to generate a enrollment link"
+      responses:
+        201:
+          description: "Enrollment link created"
+          schema:
+            type: object
+            properties:
+              count:
+                type: integer
+              expiration:
+                type: string
+                format: date-time
+              url:
+                type: string
+                format: url
+        401:
+          $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
+    delete:
+      tags:
+        - "users"
+      summary: "Revoke user enrollment link"
+      operationId: "revokeEnrollmentLink"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the user for which to revoke the enrollment link"
+      responses:
+        204:
+          description: "Enrollment link revoked"
+        401:
+          $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
+  /users/{id}/enrollment/change_slots:
+    patch:
+      tags:
+        - "users"
+      summary: "Change number of slots available for user enrollment link"
+      operationId: "changeEnrollmentLinkSlots"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the user for which to change the number of slots"
+      - in: "body"
+        name: "request"
+        description: "Request body"
+        required: true
+        schema:
+          type: object
+          properties:
+            user_id:
+              type: integer
+              description: "The ID of the user for which to change the number of slots"
+            enrollment:
+              type: object
+              properties:
+                refcount:
+                  type: integer
+                  description: "The desired number of slots"
+      responses:
+        200:
+          description: "Enrollment link changed"
+        401:
+          $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
   /groups:
     get:
       tags:
@@ -549,8 +621,11 @@ paths:
       - in: path
         name: "id"
         required: true
-        type: integer
-        description: "The ID of the group to delete"
+        type: array
+        collectionFormat: csv
+        items:
+          type: integer
+        description: "The IDs of the groups to delete"
       responses:
         204:
           description: "Group deleted"
@@ -1118,8 +1193,11 @@ paths:
       - in: path
         name: "id"
         required: true
-        type: integer
-        description: "The ID of the policy to delete"
+        type: array
+        collectionFormat: csv
+        items:
+          type: integer
+        description: "The IDs of the policies to delete, comma-separated"
       responses:
         204:
           description: "Policy deleted"
@@ -1127,6 +1205,8 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /access_proxies:
     get:
       tags:
@@ -2087,8 +2167,7 @@ definitions:
           hardware_model:
             type: string
           id:
-            type: string
-            format: uuid
+            type: integer
           os:
             type: object
             properties:
@@ -2164,8 +2243,7 @@ definitions:
           hardware_model:
             type: string
           id:
-            type: string
-            format: uuid
+            type: integer
           os:
             type: object
             properties:

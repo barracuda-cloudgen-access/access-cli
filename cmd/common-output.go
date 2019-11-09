@@ -21,7 +21,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
+	"github.com/go-openapi/strfmt"
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/spf13/cobra"
 	"github.com/thoas/go-funk"
@@ -29,6 +32,7 @@ import (
 )
 
 func initOutputFlags(cmd *cobra.Command) {
+	cmd.Flags().SortFlags = false
 	if cmd.Annotations == nil {
 		cmd.Annotations = make(map[string]string)
 	}
@@ -89,6 +93,7 @@ func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Wr
 }
 
 func printListOutputAndError(cmd *cobra.Command, data interface{}, tableWriter table.Writer, total int, loopErr error) error {
+	cmd.SilenceUsage = true
 	result, err2 := renderListOutput(cmd, data, tableWriter, total)
 	cmd.Println(result)
 	if loopErr != nil {
@@ -97,7 +102,60 @@ func printListOutputAndError(cmd *cobra.Command, data interface{}, tableWriter t
 	return err2
 }
 
+func printMultiOpOutput(cmd *cobra.Command, itemName string, itemIDs interface{}, operationVerb string) {
+	output := itemName
+	length := 2
+	niceIDs := fmt.Sprint(itemIDs)
+	switch ids := itemIDs.(type) {
+	case []string:
+		length = len(ids)
+		niceIDs = strings.Join(ids, ", ")
+	case []strfmt.UUID:
+		length = len(ids)
+		niceIDs = strings.Join(
+			funk.Map(
+				ids,
+				func(uuid strfmt.UUID) string {
+					return string(uuid)
+				}).([]string),
+			", ")
+	case []int:
+		length = len(ids)
+		niceIDs = strings.Join(
+			funk.Map(
+				ids,
+				func(i int) string {
+					return strconv.Itoa(i)
+				}).([]string),
+			", ")
+	case []int64:
+		length = len(ids)
+		niceIDs = strings.Join(
+			funk.Map(
+				ids,
+				func(i int64) string {
+					return strconv.Itoa(int(i))
+				}).([]string),
+			", ")
+	}
+	if length != 1 {
+		if strings.HasSuffix(output, "y") {
+			output = output[0:len(output)-1] + "ies"
+		} else {
+			output += "s"
+		}
+	}
+	if length == 0 {
+		output = "No " + strings.ToLower(output)
+	} else {
+		niceIDs += " "
+	}
+	output += " " + niceIDs + operationVerb
+	cmd.Println(output)
+}
+
 func renderWatchOutput(cmd *cobra.Command, data interface{}, tableWriter table.Writer) (bool, string, error) {
+	cmd.SilenceUsage = true
 	if _, ok := cmd.Annotations[flagInitOutput]; !ok {
 		panic("renderWatchOutput called for command where output flags were not initialized. This is a bug!")
 	}

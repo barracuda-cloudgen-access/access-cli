@@ -89,7 +89,7 @@ var loginCmd = &cobra.Command{
 		})
 		signInResponse, err := global.Client.Auth.SignIn(params)
 		if err != nil {
-			return err
+			return processErrorResponse(err)
 		}
 
 		// store access tokens
@@ -113,6 +113,8 @@ var loginCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(loginCmd)
+
+	loginCmd.Flags().SortFlags = false
 
 	loginCmd.Flags().StringP("email", "e", "", "email address to use when logging in")
 	loginCmd.Flags().IntP("password-fd", "d", -1, "read password from file descriptor, terminated by end of file, '\\r' or '\\n'.")

@@ -31,6 +31,7 @@ type pageable interface {
 }
 
 func initPaginationFlags(cmd *cobra.Command) {
+	cmd.Flags().SortFlags = false
 	if cmd.Annotations == nil {
 		cmd.Annotations = make(map[string]string)
 	}
@@ -98,6 +99,8 @@ func forAllPages(cmd *cobra.Command, params pageable, do func() (int, int64, err
 	if err != nil {
 		return 0, 0, err
 	}
+
+	cmd.SilenceUsage = true
 
 	if listAll {
 		rangeStart = 0

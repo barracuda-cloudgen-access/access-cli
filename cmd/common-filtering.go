@@ -35,6 +35,7 @@ type filterType struct {
 }
 
 func initFilterFlags(cmd *cobra.Command, filterTypes ...filterType) {
+	cmd.Flags().SortFlags = false
 	if cmd.Annotations == nil {
 		cmd.Annotations = make(map[string]string)
 	}
