@@ -130,6 +130,9 @@ func validateHTMLHexColor(input interface{}) bool {
 	if !ok {
 		return false
 	}
+	if c == "" {
+		return true
+	}
 	matched, err := regexp.MatchString(`#[0-9a-fA-F]{6}`, c)
 	return err == nil && matched
 }
