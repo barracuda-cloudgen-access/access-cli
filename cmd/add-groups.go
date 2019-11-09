@@ -98,7 +98,7 @@ func init() {
 	initInputFlags(groupsAddCmd,
 		inputField{
 			Name:            "Name",
-			FlagName:        "Name",
+			FlagName:        "name",
 			FlagDescription: "specify the name for the created group",
 			VarType:         "string",
 			Mandatory:       true,
