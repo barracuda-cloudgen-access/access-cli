@@ -2168,6 +2168,9 @@ definitions:
             type: string
           id:
             type: integer
+          enrollment_id:
+            type: string
+            format: uuid
           os:
             type: object
             properties:
@@ -2244,6 +2247,9 @@ definitions:
             type: string
           id:
             type: integer
+          enrollment_id:
+            type: string
+            format: uuid
           os:
             type: object
             properties:
