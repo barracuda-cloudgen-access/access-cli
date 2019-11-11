@@ -26,6 +26,7 @@ import (
 	"github.com/spf13/cobra"
 
 	apiproxies "github.com/fyde/fyde-cli/client/access_proxies"
+	"github.com/fyde/fyde-cli/models"
 )
 
 // proxyGetCmd represents the get command
@@ -58,38 +59,63 @@ var proxyGetCmd = &cobra.Command{
 			return processErrorResponse(err)
 		}
 
-		tw := table.NewWriter()
-		tw.Style().Format.Header = text.FormatDefault
-		tw.AppendHeader(table.Row{
-			"ID",
-			"Name",
-			"Location",
-			"Proxy host:port",
-			"Resources",
-			"Granted req.",
-			"Total req.",
-			"Last access",
-		})
-		tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 9, 12, 12, 30})
-
-		lastAccess := fmt.Sprint(resp.Payload.LastAccessAt)
-		if resp.Payload.LastAccessAt == nil {
-			lastAccess = "never"
-		}
-
-		tw.AppendRow(table.Row{
-			resp.Payload.ID,
-			resp.Payload.Name,
-			resp.Payload.Location,
-			fmt.Sprintf("%s:%d", resp.Payload.Host, resp.Payload.Port),
-			len(resp.Payload.AccessResources),
-			resp.Payload.AccessCount.Granted,
-			resp.Payload.AccessCount.Granted + resp.Payload.AccessCount.Denied,
-			lastAccess,
-		})
+		tw := proxyBuildTableWriter()
+		proxyTableWriterAppend(tw, resp.Payload.AccessProxy, len(resp.Payload.AccessResources))
 
 		return printListOutputAndError(cmd, resp.Payload, tw, 1, err)
 	},
+}
+
+func proxyBuildTableWriter() table.Writer {
+	tw := table.NewWriter()
+	tw.Style().Format.Header = text.FormatDefault
+	tw.AppendHeader(table.Row{
+		"ID",
+		"Name",
+		"Location",
+		"Proxy host:port",
+		"Resources",
+		"Granted req.",
+		"Total req.",
+		"Last access",
+	})
+	tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 9, 12, 12, 30})
+	return tw
+}
+
+func proxyTableWriterAppend(tw table.Writer, proxy models.AccessProxy, accessResourceCount int) {
+	lastAccess := fmt.Sprint(proxy.LastAccessAt)
+	if proxy.LastAccessAt == nil {
+		lastAccess = "never"
+	}
+
+	tw.AppendRow(table.Row{
+		proxy.ID,
+		proxy.Name,
+		proxy.Location,
+		fmt.Sprintf("%s:%d", proxy.Host, proxy.Port),
+		accessResourceCount,
+		proxy.AccessCount.Granted,
+		proxy.AccessCount.Granted + proxy.AccessCount.Denied,
+		lastAccess,
+	})
+}
+
+func proxyTableWriterAppendError(tw table.Writer, err error, id interface{}) {
+	idStr := "[ERR]"
+	if id != nil {
+		idStr += fmt.Sprintf(" %v", id)
+	}
+	tw.AppendRow(table.Row{
+		idStr,
+		processErrorResponse(err),
+		"-",
+		"-",
+		"-",
+		"-",
+		"-",
+		"-",
+	})
 }
 
 func init() {
