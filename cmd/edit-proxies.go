@@ -18,21 +18,17 @@ limitations under the License.
 */
 
 import (
-	"fmt"
-	"strconv"
-
-	"github.com/jedib0t/go-pretty/table"
-	"github.com/jedib0t/go-pretty/text"
+	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
 	apiproxies "github.com/fyde/fyde-cli/client/access_proxies"
+	"github.com/fyde/fyde-cli/models"
 )
 
-// proxiesAddCmd represents the get command
-var proxiesAddCmd = &cobra.Command{
-	Use:     "add",
-	Aliases: []string{"create", "new"},
-	Short:   "Add proxies",
+// proxiesEditCmd represents the get command
+var proxiesEditCmd = &cobra.Command{
+	Use:   "edit",
+	Short: "Edit proxies",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {
@@ -47,102 +43,83 @@ var proxiesAddCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		tw := proxyBuildTableWriterForCreation()
-		createdList := []*apiproxies.CreateProxyCreatedBody{}
+		tw := proxyBuildTableWriter()
+		createdList := []*apiproxies.EditProxyOKBody{}
 		total := 0
-		err := forAllInput(cmd, true,
+		err := forAllInput(cmd, false,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
-				proxy := apiproxies.CreateProxyBody{}
+				params := apiproxies.NewEditProxyParams()
+				// IDs are not part of the request body, so we use this workaround
+				proxy := &struct {
+					models.AccessProxy
+					ID string `json:"id"`
+				}{}
 				err := placeInputValues(cmd, values, proxy,
-					func(s string) { proxy.Name = s },
-					func(s string) { proxy.Location = s },
-					func(s string) { proxy.Host = s },
-					func(s int) { proxy.Port = strconv.Itoa(s) })
+					func(s string) { proxy.ID = s },
+					func(s string) { proxy.AccessProxy.Name = s },
+					func(s string) { proxy.AccessProxy.Location = s },
+					func(s string) { proxy.AccessProxy.Host = s },
+					func(s int) { proxy.AccessProxy.Port = int64(s) })
 				if err != nil {
 					return nil, err
 				}
-				params := apiproxies.NewCreateProxyParams()
-				params.SetProxy(proxy)
+				// here, map the ID from the "fake request body" to the correct place
+				params.SetID(strfmt.UUID(proxy.ID))
+				body := apiproxies.EditProxyBody{}
+				body.AccessProxy.AccessProxy = proxy.AccessProxy
+				params.SetProxy(body)
 
-				resp, err := global.Client.AccessProxies.CreateProxy(params, global.AuthWriter)
+				resp, err := global.Client.AccessProxies.EditProxy(params, global.AuthWriter)
 				if err != nil {
 					return nil, err
 				}
 				return resp.Payload, nil
 			}, func(data interface{}) { // printSuccess func
-				proxy := data.(*apiproxies.CreateProxyCreatedBody)
+				proxy := data.(*apiproxies.EditProxyOKBody)
 				createdList = append(createdList, proxy)
-				proxyTableWriterAppendForCreation(tw, proxy)
+				proxyTableWriterAppend(tw, proxy.AccessProxy, len(proxy.AccessResources))
 			}, func(err error, id interface{}) { // doOnError func
 				createdList = append(createdList, nil)
-				proxyTableWriterAppendErrorForCreation(tw, err, id)
+				proxyTableWriterAppendError(tw, err, id)
 			})
 		return printListOutputAndError(cmd, createdList, tw, total, err)
 	},
 }
 
-func proxyBuildTableWriterForCreation() table.Writer {
-	tw := table.NewWriter()
-	tw.Style().Format.Header = text.FormatDefault
-	tw.AppendHeader(table.Row{
-		"ID",
-		"Name",
-		"Location",
-		"Proxy host:port",
-		"Enrollment URL",
-	})
-	tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 60})
-	return tw
-}
-
-func proxyTableWriterAppendForCreation(tw table.Writer, proxy *apiproxies.CreateProxyCreatedBody) {
-	tw.AppendRow(table.Row{
-		proxy.ID,
-		proxy.Name,
-		proxy.Location,
-		fmt.Sprintf("%s:%d", proxy.Host, proxy.Port),
-		proxy.EnrollmentURL,
-	})
-}
-
-func proxyTableWriterAppendErrorForCreation(tw table.Writer, err error, id interface{}) {
-	idStr := "[ERR]"
-	if id != nil {
-		idStr += fmt.Sprintf(" %v", id)
-	}
-	tw.AppendRow(table.Row{
-		idStr,
-		processErrorResponse(err),
-		"-",
-		"-",
-		"-",
-	})
-}
-
 func init() {
-	proxiesCmd.AddCommand(proxiesAddCmd)
+	proxiesCmd.AddCommand(proxiesEditCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// proxiesAddCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// proxiesEditCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// proxiesAddCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// proxiesEditCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	initOutputFlags(proxiesAddCmd)
-	initLoopControlFlags(proxiesAddCmd)
+	initOutputFlags(proxiesEditCmd)
+	initLoopControlFlags(proxiesEditCmd)
 
-	initInputFlags(proxiesAddCmd,
+	initInputFlags(proxiesEditCmd,
+		inputField{
+			Name:            "ID",
+			FlagName:        "id",
+			FlagDescription: "specify the ID of the proxy to edit",
+			VarType:         "string",
+			Mandatory:       true,
+			DefaultValue:    "",
+			IsIDOnError:     true,
+			SchemaName:      "id",
+		},
 		inputField{
 			Name:            "Name",
 			FlagName:        "name",
-			FlagDescription: "specify the name for the created proxy",
+			FlagDescription: "specify the new name for the proxy",
 			VarType:         "string",
-			Mandatory:       true,
+			Mandatory:       false,
 			DefaultValue:    "",
 			IsIDOnError:     true,
 			SchemaName:      "name",
@@ -150,25 +127,27 @@ func init() {
 		inputField{
 			Name:            "Location",
 			FlagName:        "location",
-			FlagDescription: "specify the location for the created proxy",
+			FlagDescription: "specify the new location for the proxy",
+			VarType:         "string",
+			Mandatory:       false,
+			DefaultValue:    "",
+			IsIDOnError:     true,
+			SchemaName:      "name",
+		},
+		inputField{
+			Name:            "Host",
+			FlagName:        "host",
+			FlagDescription: "specify the new host for the proxy",
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",
 		},
 		inputField{
-			Name:            "Host",
-			FlagName:        "host",
-			FlagDescription: "specify the host for the created proxy",
-			VarType:         "string",
-			Mandatory:       true,
-			DefaultValue:    "",
-		},
-		inputField{
 			Name:            "Port",
 			FlagName:        "port",
-			FlagDescription: "specify the port for the created proxy",
+			FlagDescription: "specify the new port for the proxy",
 			VarType:         "int",
-			Mandatory:       true,
+			Mandatory:       false,
 			DefaultValue:    0,
 		})
 }

@@ -89,14 +89,21 @@ func proxyTableWriterAppend(tw table.Writer, proxy models.AccessProxy, accessRes
 		lastAccess = "never"
 	}
 
+	granted := "?"
+	total := "?"
+	if proxy.AccessCount != nil {
+		granted = fmt.Sprint(proxy.AccessCount.Granted)
+		total = fmt.Sprint(proxy.AccessCount.Granted + proxy.AccessCount.Denied)
+	}
+
 	tw.AppendRow(table.Row{
 		proxy.ID,
 		proxy.Name,
 		proxy.Location,
 		fmt.Sprintf("%s:%d", proxy.Host, proxy.Port),
 		accessResourceCount,
-		proxy.AccessCount.Granted,
-		proxy.AccessCount.Granted + proxy.AccessCount.Denied,
+		granted,
+		total,
 		lastAccess,
 	})
 }
