@@ -20,6 +20,7 @@ limitations under the License.
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/jedib0t/go-pretty/text"
@@ -105,6 +106,12 @@ var enrollmentRevokeCmd = &cobra.Command{
 
 		_, err = global.Client.Users.RevokeEnrollmentLink(params, global.AuthWriter)
 		if err != nil {
+			// best possible workaround for https://github.com/go-swagger/go-swagger/issues/1929
+			// (without resorting to fixing the go-swagger code generator)
+			if strings.Contains(err.Error(), "(*models.NotFoundResponse) is not supported by the TextConsumer, can be resolved by supporting TextUnmarshaler interface") {
+				cmd.Println("User", userID, "does not exist or does not have an enrollment link")
+				return nil
+			}
 			return processErrorResponse(err)
 		}
 
