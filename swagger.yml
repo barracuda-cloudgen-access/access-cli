@@ -1437,9 +1437,12 @@ paths:
       - in: path
         name: "id"
         required: true
-        type: string
-        format: uuid
-        description: "The ID of the proxy to delete"
+        type: array
+        collectionFormat: csv
+        items:
+          type: string
+          format: uuid
+        description: "The IDs of the proxies to delete, comma-separated"
       responses:
         204:
           description: "Proxy deleted"
