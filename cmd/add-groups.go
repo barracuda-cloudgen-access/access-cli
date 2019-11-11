@@ -47,7 +47,7 @@ var groupsAddCmd = &cobra.Command{
 		tw := groupBuildTableWriter()
 		createdList := []*apigroups.CreateGroupCreatedBody{}
 		total := 0
-		err := forAllInput(cmd,
+		err := forAllInput(cmd, true,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				group := &apigroups.CreateGroupParamsBodyGroup{}

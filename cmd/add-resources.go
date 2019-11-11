@@ -46,7 +46,7 @@ var resourcesAddCmd = &cobra.Command{
 		tw := resourceBuildTableWriter()
 		createdList := []*apiresources.CreateResourceCreatedBody{}
 		total := 0
-		err := forAllInput(cmd,
+		err := forAllInput(cmd, true,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				resource := &apiresources.CreateResourceParamsBodyAccessResource{}

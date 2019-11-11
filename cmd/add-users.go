@@ -47,7 +47,7 @@ var usersAddCmd = &cobra.Command{
 		tw := userBuildTableWriter()
 		createdList := []*models.User{}
 		total := 0
-		err := forAllInput(cmd,
+		err := forAllInput(cmd, true,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				user := &apiusers.CreateUserParamsBodyUser{}
