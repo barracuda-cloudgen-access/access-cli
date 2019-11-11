@@ -85,7 +85,14 @@ func initInputFlags(cmd *cobra.Command, fields ...inputField) {
 		case "string":
 			cmd.Flags().StringP(field.FlagName, field.FlagShorthand, field.DefaultValue.(string), field.FlagDescription)
 		case "[]int":
-			cmd.Flags().IntSliceP(field.FlagName, field.FlagShorthand, field.DefaultValue.([]int), field.FlagDescription)
+			// see https://github.com/spf13/pflag/issues/222
+			// cmd.Flags().IntSliceP(field.FlagName, field.FlagShorthand, field.DefaultValue.([]int), field.FlagDescription)
+			// we will accept a string slice instead, and convert to a int slice later
+			// convert default value from int slice to string slice:
+			dconv := funk.Map(field.DefaultValue.([]int), func(x int) string {
+				return strconv.Itoa(x)
+			}).([]string)
+			cmd.Flags().StringSliceP(field.FlagName, field.FlagShorthand, dconv, field.FlagDescription)
 		case "[]string":
 			cmd.Flags().StringSliceP(field.FlagName, field.FlagShorthand, field.DefaultValue.([]string), field.FlagDescription)
 		default:
@@ -139,7 +146,24 @@ func getFlagValue(cmd *cobra.Command, varType, flagName string) (interface{}, er
 	case "string":
 		value, err = cmd.Flags().GetString(flagName)
 	case "[]int":
-		value, err = cmd.Flags().GetIntSlice(flagName)
+		// see https://github.com/spf13/pflag/issues/222
+		// we accepted a string slice instead, and will now convert to a int slice
+		strSlice, err := cmd.Flags().GetStringSlice(flagName)
+		if err != nil {
+			return nil, err
+		}
+		out := make([]int, len(strSlice))
+		for i, str := range strSlice {
+			// support [1,2,3] syntax
+			str = strings.Trim(str, "[]")
+
+			var err error
+			out[i], err = strconv.Atoi(str)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return out, nil
 	case "[]string":
 		value, err = cmd.Flags().GetStringSlice(flagName)
 	default:
@@ -149,6 +173,7 @@ func getFlagValue(cmd *cobra.Command, varType, flagName string) (interface{}, er
 }
 
 func forAllInput(cmd *cobra.Command,
+	writeDefaultValues bool,
 	do func(entry *inputEntry) (interface{}, error),
 	printSuccess func(interface{}),
 	doOnError func(error, interface{})) error {
@@ -179,10 +204,14 @@ func forAllInput(cmd *cobra.Command,
 		if !cmd.Flags().Changed(field.FlagName) && field.Mandatory {
 			// user did not supply the field value in a flag, must ask interactively
 			d = interactivelyReadField(cmd, field)
+		} else if !cmd.Flags().Changed(field.FlagName) && !writeDefaultValues {
+			// in placeInputValues, we only call the respective function for this field
+			// if the value for the entry is not nil. so, we just leave it nil, to indicate this value is not provided
+			continue
 		} else {
 			d, err = getFlagValue(cmd, field.VarType, field.FlagName)
 			if err != nil {
-				continue
+				return err
 			}
 		}
 		entry.Values[i] = d
@@ -396,7 +425,9 @@ func placeInputValues(cmd *cobra.Command,
 	switch entry.Type {
 	case individualValues:
 		for i, field := range data.fields {
-			callApplyFunc(setterFuncs[i], entry.Values[i], field.VarType)
+			if entry.Values[i] != nil {
+				callApplyFunc(setterFuncs[i], entry.Values[i], field.VarType)
+			}
 		}
 		return nil
 	case wholeJSONObject:
