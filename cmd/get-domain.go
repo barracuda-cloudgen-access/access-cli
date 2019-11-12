@@ -26,6 +26,7 @@ import (
 	"github.com/spf13/cobra"
 
 	apiassets "github.com/fyde/fyde-cli/client/assets"
+	"github.com/fyde/fyde-cli/models"
 )
 
 // domainGetCmd represents the get command
@@ -63,15 +64,7 @@ var domainGetCmd = &cobra.Command{
 			return processErrorResponse(err)
 		}
 
-		tw := table.NewWriter()
-		tw.Style().Format.Header = text.FormatDefault
-		tw.AppendHeader(table.Row{
-			"ID",
-			"Name",
-			"Category",
-			"Asset source",
-		})
-		tw.SetAllowedColumnLengths([]int{15, 30, 30, 36})
+		tw := domainBuildTableWriter()
 
 		tw.AppendRow(table.Row{
 			resp.Payload.ID,
@@ -82,6 +75,41 @@ var domainGetCmd = &cobra.Command{
 
 		return printListOutputAndError(cmd, resp.Payload, tw, 1, err)
 	},
+}
+
+func domainBuildTableWriter() table.Writer {
+	tw := table.NewWriter()
+	tw.Style().Format.Header = text.FormatDefault
+	tw.AppendHeader(table.Row{
+		"ID",
+		"Name",
+		"Category",
+		"Asset source",
+	})
+	tw.SetAllowedColumnLengths([]int{15, 30, 30, 36})
+	return tw
+}
+
+func domainTableWriterAppend(tw table.Writer, asset *models.Asset) {
+	tw.AppendRow(table.Row{
+		asset.ID,
+		asset.Name,
+		asset.Category,
+		asset.AssetSourceID,
+	})
+}
+
+func domainTableWriterAppendError(tw table.Writer, err error, id interface{}) {
+	idStr := "[ERR]"
+	if id != nil {
+		idStr += fmt.Sprintf(" %v", id)
+	}
+	tw.AppendRow(table.Row{
+		idStr,
+		processErrorResponse(err),
+		"-",
+		"-",
+	})
 }
 
 func init() {

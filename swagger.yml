@@ -1583,6 +1583,8 @@ paths:
             $ref: "#/definitions/Asset"
         401:
           $ref: "#/responses/Unauthorized"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /assets/{id}:
     get:
       tags:
