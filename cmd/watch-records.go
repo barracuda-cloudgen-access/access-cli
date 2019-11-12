@@ -60,6 +60,10 @@ var recordsWatchCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		recordChan := make(chan *models.DeviceEventListItem)
 
+		outputFormat, _ := cmd.Flags().GetString("output")
+		detailedEvents, _ := cmd.Flags().GetBool("detailed-info")
+		detailedEvents = detailedEvents && (outputFormat == "json" || outputFormat == "json-pretty")
+
 		refreshPeriod, _ := cmd.Flags().GetInt("refresh-period")
 
 		var innerError error
@@ -154,16 +158,6 @@ var recordsWatchCmd = &cobra.Command{
 					"Date",
 				})
 			}
-			user := "Unknown"
-			if record.User != nil {
-				user = record.User.Name
-			}
-			tw.AppendRow(table.Row{
-				record.ID,
-				record.Name,
-				user,
-				record.Date,
-			})
 
 			// fix column width so it looks consistent across "tables"
 			tw.SetColumnConfigs([]table.ColumnConfig{
@@ -189,7 +183,41 @@ var recordsWatchCmd = &cobra.Command{
 				},
 			})
 
-			isTable, result, err := renderWatchOutput(cmd, record, tw)
+			user := "Unknown"
+			var toRender interface{}
+			if detailedEvents {
+				params := apievents.NewGetDeviceEventParams()
+				params.SetID(record.ID)
+				params.SetDate(record.Date)
+
+				resp, err := global.Client.DeviceEvents.GetDeviceEvent(params, global.AuthWriter)
+				if err != nil {
+					return processErrorResponse(err)
+				}
+				if resp.Payload.User != nil {
+					user = resp.Payload.User.Name
+				}
+				tw.AppendRow(table.Row{
+					resp.Payload.ID,
+					resp.Payload.Name,
+					user,
+					resp.Payload.Date.Utc,
+				})
+				toRender = resp.Payload
+			} else {
+				if record.User != nil {
+					user = record.User.Name
+				}
+				tw.AppendRow(table.Row{
+					record.ID,
+					record.Name,
+					user,
+					record.Date,
+				})
+				toRender = record
+			}
+
+			isTable, result, err := renderWatchOutput(cmd, toRender, tw)
 			if err != nil {
 				return err
 			}
@@ -231,4 +259,5 @@ func init() {
 	initOutputFlags(recordsWatchCmd)
 
 	recordsWatchCmd.Flags().IntP("refresh-period", "r", 60, "period, in seconds, at which to check for new events")
+	recordsWatchCmd.Flags().BoolP("detailed-info", "d", false, "show detailed info for each record (slower, only for JSON output)")
 }
