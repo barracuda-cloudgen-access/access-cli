@@ -31,7 +31,7 @@ import (
 	"github.com/fyde/fyde-cli/models"
 )
 
-// recordsWatchCmd represents the list command
+// recordsWatchCmd represents the watch command
 var recordsWatchCmd = &cobra.Command{
 	Use:   "watch",
 	Short: "Watch records as they are created",

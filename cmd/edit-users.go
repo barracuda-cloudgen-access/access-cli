@@ -25,7 +25,7 @@ import (
 	"github.com/fyde/fyde-cli/models"
 )
 
-// usersEditCmd represents the get command
+// usersEditCmd represents the edit command
 var usersEditCmd = &cobra.Command{
 	Use:   "edit",
 	Short: "Edit users",

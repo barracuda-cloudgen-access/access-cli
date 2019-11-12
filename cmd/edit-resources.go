@@ -25,7 +25,7 @@ import (
 	"github.com/fyde/fyde-cli/models"
 )
 
-// resourcesEditCmd represents the get command
+// resourcesEditCmd represents the edit command
 var resourcesEditCmd = &cobra.Command{
 	Use:                "edit",
 	Short:              "Edit resources",

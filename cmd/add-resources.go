@@ -24,7 +24,7 @@ import (
 	apiresources "github.com/fyde/fyde-cli/client/access_resources"
 )
 
-// resourcesAddCmd represents the get command
+// resourcesAddCmd represents the add command
 var resourcesAddCmd = &cobra.Command{
 	Use:     "add",
 	Aliases: []string{"create", "new"},

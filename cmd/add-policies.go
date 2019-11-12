@@ -24,7 +24,7 @@ import (
 	apipolicies "github.com/fyde/fyde-cli/client/access_policies"
 )
 
-// policiesAddCmd represents the get command
+// policiesAddCmd represents the add command
 var policiesAddCmd = &cobra.Command{
 	Use:     "add",
 	Aliases: []string{"create", "new"},

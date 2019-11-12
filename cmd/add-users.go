@@ -25,7 +25,7 @@ import (
 	"github.com/fyde/fyde-cli/models"
 )
 
-// usersAddCmd represents the get command
+// usersAddCmd represents the add command
 var usersAddCmd = &cobra.Command{
 	Use:     "add",
 	Aliases: []string{"create", "new"},

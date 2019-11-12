@@ -24,7 +24,7 @@ import (
 	apipolicies "github.com/fyde/fyde-cli/client/access_policies"
 )
 
-// policiesEditCmd represents the get command
+// policiesEditCmd represents the edit command
 var policiesEditCmd = &cobra.Command{
 	Use:   "edit",
 	Short: "Edit policies",

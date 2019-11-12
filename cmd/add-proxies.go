@@ -28,7 +28,7 @@ import (
 	apiproxies "github.com/fyde/fyde-cli/client/access_proxies"
 )
 
-// proxiesAddCmd represents the get command
+// proxiesAddCmd represents the add command
 var proxiesAddCmd = &cobra.Command{
 	Use:     "add",
 	Aliases: []string{"create", "new"},

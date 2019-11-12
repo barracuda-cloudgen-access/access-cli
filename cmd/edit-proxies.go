@@ -25,7 +25,7 @@ import (
 	"github.com/fyde/fyde-cli/models"
 )
 
-// proxiesEditCmd represents the get command
+// proxiesEditCmd represents the edit command
 var proxiesEditCmd = &cobra.Command{
 	Use:   "edit",
 	Short: "Edit proxies",
