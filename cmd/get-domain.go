@@ -65,13 +65,7 @@ var domainGetCmd = &cobra.Command{
 		}
 
 		tw := domainBuildTableWriter()
-
-		tw.AppendRow(table.Row{
-			resp.Payload.ID,
-			resp.Payload.Name,
-			resp.Payload.Category,
-			resp.Payload.AssetSourceID,
-		})
+		domainTableWriterAppend(tw, resp.Payload)
 
 		return printListOutputAndError(cmd, resp.Payload, tw, 1, err)
 	},
