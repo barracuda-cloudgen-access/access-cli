@@ -21,9 +21,9 @@ Only the following operations are implemented:
 
  - List users, groups, devices, resources, proxies and policies
  - Get info about specific user, group, device, resource, proxy or policy
- - Create users, groups, resources and policies, using command line flags or in batch mode, from files
- - Edit users, groups, resources and policies, using command line flags or in batch mode, from files
- - Delete users, groups, resources and policies
+ - Create users, groups, resources, policies, proxies and domains, using command line flags or in batch mode, from files
+ - Edit users, groups, resources, policies and proxies, using command line flags or in batch mode, from files
+ - Delete users, groups, resources, policies, proxies and domains
  - List activity records and get info about specific record
  - Watch activity records as they happen in real-time
 
@@ -90,7 +90,7 @@ You can then proceed to log in with your console credentials:
 
 ```
 $ fyde-cli login
-Username: you@example.com
+Email address: you@example.com
 Password:
 Logged in successfully, access token stored in (...)fyde/fyde-cli/auth.yaml
 ```
