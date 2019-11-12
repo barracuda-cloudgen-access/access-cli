@@ -53,7 +53,7 @@ var proxiesAddCmd = &cobra.Command{
 		err := forAllInput(cmd, true,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
-				proxy := apiproxies.CreateProxyBody{}
+				proxy := &apiproxies.CreateProxyBody{}
 				err := placeInputValues(cmd, values, proxy,
 					func(s string) { proxy.Name = s },
 					func(s string) { proxy.Location = s },
@@ -63,7 +63,7 @@ var proxiesAddCmd = &cobra.Command{
 					return nil, err
 				}
 				params := apiproxies.NewCreateProxyParams()
-				params.SetProxy(proxy)
+				params.SetProxy(*proxy)
 
 				resp, err := global.Client.AccessProxies.CreateProxy(params, global.AuthWriter)
 				if err != nil {

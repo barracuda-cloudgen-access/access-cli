@@ -50,7 +50,7 @@ var domainsAddCmd = &cobra.Command{
 		err := forAllInput(cmd, true,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
-				asset := apiassets.CreateAssetBody{
+				asset := &apiassets.CreateAssetBody{
 					Category: "domain",
 				}
 				err := placeInputValues(cmd, values, asset,
@@ -60,7 +60,7 @@ var domainsAddCmd = &cobra.Command{
 					return nil, err
 				}
 				params := apiassets.NewCreateAssetParams()
-				params.SetAsset(asset)
+				params.SetAsset(*asset)
 
 				resp, err := global.Client.Assets.CreateAsset(params, global.AuthWriter)
 				if err != nil {
