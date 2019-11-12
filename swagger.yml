@@ -1184,6 +1184,8 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
     delete:
       tags:
         - "access_policies"
@@ -1424,6 +1426,8 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
     delete:
       tags:
         - "access_proxies"
@@ -1433,9 +1437,12 @@ paths:
       - in: path
         name: "id"
         required: true
-        type: string
-        format: uuid
-        description: "The ID of the proxy to delete"
+        type: array
+        collectionFormat: csv
+        items:
+          type: string
+          format: uuid
+        description: "The IDs of the proxies to delete, comma-separated"
       responses:
         204:
           description: "Proxy deleted"
@@ -1576,6 +1583,8 @@ paths:
             $ref: "#/definitions/Asset"
         401:
           $ref: "#/responses/Unauthorized"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /assets/{id}:
     get:
       tags:
@@ -1608,8 +1617,11 @@ paths:
       - in: path
         name: "id"
         required: true
-        type: integer
-        description: "The ID of the asset to delete"
+        type: array
+        collectionFormat: csv
+        items:
+          type: integer
+        description: "The IDs of the assets to delete, comma-separated"
       responses:
         204:
           description: "Asset deleted"

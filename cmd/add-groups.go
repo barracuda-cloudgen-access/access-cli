@@ -25,7 +25,7 @@ import (
 	apigroups "github.com/fyde/fyde-cli/client/groups"
 )
 
-// groupsAddCmd represents the get command
+// groupsAddCmd represents the add command
 var groupsAddCmd = &cobra.Command{
 	Use:     "add",
 	Aliases: []string{"create", "new"},
@@ -117,7 +117,7 @@ func init() {
 		inputField{
 			Name:            "Color",
 			FlagName:        "color",
-			FlagDescription: "specify the color for the created group  (hexadecimal #RRGGBB format)",
+			FlagDescription: "specify the color for the created group (hexadecimal #RRGGBB format)",
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",

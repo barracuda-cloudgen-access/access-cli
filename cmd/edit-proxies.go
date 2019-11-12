@@ -21,13 +21,14 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
-	apipolicies "github.com/fyde/fyde-cli/client/access_policies"
+	apiproxies "github.com/fyde/fyde-cli/client/access_proxies"
+	"github.com/fyde/fyde-cli/models"
 )
 
-// policiesEditCmd represents the edit command
-var policiesEditCmd = &cobra.Command{
+// proxiesEditCmd represents the edit command
+var proxiesEditCmd = &cobra.Command{
 	Use:   "edit",
-	Short: "Edit policies",
+	Short: "Edit proxies",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {
@@ -42,81 +43,81 @@ var policiesEditCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		tw := policyBuildTableWriter()
-		createdList := []*apipolicies.EditPolicyOKBody{}
+		tw := proxyBuildTableWriter()
+		createdList := []*apiproxies.EditProxyOKBody{}
 		total := 0
 		err := forAllInput(cmd, false,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
-				params := apipolicies.NewEditPolicyParams()
+				params := apiproxies.NewEditProxyParams()
 				// IDs are not part of the request body, so we use this workaround
-				policy := &struct {
-					*apipolicies.EditPolicyParamsBodyAccessPolicy
-					ID int64 `json:"id"`
-				}{
-					EditPolicyParamsBodyAccessPolicy: &apipolicies.EditPolicyParamsBodyAccessPolicy{},
-				}
-				err := placeInputValues(cmd, values, policy,
-					func(s int) { policy.ID = int64(s) },
-					func(s string) { policy.Name = s },
-					func(s []strfmt.UUID) { policy.AccessResourceIds = s },
-					func(s []int64) { policy.GroupIds = s })
+				proxy := &struct {
+					models.AccessProxy
+					ID string `json:"id"`
+				}{}
+				err := placeInputValues(cmd, values, proxy,
+					func(s string) { proxy.ID = s },
+					func(s string) { proxy.AccessProxy.Name = s },
+					func(s string) { proxy.AccessProxy.Location = s },
+					func(s string) { proxy.AccessProxy.Host = s },
+					func(s int) { proxy.AccessProxy.Port = int64(s) })
 				if err != nil {
 					return nil, err
 				}
 				// here, map the ID from the "fake request body" to the correct place
-				params.SetID(policy.ID)
-				body := apipolicies.EditPolicyBody{AccessPolicy: policy.EditPolicyParamsBodyAccessPolicy}
-				params.SetPolicy(body)
+				params.SetID(strfmt.UUID(proxy.ID))
+				body := apiproxies.EditProxyBody{}
+				body.AccessProxy.AccessProxy = proxy.AccessProxy
+				params.SetProxy(body)
 
-				resp, err := global.Client.AccessPolicies.EditPolicy(params, global.AuthWriter)
+				resp, err := global.Client.AccessProxies.EditProxy(params, global.AuthWriter)
 				if err != nil {
 					return nil, err
 				}
 				return resp.Payload, nil
 			}, func(data interface{}) { // printSuccess func
-				policy := data.(*apipolicies.EditPolicyOKBody)
-				createdList = append(createdList, policy)
-				policyTableWriterAppend(tw, policy.AccessPolicy, len(policy.AccessResources))
+				proxy := data.(*apiproxies.EditProxyOKBody)
+				createdList = append(createdList, proxy)
+				proxyTableWriterAppend(tw, proxy.AccessProxy, len(proxy.AccessResources))
 			}, func(err error, id interface{}) { // doOnError func
 				createdList = append(createdList, nil)
-				policyTableWriterAppendError(tw, err, id)
+				proxyTableWriterAppendError(tw, err, id)
 			})
 		return printListOutputAndError(cmd, createdList, tw, total, err)
 	},
 }
 
 func init() {
-	policiesCmd.AddCommand(policiesEditCmd)
+	proxiesCmd.AddCommand(proxiesEditCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// policiesEditCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// proxiesEditCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// policiesEditCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// proxiesEditCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	initOutputFlags(policiesEditCmd)
-	initLoopControlFlags(policiesEditCmd)
+	initOutputFlags(proxiesEditCmd)
+	initLoopControlFlags(proxiesEditCmd)
 
-	initInputFlags(policiesEditCmd,
+	initInputFlags(proxiesEditCmd,
 		inputField{
 			Name:            "ID",
 			FlagName:        "id",
-			FlagDescription: "specify the ID of the policy to edit",
-			VarType:         "int",
+			FlagDescription: "specify the ID of the proxy to edit",
+			VarType:         "string",
 			Mandatory:       true,
-			DefaultValue:    0,
+			DefaultValue:    "",
 			IsIDOnError:     true,
 			SchemaName:      "id",
 		},
 		inputField{
 			Name:            "Name",
 			FlagName:        "name",
-			FlagDescription: "specify the new name for the policy",
+			FlagDescription: "specify the new name for the proxy",
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",
@@ -124,19 +125,29 @@ func init() {
 			SchemaName:      "name",
 		},
 		inputField{
-			Name:            "Resources",
-			FlagName:        "resources",
-			FlagDescription: "specify the new resources for the policy",
-			VarType:         "[]string",
+			Name:            "Location",
+			FlagName:        "location",
+			FlagDescription: "specify the new location for the proxy",
+			VarType:         "string",
 			Mandatory:       false,
-			DefaultValue:    []string{},
+			DefaultValue:    "",
+			IsIDOnError:     true,
+			SchemaName:      "name",
 		},
 		inputField{
-			Name:            "Groups",
-			FlagName:        "groups",
-			FlagDescription: "specify the new groups for the policy",
-			VarType:         "[]int",
+			Name:            "Host",
+			FlagName:        "host",
+			FlagDescription: "specify the new host for the proxy",
+			VarType:         "string",
 			Mandatory:       false,
-			DefaultValue:    []int{},
+			DefaultValue:    "",
+		},
+		inputField{
+			Name:            "Port",
+			FlagName:        "port",
+			FlagDescription: "specify the new port for the proxy",
+			VarType:         "int",
+			Mandatory:       false,
+			DefaultValue:    0,
 		})
 }

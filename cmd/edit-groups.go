@@ -24,7 +24,7 @@ import (
 	"github.com/fyde/fyde-cli/models"
 )
 
-// groupsEditCmd represents the get command
+// groupsEditCmd represents the edit command
 var groupsEditCmd = &cobra.Command{
 	Use:   "edit",
 	Short: "Edit groups",

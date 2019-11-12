@@ -18,10 +18,6 @@ limitations under the License.
 */
 
 import (
-	"fmt"
-
-	"github.com/jedib0t/go-pretty/table"
-	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
 	apiproxies "github.com/fyde/fyde-cli/client/access_proxies"
@@ -64,36 +60,10 @@ var proxiesListCmd = &cobra.Command{
 		}
 		completePayload = completePayload[cutStart:cutEnd]
 
-		tw := table.NewWriter()
-		tw.Style().Format.Header = text.FormatDefault
-		tw.AppendHeader(table.Row{
-			"ID",
-			"Name",
-			"Location",
-			"Proxy host:port",
-			"Resources",
-			"Granted req.",
-			"Total req.",
-			"Last access",
-		})
-		tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 9, 12, 12, 30})
+		tw := proxyBuildTableWriter()
 
 		for _, item := range completePayload {
-			lastAccess := fmt.Sprint(item.LastAccessAt)
-			if item.LastAccessAt == nil {
-				lastAccess = "never"
-			}
-
-			tw.AppendRow(table.Row{
-				item.ID,
-				item.Name,
-				item.Location,
-				fmt.Sprintf("%s:%d", item.Host, item.Port),
-				item.AccessResourcesCount,
-				item.AccessCount.Granted,
-				item.AccessCount.Granted + item.AccessCount.Denied,
-				lastAccess,
-			})
+			proxyTableWriterAppend(tw, item.AccessProxy, int(item.AccessResourcesCount))
 		}
 
 		return printListOutputAndError(cmd, completePayload, tw, total, err)

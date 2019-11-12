@@ -21,14 +21,15 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
-	apipolicies "github.com/fyde/fyde-cli/client/access_policies"
+	apiassets "github.com/fyde/fyde-cli/client/assets"
+	"github.com/fyde/fyde-cli/models"
 )
 
-// policiesAddCmd represents the add command
-var policiesAddCmd = &cobra.Command{
+// domainsAddCmd represents the add command
+var domainsAddCmd = &cobra.Command{
 	Use:     "add",
 	Aliases: []string{"create", "new"},
-	Short:   "Add policies",
+	Short:   "Add domains",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {
@@ -43,62 +44,62 @@ var policiesAddCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		tw := policyBuildTableWriter()
-		createdList := []*apipolicies.CreatePolicyCreatedBody{}
+		tw := domainBuildTableWriter()
+		createdList := []*models.Asset{}
 		total := 0
 		err := forAllInput(cmd, true,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
-				policy := &apipolicies.CreatePolicyParamsBodyAccessPolicy{}
-				err := placeInputValues(cmd, values, policy,
-					func(s string) { policy.Name = s },
-					func(s []strfmt.UUID) { policy.AccessResourceIds = s },
-					func(s []int64) { policy.GroupIds = s })
+				asset := &apiassets.CreateAssetBody{
+					Category: "domain",
+				}
+				err := placeInputValues(cmd, values, asset,
+					func(s string) { asset.Name = s },
+					func(s string) { asset.AssetSourceID = strfmt.UUID(s) })
 				if err != nil {
 					return nil, err
 				}
-				body := apipolicies.CreatePolicyBody{AccessPolicy: policy}
-				params := apipolicies.NewCreatePolicyParams()
-				params.SetPolicy(body)
+				params := apiassets.NewCreateAssetParams()
+				params.SetAsset(*asset)
 
-				resp, err := global.Client.AccessPolicies.CreatePolicy(params, global.AuthWriter)
+				resp, err := global.Client.Assets.CreateAsset(params, global.AuthWriter)
 				if err != nil {
 					return nil, err
 				}
 				return resp.Payload, nil
 			}, func(data interface{}) { // printSuccess func
-				policy := data.(*apipolicies.CreatePolicyCreatedBody)
-				createdList = append(createdList, policy)
-				policyTableWriterAppend(tw, policy.AccessPolicy, len(policy.AccessResources))
+				asset := data.(*models.Asset)
+				createdList = append(createdList, asset)
+				domainTableWriterAppend(tw, asset)
 			}, func(err error, id interface{}) { // doOnError func
 				createdList = append(createdList, nil)
-				policyTableWriterAppendError(tw, err, id)
+				domainTableWriterAppendError(tw, err, id)
 			})
 		return printListOutputAndError(cmd, createdList, tw, total, err)
 	},
 }
 
 func init() {
-	policiesCmd.AddCommand(policiesAddCmd)
+	domainsCmd.AddCommand(domainsAddCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// policiesAddCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// domainsAddCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// policiesAddCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// domainsAddCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	initOutputFlags(policiesAddCmd)
-	initLoopControlFlags(policiesAddCmd)
+	initOutputFlags(domainsAddCmd)
+	initLoopControlFlags(domainsAddCmd)
 
-	initInputFlags(policiesAddCmd,
+	initInputFlags(domainsAddCmd,
 		inputField{
 			Name:            "Name",
 			FlagName:        "name",
-			FlagDescription: "specify the name for the created policy",
+			FlagDescription: "specify the domain name for the created domain",
 			VarType:         "string",
 			Mandatory:       true,
 			DefaultValue:    "",
@@ -106,19 +107,11 @@ func init() {
 			SchemaName:      "name",
 		},
 		inputField{
-			Name:            "Resources",
-			FlagName:        "resources",
-			FlagDescription: "specify the resources for the created policy",
-			VarType:         "[]string",
-			Mandatory:       false,
-			DefaultValue:    []string{},
-		},
-		inputField{
-			Name:            "Groups",
-			FlagName:        "groups",
-			FlagDescription: "specify the groups for the created policy",
-			VarType:         "[]int",
-			Mandatory:       false,
-			DefaultValue:    []int{},
+			Name:            "Source",
+			FlagName:        "source",
+			FlagDescription: "specify the source ID for the created domain",
+			VarType:         "string",
+			Mandatory:       true,
+			DefaultValue:    "",
 		})
 }
