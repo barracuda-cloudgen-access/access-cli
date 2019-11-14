@@ -139,11 +139,7 @@ func printMultiOpOutput(cmd *cobra.Command, itemName string, itemIDs interface{}
 			", ")
 	}
 	if length != 1 {
-		if strings.HasSuffix(output, "y") {
-			output = output[0:len(output)-1] + "ies"
-		} else {
-			output += "s"
-		}
+		output = pluralize(output)
 	}
 	if length == 0 {
 		output = "No " + strings.ToLower(output)
@@ -204,4 +200,14 @@ func renderPrettyJSON(data interface{}) (string, error) {
 		return "", err
 	}
 	return string(r), nil
+}
+
+func pluralize(noun string) string {
+	if strings.HasSuffix(noun, "s") {
+		return noun
+	}
+	if strings.HasSuffix(noun, "y") {
+		return noun[0:len(noun)-1] + "ies"
+	}
+	return noun + "s"
 }

@@ -116,7 +116,7 @@ func init() {
 	initOutputFlags(resourcesEditCmd)
 	initLoopControlFlags(resourcesEditCmd)
 
-	initInputFlags(resourcesEditCmd,
+	initInputFlags(resourcesEditCmd, "resource",
 		inputField{
 			Name:            "ID",
 			FlagName:        "id",

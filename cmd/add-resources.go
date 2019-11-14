@@ -103,7 +103,7 @@ func init() {
 	initOutputFlags(resourcesAddCmd)
 	initLoopControlFlags(resourcesAddCmd)
 
-	initInputFlags(resourcesAddCmd,
+	initInputFlags(resourcesAddCmd, "resource",
 		inputField{
 			Name:            "Name",
 			FlagName:        "name",

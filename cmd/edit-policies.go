@@ -102,7 +102,7 @@ func init() {
 	initOutputFlags(policiesEditCmd)
 	initLoopControlFlags(policiesEditCmd)
 
-	initInputFlags(policiesEditCmd,
+	initInputFlags(policiesEditCmd, "policy",
 		inputField{
 			Name:            "ID",
 			FlagName:        "id",

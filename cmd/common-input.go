@@ -65,15 +65,16 @@ const (
 	individualValues
 )
 
-func initInputFlags(cmd *cobra.Command, fields ...inputField) {
+func initInputFlags(cmd *cobra.Command, typeName string, fields ...inputField) {
 	cmd.Flags().SortFlags = false
 	if cmd.Annotations == nil {
 		cmd.Annotations = make(map[string]string)
 	}
 	cmd.Annotations[flagInitInput] = "yes"
+	typeName = pluralize(typeName)
 
-	cmd.Flags().StringP("from-file", "f", "", "file from where to import users")
-	cmd.Flags().StringP("file-format", "i", "json", "format for the file from where to import users (csv or json)")
+	cmd.Flags().StringP("from-file", "f", "", "file from where to import "+typeName)
+	cmd.Flags().StringP("file-format", "i", "json", "format for the file from where to import "+typeName+" (csv or json)")
 	cmd.Flags().Bool("errors-only", false, "only include failed operations in output")
 
 	for _, field := range fields {
