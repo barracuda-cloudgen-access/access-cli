@@ -254,7 +254,7 @@ func init() {
 	// recordsWatchCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initFilterFlags(recordsWatchCmd,
-		filterType{"event_name", "[]string"},
+		filterType{"event-name", "[]string"},
 		filterType{"user-id", "int"})
 	initOutputFlags(recordsWatchCmd)
 
