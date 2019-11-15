@@ -98,7 +98,7 @@ func init() {
 	initOutputFlags(usersAddCmd)
 	initLoopControlFlags(usersAddCmd)
 
-	initInputFlags(usersAddCmd,
+	initInputFlags(usersAddCmd, "user",
 		inputField{
 			Name:            "Username",
 			FlagName:        "username",

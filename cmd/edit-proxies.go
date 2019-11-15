@@ -103,7 +103,7 @@ func init() {
 	initOutputFlags(proxiesEditCmd)
 	initLoopControlFlags(proxiesEditCmd)
 
-	initInputFlags(proxiesEditCmd,
+	initInputFlags(proxiesEditCmd, "proxy",
 		inputField{
 			Name:            "ID",
 			FlagName:        "id",

@@ -95,7 +95,7 @@ func init() {
 	initOutputFlags(domainsAddCmd)
 	initLoopControlFlags(domainsAddCmd)
 
-	initInputFlags(domainsAddCmd,
+	initInputFlags(domainsAddCmd, "domain",
 		inputField{
 			Name:            "Name",
 			FlagName:        "name",

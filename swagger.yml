@@ -1460,11 +1460,10 @@ paths:
       - "application/json"
       parameters:
       - in: query
-        name: "user"
-        description: "Restrict the events to return to the specified user name"
+        name: "user_id"
+        description: "Restrict the events to return to the specified user ID"
         required: false
-        type: string
-        enum: [enabled, disabled]
+        type: integer
       - in: query
         name: "event_name[]"
         description: "Restrict the types of events to return"

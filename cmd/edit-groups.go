@@ -102,7 +102,7 @@ func init() {
 	initOutputFlags(groupsEditCmd)
 	initLoopControlFlags(groupsEditCmd)
 
-	initInputFlags(groupsEditCmd,
+	initInputFlags(groupsEditCmd, "group",
 		inputField{
 			Name:            "ID",
 			FlagName:        "id",

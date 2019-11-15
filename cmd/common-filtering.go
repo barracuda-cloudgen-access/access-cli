@@ -103,6 +103,11 @@ func callApplyFunc(f, value interface{}, varType string) {
 	case func(*int):
 		dd := value.(int)
 		f(&dd)
+	case func(int64):
+		f(int64(value.(int)))
+	case func(*int64):
+		dd := int64(value.(int))
+		f(&dd)
 	case func(string):
 		f(value.(string))
 	case func(*string):
