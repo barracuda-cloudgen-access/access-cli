@@ -137,6 +137,9 @@ func preRunFlagCheckInput(cmd *cobra.Command, args []string) error {
 }
 
 func getFlagValue(cmd *cobra.Command, varType, flagName string) (interface{}, error) {
+	if !cmd.Flags().Changed(flagName) {
+		return nil, fmt.Errorf("user did not specify %s", flagName)
+	}
 	var value interface{}
 	var err error
 	switch varType {
