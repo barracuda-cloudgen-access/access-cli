@@ -106,7 +106,7 @@ func init() {
 	initPaginationFlags(recordsListCmd)
 	initSortFlags(recordsListCmd)
 	initFilterFlags(recordsListCmd,
-		filterType{"event_name", "[]string"},
+		filterType{"event-name", "[]string"},
 		filterType{"user-id", "int"})
 	initOutputFlags(recordsListCmd)
 }
