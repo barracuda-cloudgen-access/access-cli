@@ -79,7 +79,7 @@ var recordsWatchCmd = &cobra.Command{
 			for page := int64(1); ; page++ {
 				params := apievents.NewListDeviceEventsParams()
 				params.SetPage(&page)
-				setFilter(cmd, params.SetEventName, params.SetUser)
+				setFilter(cmd, params.SetEventName, params.SetUserID)
 				resp, err := global.Client.DeviceEvents.ListDeviceEvents(params, global.AuthWriter)
 				if err != nil {
 					innerError = err

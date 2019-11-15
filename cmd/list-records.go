@@ -46,7 +46,7 @@ var recordsListCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apievents.NewListDeviceEventsParams()
-		setFilter(cmd, params.SetEventName, params.SetUser)
+		setFilter(cmd, params.SetEventName, params.SetUserID)
 		completePayload := []*models.DeviceEventListItem{}
 		total := 0
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
@@ -107,6 +107,6 @@ func init() {
 	initSortFlags(recordsListCmd)
 	initFilterFlags(recordsListCmd,
 		filterType{"event_name", "[]string"},
-		filterType{"user", "string"})
+		filterType{"user_id", "string"})
 	initOutputFlags(recordsListCmd)
 }
