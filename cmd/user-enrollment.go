@@ -104,6 +104,7 @@ var enrollmentRevokeCmd = &cobra.Command{
 		params := apiusers.NewRevokeEnrollmentLinkParams()
 		params.SetID(userID)
 
+		cmd.SilenceUsage = true
 		_, err = global.Client.Users.RevokeEnrollmentLink(params, global.AuthWriter)
 		if err != nil {
 			// best possible workaround for https://github.com/go-swagger/go-swagger/issues/1929
@@ -134,6 +135,7 @@ var enrollmentGetCmd = &cobra.Command{
 		params := apiusers.NewGetUserParams()
 		params.SetID(userID)
 
+		cmd.SilenceUsage = true
 		resp, err := global.Client.Users.GetUser(params, global.AuthWriter)
 		if err != nil {
 			return processErrorResponse(err)
