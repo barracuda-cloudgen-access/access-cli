@@ -120,10 +120,41 @@ var enrollmentRevokeCmd = &cobra.Command{
 	},
 }
 
+// enrollmentGetCmd represents the get command
+var enrollmentGetCmd = &cobra.Command{
+	Use:     "get",
+	Short:   "Get user enrollment link",
+	PreRunE: enrollmentPreRunE,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		userID, err := strconv.ParseInt(args[0], 10, 64)
+		if err != nil {
+			return err
+		}
+
+		params := apiusers.NewGetUserParams()
+		params.SetID(userID)
+
+		resp, err := global.Client.Users.GetUser(params, global.AuthWriter)
+		if err != nil {
+			return processErrorResponse(err)
+		}
+
+		if resp.Payload.Enrollment == nil ||
+			resp.Payload.EnrollmentStatus == "revoked" ||
+			resp.Payload.EnrollmentStatus == "expired" {
+			cmd.Println("No shareable enrollment link available for this user")
+		} else {
+			cmd.Println(resp.Payload.Enrollment.URL)
+		}
+		return nil
+	},
+}
+
 func init() {
 	usersCmd.AddCommand(enrollmentCmd)
 	enrollmentCmd.AddCommand(enrollmentGenerateCmd)
 	enrollmentCmd.AddCommand(enrollmentRevokeCmd)
+	enrollmentCmd.AddCommand(enrollmentGetCmd)
 
 	// Here you will define your flags and configuration settings.
 
