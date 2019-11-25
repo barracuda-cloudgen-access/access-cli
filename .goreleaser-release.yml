@@ -2,8 +2,8 @@ env:
   - GO111MODULE=on
 before:
   hooks:
-    - go mod tidy
     - swagger generate client -f swagger.yml
+    - go mod tidy
     - go generate ./...
 builds:
   -
@@ -13,15 +13,34 @@ builds:
       - linux
       - darwin
       - windows
+    ignore:
+      - goos: darwin
+        goarch: 386
     ldflags:
       - -s -w -X main.GitCommit={{.ShortCommit}} -X main.BuildDate={{.Date}} -X main.Version={{.Version}} -X main.GitState=clean
 archives:
 - replacements:
-    darwin: Darwin
+    darwin: macOS
     linux: Linux
     windows: Windows
     386: i386
     amd64: x86_64
+nfpms:
+  - 
+    vendor: Fyde, Inc.
+    homepage: https://fyde.github.io/docs/fyde-cli/
+    description: Command-line client for Fyde Enterprise Console APIs
+    license: Apache 2.0
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/bin
+    replacements:
+      darwin: macOS
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
 checksum:
   name_template: 'checksums.txt'
 snapshot:
