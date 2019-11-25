@@ -2,6 +2,7 @@ fyde-cli
 fyde-cli.exe
 debug
 .vscode
+dist/
 client/
 models/
 vendor/

@@ -18,13 +18,13 @@ package main
 import "github.com/fyde/fyde-cli/cmd"
 
 var (
-	// GitCommit is provided by govvv at compile-time
+	// GitCommit is provided by govvv/goreleaser at compile-time
 	GitCommit = "???"
-	// BuildDate is provided by govvv at compile-time
+	// BuildDate is provided by govvv/goreleaser at compile-time
 	BuildDate = "???"
-	// GitState is provided by govvv at compile-time
+	// GitState is provided by govvv/goreleaser at compile-time
 	GitState = "???"
-	// Version is provided by govvv at compile-time
+	// Version is provided by govvv/goreleaser at compile-time
 	Version = "???"
 )
 
