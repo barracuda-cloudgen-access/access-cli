@@ -9,31 +9,34 @@ fyde-cli enables interaction with the Fyde Enterprise Console using the command 
 It is designed with both interactive usage and scripting in mind.
 
 fyde-cli is written in [Go](https://golang.org) and supports different architectures.
-We provide pre-built binaries for x86-64 Windows, macOS and Linux, as well as ARM and ARM64 Linux.
-You can use it in other architectures by compiling from source.
+We provide pre-built i386 and x86-64 Windows and Linux binaries and x86-64 macOS binaries.
+deb and rpm packages are also provided.
+You can use fyde-cli in other architectures by compiling from source.
 
 ## Features
 
-The goal for this project is to implement most operations possible with the web version of the [Fyde Enterprise Console](https://fyde.github.io/docs/fyde-enterprise-console), enabling batch mode for certain operations (like adding multiple users from a CSV file or a JSON dump).
-
-Currently, fyde-cli is at an early development stage.
-Only the following operations are implemented:
+fyde-cli supports most operations possible with the web version of the [Fyde Enterprise Console](https://fyde.github.io/docs/fyde-enterprise-console), enabling batch mode for certain operations (like adding multiple users from a CSV file or a JSON dump).
+The following operations are implemented:
 
  - List users, groups, devices, resources, proxies and policies
  - Get info about specific user, group, device, resource, proxy or policy
  - Create users, groups, resources, policies, proxies and domains, using command line flags or in batch mode, from files
  - Edit users, groups, resources, policies and proxies, using command line flags or in batch mode, from files
  - Delete users, groups, resources, policies, proxies and domains
+ - Generate, view, and revoke user enrollment links
  - List activity records and get info about specific record
  - Watch activity records as they happen in real-time
+
+fyde-cli will be continually updated to support new management console features.
 
 ## Installation
 
 If you are using an operating system and architecture for which we provide pre-built binaries, we recommend using those.
 Just download the appropriate archive from the [releases page](https://github.com/fyde/fyde-cli/releases).
+We also provide deb and rpm packages.
 The fyde-cli binaries are statically compiled and have no external dependencies.
 
-Inside the archive, there's the executable, a copy of this document and the license. Simply extract the executable and place it where you find most convenient (for example, in most Linux distros, you could use `/usr/local/bin` for a system-wide install).
+Inside archives, there's the executable, a copy of this document and the license. Simply extract the executable and place it where you find most convenient (for example, in most Linux distros, you could use `/usr/local/bin` for a system-wide install).
 Don't forget to add the executable to `$PATH`, or equivalent, if desired.
 
 ### Installing from source
@@ -44,7 +47,7 @@ If we do not provide a pre-built binary for your platform, or if you want to mak
 
  - [Git](https://git-scm.com/)
  - [Go](https://golang.org) (version 1.13 or higher)
- - [go-swagger](https://github.com/go-swagger/go-swagger) - if you run into problems with the latest release, you can compile from the master branch, commit [5499ab](https://github.com/go-swagger/go-swagger/commit/5499abf2a8c86a57f3a8112aca47a624f609689e).
+ - [go-swagger](https://github.com/go-swagger/go-swagger) - fyde-cli is developed and tested using v0.21.0
 
 #### Obtaining the code
 
@@ -114,7 +117,7 @@ JSON output generally contains the most information, sometimes including nested 
 
 All output formats are subject to pagination parameters, when those are available.
 
-Certain output options are specific to input-accepting commands input (for record creation or editing):
+Additional output options are available for record creation and editing commands:
  - `--errors-only` - output will be restricted to records whose creation/editing failed
 
 ### Input formats
@@ -128,12 +131,14 @@ When adding or editing records, fyde-cli can receive input in three different wa
  - From CSV files, using `--from-file=filename.csv --file-format=csv`
    - In this case, fyde-cli will expect a file containing comma-separated values, with one record per line. The first record must be a header mapping each column to the correct record field
 
+The expected formats when using JSON and CSV files are documented in [the fyde-cli wiki](https://github.com/fyde/fyde-cli/wiki#batch-mode-operations).
+
 ### Behavior on error
 
 When creating, editing or deleting multiple records in one go, by default fyde-cli will stop on the first error.
-However, one may want to perform the operation in a "best effort" basis, where fyde-cli will continue processing the remaining records/arguments regardless of previous errors.
+However, one may want to perform the operation in a "best effort" basis, where fyde-cli will continue processing the remaining records/arguments regardless of previous server-issued errors.
 This can be enabled using the `--continue-on-error` flag.
-When this flag is passed, fyde-cli should never exit with a non-zero code.
+When this flag is passed, fyde-cli never exits with a non-zero code, as long as the input is correctly formatted and all errors come from server-side operations.
 
 ## Reporting issues
 
