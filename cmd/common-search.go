@@ -29,7 +29,7 @@ func initSearchFlags(cmd *cobra.Command) {
 		cmd.Annotations = make(map[string]string)
 	}
 	cmd.Annotations[flagInitSearch] = "yes"
-	cmd.Flags().String("search", "", "full-text search query for result filtering")
+	cmd.Flags().StringP("search", "q", "", "full-text search query for result filtering")
 }
 
 func preRunFlagCheckSearch(cmd *cobra.Command, args []string) error {
