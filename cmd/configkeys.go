@@ -19,6 +19,7 @@ limitations under the License.
 
 const ckeyAuthEndpoint = "endpoint"
 const ckeyAuthSkipTLSVerify = "skipTLSVerify"
+const ckeyAuthUseInsecureHTTP = "useInsecureHTTP"
 const ckeyAuthMethod = "method"
 const ckeyAuthAccessToken = "accessToken"
 const ckeyAuthClient = "client"

@@ -119,8 +119,15 @@ func initClient() {
 
 	transport := http.DefaultTransport
 
+	schemes := []string{"https"}
+	insecureUseHTTP := authViper.GetBool(ckeyAuthUseInsecureHTTP)
+	if insecureUseHTTP {
+		fmt.Fprintln(os.Stderr, "WARNING: HTTP, instead of HTTPS, is being used for API communication. THIS IS INSECURE.")
+		schemes = []string{"http"}
+	}
+
 	insecureSkipVerify := authViper.GetBool(ckeyAuthSkipTLSVerify)
-	if insecureSkipVerify {
+	if insecureSkipVerify && !insecureUseHTTP {
 		fmt.Fprintln(os.Stderr, "WARNING: TLS certificate verification is being skipped for the endpoint. THIS IS INSECURE.")
 		transport = &http.Transport{
 			TLSClientConfig: &tls.Config{
@@ -129,7 +136,7 @@ func initClient() {
 		}
 	}
 
-	global.Transport = httptransport.New(endpoint, "/api/v1", nil)
+	global.Transport = httptransport.New(endpoint, "/api/v1", schemes)
 	if global.VerboseLevel > 1 {
 		// wrap transport in loghttp
 		transport = &loghttp.Transport{
