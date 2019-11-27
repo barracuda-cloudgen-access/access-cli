@@ -40,8 +40,11 @@ func initConfig() {
 	}
 	global.WriteFiles = true
 	cfgViper = viper.New()
+	if cfgFile == "" {
+		cfgFile = os.Getenv(ConfigFileEnvVar)
+	}
 	if cfgFile != "" {
-		// Use config file from the flag.
+		// Use config file from the flag/env var.
 		cfgViper.SetConfigFile(cfgFile)
 	} else {
 		p := getUserConfigPath()
@@ -77,8 +80,11 @@ func initAuthConfig() {
 	}
 	authViper = viper.New()
 	setAuthDefaults()
+	if authFile == "" {
+		authFile = os.Getenv(AuthFileEnvVar)
+	}
 	if authFile != "" {
-		// Use config file from the flag.
+		// Use config file from the flag/env var.
 		authViper.SetConfigFile(authFile)
 	} else {
 		p := getUserConfigPath()

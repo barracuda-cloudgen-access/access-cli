@@ -25,9 +25,17 @@ const (
 	// used for the config file
 	ConfigFileName = "config.yaml"
 
+	// ConfigFileEnvVar is the name of the environment variable used to override
+	// the config file path
+	ConfigFileEnvVar = "FYDE_CLI_CONFIG_FILE"
+
 	// AuthFileName is the file name (not path, that's platform-dependent)
 	// used for the auth file
 	AuthFileName = "auth.yaml"
+
+	// AuthFileEnvVar is the name of the environment variable used to override
+	// the auth file path
+	AuthFileEnvVar = "FYDE_CLI_AUTH_FILE"
 
 	// ConfigVendorName is the vendor name used to select the default path for
 	// configuration storage
