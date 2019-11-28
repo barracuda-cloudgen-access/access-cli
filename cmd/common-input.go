@@ -156,10 +156,13 @@ func getFlagValue(cmd *cobra.Command, varType, flagName string) (interface{}, er
 		if err != nil {
 			return nil, err
 		}
+		if len(strSlice) == 1 && strings.Trim(strSlice[0], "[] ") == "" {
+			return []int{}, nil
+		}
 		out := make([]int, len(strSlice))
 		for i, str := range strSlice {
 			// support [1,2,3] syntax
-			str = strings.Trim(str, "[]")
+			str = strings.Trim(str, "[] ")
 
 			var err error
 			out[i], err = strconv.Atoi(str)

@@ -60,7 +60,38 @@ var policiesEditCmd = &cobra.Command{
 					func(s int) { policy.ID = int64(s) },
 					func(s string) { policy.Name = s },
 					func(s []strfmt.UUID) { policy.AccessResourceIds = s },
-					func(s []int64) { policy.GroupIds = s })
+					func(rbac bool) {
+						if policy.Conditions == nil {
+							policy.Conditions = &apipolicies.EditPolicyParamsBodyAccessPolicyConditions{}
+							policy.Conditions.Rbac = &apipolicies.EditPolicyParamsBodyAccessPolicyConditionsRbac{
+								UserIds:  []int64{},
+								GroupIds: []int64{},
+							}
+						}
+						policy.Conditions.Rbac.Enabled = &rbac
+					},
+					func(groups []int64) {
+						if policy.Conditions == nil {
+							t := true
+							policy.Conditions = &apipolicies.EditPolicyParamsBodyAccessPolicyConditions{}
+							policy.Conditions.Rbac = &apipolicies.EditPolicyParamsBodyAccessPolicyConditionsRbac{
+								Enabled: &t,
+								UserIds: []int64{},
+							}
+						}
+						policy.Conditions.Rbac.GroupIds = groups
+					},
+					func(users []int64) {
+						if policy.Conditions == nil {
+							t := true
+							policy.Conditions = &apipolicies.EditPolicyParamsBodyAccessPolicyConditions{}
+							policy.Conditions.Rbac = &apipolicies.EditPolicyParamsBodyAccessPolicyConditionsRbac{
+								Enabled:  &t,
+								GroupIds: []int64{},
+							}
+						}
+						policy.Conditions.Rbac.UserIds = users
+					})
 				if err != nil {
 					return nil, err
 				}
@@ -130,9 +161,25 @@ func init() {
 			DefaultValue:    []string{},
 		},
 		inputField{
+			Name:            "RBAC",
+			FlagName:        "rbac",
+			FlagDescription: "whether to enable role-based access control (RBAC) for the policy",
+			VarType:         "bool",
+			Mandatory:       false,
+			DefaultValue:    false,
+		},
+		inputField{
 			Name:            "Groups",
 			FlagName:        "groups",
-			FlagDescription: "specify the new groups for the policy",
+			FlagDescription: "specify the new RBAC groups for the policy",
+			VarType:         "[]int",
+			Mandatory:       false,
+			DefaultValue:    []int{},
+		},
+		inputField{
+			Name:            "Users",
+			FlagName:        "users",
+			FlagDescription: "specify the new RBAC users for the policy",
 			VarType:         "[]int",
 			Mandatory:       false,
 			DefaultValue:    []int{},

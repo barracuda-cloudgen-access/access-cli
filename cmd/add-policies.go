@@ -50,12 +50,54 @@ var policiesAddCmd = &cobra.Command{
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				policy := &apipolicies.CreatePolicyParamsBodyAccessPolicy{}
+				enableRBAC := false
 				err := placeInputValues(cmd, values, policy,
 					func(s string) { policy.Name = s },
 					func(s []strfmt.UUID) { policy.AccessResourceIds = s },
-					func(s []int64) { policy.GroupIds = s })
+					func(rbac bool) {
+						if !rbac {
+							policy.Conditions = nil
+							return
+						}
+						enableRBAC = true
+						if policy.Conditions == nil {
+							policy.Conditions = &apipolicies.CreatePolicyParamsBodyAccessPolicyConditions{}
+							policy.Conditions.Rbac = &apipolicies.CreatePolicyParamsBodyAccessPolicyConditionsRbac{
+								GroupIds: []int64{},
+								UserIds:  []int64{},
+							}
+						}
+						policy.Conditions.Rbac.Enabled = &rbac
+					},
+					func(groups []int64) {
+						if policy.Conditions == nil {
+							t := true
+							policy.Conditions = &apipolicies.CreatePolicyParamsBodyAccessPolicyConditions{}
+							policy.Conditions.Rbac = &apipolicies.CreatePolicyParamsBodyAccessPolicyConditionsRbac{
+								Enabled: &t,
+								UserIds: []int64{},
+							}
+						}
+						policy.Conditions.Rbac.GroupIds = groups
+					},
+					func(users []int64) {
+						if policy.Conditions == nil {
+							t := true
+							policy.Conditions = &apipolicies.CreatePolicyParamsBodyAccessPolicyConditions{}
+							policy.Conditions.Rbac = &apipolicies.CreatePolicyParamsBodyAccessPolicyConditionsRbac{
+								Enabled:  &t,
+								GroupIds: []int64{},
+							}
+						}
+						policy.Conditions.Rbac.UserIds = users
+					})
 				if err != nil {
 					return nil, err
+				}
+				if !enableRBAC {
+					// groups, users fields always get set to their (empty) default values,
+					// incorrectly enabling rbac even when the user doesn't ask for it
+					policy.Conditions = nil
 				}
 				body := apipolicies.CreatePolicyBody{AccessPolicy: policy}
 				params := apipolicies.NewCreatePolicyParams()
@@ -114,9 +156,25 @@ func init() {
 			DefaultValue:    []string{},
 		},
 		inputField{
+			Name:            "RBAC",
+			FlagName:        "rbac",
+			FlagDescription: "whether to enable role-based access control (RBAC) for the policy",
+			VarType:         "bool",
+			Mandatory:       false,
+			DefaultValue:    false,
+		},
+		inputField{
 			Name:            "Groups",
 			FlagName:        "groups",
-			FlagDescription: "specify the groups for the created policy",
+			FlagDescription: "specify the RBAC groups for the created policy",
+			VarType:         "[]int",
+			Mandatory:       false,
+			DefaultValue:    []int{},
+		},
+		inputField{
+			Name:            "Users",
+			FlagName:        "users",
+			FlagDescription: "specify the RBAC users for the created policy",
 			VarType:         "[]int",
 			Mandatory:       false,
 			DefaultValue:    []int{},

@@ -996,12 +996,26 @@ paths:
                     format: uuid
                 conditions:
                   type: object
-                  # TODO (along with conditions on AccessPolicy)
-                group_ids:
-                  type: array
-                  items:
-                    type: integer
-                    example: 4
+                  properties:
+                    rbac:
+                      type: object
+                      required:
+                        - enabled
+                        - group_ids
+                        - user_ids
+                      properties:
+                        enabled:
+                          type: boolean
+                        group_ids:
+                          type: array
+                          items:
+                            type: integer
+                            example: 4
+                        user_ids:
+                          type: array
+                          items:
+                            type: integer
+                            example: 3
                 name:
                   type: string
                   example: "Block jailbroken"
@@ -1133,12 +1147,26 @@ paths:
                     format: uuid
                 conditions:
                   type: object
-                  # TODO (along with conditions on AccessPolicy)
-                group_ids:
-                  type: array
-                  items:
-                    type: integer
-                    example: 4
+                  properties:
+                    rbac:
+                      type: object
+                      required:
+                        - enabled
+                        - group_ids
+                        - user_ids
+                      properties:
+                        enabled:
+                          type: boolean
+                        group_ids:
+                          type: array
+                          items:
+                            type: integer
+                            example: 4
+                        user_ids:
+                          type: array
+                          items:
+                            type: integer
+                            example: 3
                 name:
                   type: string
                   example: "Block jailbroken"
@@ -2106,7 +2134,28 @@ definitions:
         format: date-time
       conditions:
         type: object
-        # TODO properties (only those enabled are present)
+        additionalProperties:
+          type: object
+        properties:
+          rbac:
+            type: object
+            required:
+              - enabled
+              - group_ids
+              - user_ids
+            properties:
+              enabled:
+                type: boolean
+              group_ids:
+                type: array
+                items:
+                  type: integer
+                  example: 4
+              user_ids:
+                type: array
+                items:
+                  type: integer
+                  example: 3
   AccessProxy:
     type: object
     properties:
