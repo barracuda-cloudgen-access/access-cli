@@ -19,6 +19,7 @@ limitations under the License.
 
 import (
 	"fmt"
+	"regexp"
 
 	"github.com/spf13/cobra"
 )
@@ -35,6 +36,10 @@ var endpointSetCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// TODO perform some sort of validation of the endpoint
+
+		// if someone passes in a URL, ensure we only extract user:pass@host:port without protocol, slashes, etc.
+		re := regexp.MustCompile(`^(?:https?:(?:\/\/)?)?([^\/?\n]+)`)
+		args[0] = re.FindStringSubmatch(args[0])[1]
 
 		authViper.Set(ckeyAuthAccessToken, "")
 		authViper.Set(ckeyAuthClient, "")
@@ -54,7 +59,7 @@ var endpointSetCmd = &cobra.Command{
 				return err
 			}
 		}
-		cmd.Printf("Endpoint changed. Credentials cleared, please login again using `%s login`\n", ApplicationName)
+		cmd.Printf("Endpoint set to %s.\nCredentials cleared, please login again using `%s login`\n", args[0], ApplicationName)
 		if insecureUseHTTP {
 			cmd.Println("WARNING: HTTP, instead of HTTPS, is being used for API communication. THIS IS INSECURE.")
 		} else if insecureSkipVerify {
