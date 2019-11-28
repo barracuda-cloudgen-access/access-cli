@@ -215,7 +215,11 @@ func forAllInput(cmd *cobra.Command,
 		} else {
 			d, err = getFlagValue(cmd, field.VarType, field.FlagName)
 			if err != nil {
-				return err
+				if field.Mandatory {
+					return err
+				} else if field.DefaultValue != nil && writeDefaultValues {
+					d = field.DefaultValue
+				}
 			}
 		}
 		entry.Values[i] = d
