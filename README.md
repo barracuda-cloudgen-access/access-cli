@@ -86,8 +86,11 @@ To use the client with an endpoint other than the default, you should start by s
 
 ```
 $ fyde-cli endpoint set fydeconsole.example.com
-Endpoint changed. Credentials cleared, please login again using `fyde-cli login`
+Endpoint changed to fydeconsole.example.com.
+Credentials cleared, please login again using `fyde-cli login`
 ```
+
+See [this page](https://github.com/fyde/fyde-cli/wiki/Working-with-different-MC-endpoints) for more information about using different endpoints.
 
 You can then proceed to log in with your console credentials:
 
