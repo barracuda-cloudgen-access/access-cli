@@ -64,8 +64,6 @@ func initConfig() {
 		cfgViper.SetConfigType(ConfigFileName[dotIdx+1 : len(ConfigFileName)])
 	}
 
-	cfgViper.AutomaticEnv() // read in environment variables that match
-
 	// If a config file is found, read it in.
 	if err := cfgViper.ReadInConfig(); err == nil && global.VerboseLevel > 0 {
 		fmt.Println("Using config file:", cfgViper.ConfigFileUsed())
@@ -103,8 +101,6 @@ func initAuthConfig() {
 		authViper.SetConfigName(AuthFileName[0:dotIdx])
 		authViper.SetConfigType(AuthFileName[dotIdx+1 : len(AuthFileName)])
 	}
-
-	authViper.AutomaticEnv() // read in environment variables that match
 
 	// If a credentials file is found, read it in.
 	if err := authViper.ReadInConfig(); err == nil && global.VerboseLevel > 0 {
