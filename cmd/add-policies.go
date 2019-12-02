@@ -51,10 +51,12 @@ var policiesAddCmd = &cobra.Command{
 				total++ // this is the total of successful+failures, must increment before failure
 				policy := &apipolicies.CreatePolicyParamsBodyAccessPolicy{}
 				enableRBAC := false
+				called := false
 				err := placeInputValues(cmd, values, policy,
 					func(s string) { policy.Name = s },
 					func(s []strfmt.UUID) { policy.AccessResourceIds = s },
 					func(rbac bool) {
+						called = true
 						if !rbac {
 							policy.Conditions = nil
 							return
@@ -70,22 +72,22 @@ var policiesAddCmd = &cobra.Command{
 						policy.Conditions.Rbac.Enabled = &rbac
 					},
 					func(groups []int64) {
+						called = true
 						if policy.Conditions == nil {
-							t := true
 							policy.Conditions = &apipolicies.CreatePolicyParamsBodyAccessPolicyConditions{}
 							policy.Conditions.Rbac = &apipolicies.CreatePolicyParamsBodyAccessPolicyConditionsRbac{
-								Enabled: &t,
+								Enabled: &called,
 								UserIds: []int64{},
 							}
 						}
 						policy.Conditions.Rbac.GroupIds = groups
 					},
 					func(users []int64) {
+						called = true
 						if policy.Conditions == nil {
-							t := true
 							policy.Conditions = &apipolicies.CreatePolicyParamsBodyAccessPolicyConditions{}
 							policy.Conditions.Rbac = &apipolicies.CreatePolicyParamsBodyAccessPolicyConditionsRbac{
-								Enabled:  &t,
+								Enabled:  &called,
 								GroupIds: []int64{},
 							}
 						}
@@ -94,7 +96,7 @@ var policiesAddCmd = &cobra.Command{
 				if err != nil {
 					return nil, err
 				}
-				if !enableRBAC {
+				if called && !enableRBAC {
 					// groups, users fields always get set to their (empty) default values,
 					// incorrectly enabling rbac even when the user doesn't ask for it
 					policy.Conditions = nil
