@@ -31,12 +31,14 @@ fyde-cli will be continually updated to support new management console features.
 
 ## Installation
 
+If you use [Homebrew](https://brew.sh/) on Linux or Mac, we recommend installing fyde-cli through our Homebrew tap - instructions [in the tap repo](https://github.com/fyde/homebrew-tap).
+
 If you are using an operating system and architecture for which we provide pre-built binaries, we recommend using those.
 Just download the appropriate archive from the [releases page](https://github.com/fyde/fyde-cli/releases).
 We also provide deb and rpm packages.
 The fyde-cli binaries are statically compiled and have no external dependencies.
 
-Inside archives, there's the executable, a copy of this document and the license. Simply extract the executable and place it where you find most convenient (for example, in most Linux distros, you could use `/usr/local/bin` for a system-wide install).
+Inside each archive, you'll find the executable for the corresponding platform, a copy of this document and the license. Simply extract the executable and place it where you find most convenient (for example, in most Linux distros, you could use `/usr/local/bin` for a system-wide install).
 Don't forget to add the executable to `$PATH`, or equivalent, if desired.
 
 ### Installing from source
