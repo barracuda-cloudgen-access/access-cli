@@ -32,7 +32,7 @@ func setAuthDefaults() {
 	authViper.SetDefault(ckeyAuthEndpoint, DefaultEndpoint)
 }
 
-// initConfig reads in config file and ENV variables if set.
+// initConfig reads in the config file
 func initConfig() {
 	if cfgViper != nil {
 		// already init (e.g. in tests)
@@ -70,7 +70,12 @@ func initConfig() {
 	}
 }
 
-// initAuthConfig reads in credentials file and ENV variables if set.
+func cfgViperInConfig(key string) bool {
+	// it's not documented anywhere, but InConfig expects the key to be lowercase...
+	return cfgViper.InConfig(strings.ToLower(key))
+}
+
+// initAuthConfig reads in the credentials file
 func initAuthConfig() {
 	if authViper != nil {
 		// already init (e.g. in tests)
