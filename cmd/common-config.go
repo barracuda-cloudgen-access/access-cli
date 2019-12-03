@@ -28,6 +28,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+func setConfigDefaults() {
+	cfgViper.SetDefault(ckeyRecordsPerGetRequest, 50)
+}
+
 func setAuthDefaults() {
 	authViper.SetDefault(ckeyAuthEndpoint, DefaultEndpoint)
 }
@@ -40,6 +44,7 @@ func initConfig() {
 	}
 	global.WriteFiles = true
 	cfgViper = viper.New()
+	setConfigDefaults()
 	if cfgFile == "" {
 		cfgFile = os.Getenv(ConfigFileEnvVar)
 	}

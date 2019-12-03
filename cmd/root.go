@@ -148,7 +148,14 @@ func initClient() {
 		global.Transport.SetDebug(true)
 	}
 	global.Client = apiclient.New(global.Transport, strfmt.Default)
-	global.FetchPerPage = 50
+	global.FetchPerPage = cfgViper.GetInt(ckeyRecordsPerGetRequest)
+	if global.FetchPerPage > 200 {
+		fmt.Fprintf(os.Stderr, "WARNING: %s setting exceeds limit of 200. Limiting to 200.\n", ckeyRecordsPerGetRequest)
+		global.FetchPerPage = 200
+	} else if global.FetchPerPage < 1 {
+		fmt.Fprintf(os.Stderr, "WARNING: %s setting is invalid. Setting to 50.\n", ckeyRecordsPerGetRequest)
+		global.FetchPerPage = 50
+	}
 
 	switch authViper.GetString(ckeyAuthMethod) {
 	case authMethodBearerToken:

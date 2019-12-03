@@ -27,3 +27,4 @@ const ckeyAuthUID = "uid"
 
 const ckeyOutputFormat = "outputFormat"
 const ckeyPipeOutputFormat = "pipeOutputFormat"
+const ckeyRecordsPerGetRequest = "recordsPerGetRequest"
