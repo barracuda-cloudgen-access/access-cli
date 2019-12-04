@@ -118,6 +118,12 @@ func TestPagination(t *testing.T) {
 			expectedFetches: 7,
 			expected:        genData,
 		},
+		tcase{
+			rangeStart: 1, rangeEnd: 11, pageSize: 10,
+			data:            genData,
+			expectedFetches: 1,
+			expected:        genData[0:10],
+		},
 	}
 
 	for _, testCase := range testCases {
