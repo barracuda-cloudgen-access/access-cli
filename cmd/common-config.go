@@ -30,6 +30,7 @@ import (
 
 func setConfigDefaults() {
 	cfgViper.SetDefault(ckeyRecordsPerGetRequest, 50)
+	cfgViper.SetDefault(ckeyDefaultRangeSize, 20)
 }
 
 func setAuthDefaults() {

@@ -106,7 +106,7 @@ func forAllPages(cmd *cobra.Command, params pageable, do func() (int, int64, err
 		rangeStart = 0
 		rangeEnd = math.MaxInt64
 	} else if rangeEnd == -1 {
-		rangeEnd = rangeStart + 20
+		rangeEnd = rangeStart + int64(global.DefaultRangeSize)
 	} else if rangeEnd == 0 {
 		rangeEnd = math.MaxInt64
 	} else {

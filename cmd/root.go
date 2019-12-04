@@ -43,14 +43,15 @@ var cfgViper *viper.Viper
 var authViper *viper.Viper
 
 type globalInfo struct {
-	Transport    *httptransport.Runtime
-	Client       *apiclient.FydeEnterpriseConsole
-	AuthWriter   runtime.ClientAuthInfoWriter
-	VerboseLevel int
-	WriteFiles   bool
-	FetchPerPage int
-	FilterData   map[*cobra.Command]*filterData
-	InputData    map[*cobra.Command]*inputData
+	Transport        *httptransport.Runtime
+	Client           *apiclient.FydeEnterpriseConsole
+	AuthWriter       runtime.ClientAuthInfoWriter
+	VerboseLevel     int
+	WriteFiles       bool
+	FetchPerPage     int
+	DefaultRangeSize int
+	FilterData       map[*cobra.Command]*filterData
+	InputData        map[*cobra.Command]*inputData
 }
 
 var global globalInfo
@@ -155,6 +156,12 @@ func initClient() {
 	} else if global.FetchPerPage < 1 {
 		fmt.Fprintf(os.Stderr, "WARNING: %s setting is invalid. Setting to 50.\n", ckeyRecordsPerGetRequest)
 		global.FetchPerPage = 50
+	}
+
+	global.DefaultRangeSize = cfgViper.GetInt(ckeyDefaultRangeSize)
+	if global.DefaultRangeSize < 1 {
+		fmt.Fprintf(os.Stderr, "WARNING: %s setting is invalid. Setting to 20.\n", ckeyDefaultRangeSize)
+		global.DefaultRangeSize = 20
 	}
 
 	switch authViper.GetString(ckeyAuthMethod) {
