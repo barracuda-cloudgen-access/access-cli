@@ -528,6 +528,8 @@ paths:
                           example: "John Doe"
         401:
           $ref: "#/responses/Unauthorized"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /groups/{id}:
     get:
       tags:
@@ -612,6 +614,8 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
     delete:
       tags:
         - "groups"
@@ -1059,6 +1063,8 @@ paths:
                           x-nullable: true
         401:
           $ref: "#/responses/Unauthorized"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /access_policies/{id}:
     get:
       tags:
@@ -1324,6 +1330,8 @@ paths:
                 enum: [proxy_pending, proxy_enabled]
         401:
           $ref: "#/responses/Unauthorized"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /access_proxies/{id}:
     get:
       tags:
