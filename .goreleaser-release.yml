@@ -18,6 +18,8 @@ builds:
         goarch: 386
     ldflags:
       - -s -w -X main.GitCommit={{.ShortCommit}} -X main.BuildDate={{.Date}} -X main.Version={{.Version}} -X main.GitState=clean
+    hooks:
+      pre: ./scripts/generate-completions.sh
 archives:
 - replacements:
     darwin: macOS
@@ -26,7 +28,7 @@ archives:
     386: i386
     amd64: x86_64
 nfpms:
-  - 
+  -
     vendor: Fyde, Inc.
     homepage: https://fyde.github.io/docs/fyde-cli/
     description: Command-line client for Fyde Enterprise Console APIs
@@ -41,6 +43,9 @@ nfpms:
       windows: Windows
       386: i386
       amd64: x86_64
+    files:
+      "dist/completions/fyde-cli.bash": "/usr/share/bash-completion/completions/fyde-cli"
+      "dist/completions/fyde-cli.zsh": "/usr/share/zsh/site-functions/_fyde-cli"
 checksum:
   name_template: 'checksums.txt'
 snapshot:
