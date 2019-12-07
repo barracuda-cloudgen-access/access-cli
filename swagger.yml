@@ -439,6 +439,31 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
+  /users/{user_id}/devices/{device_id}:
+    delete:
+      tags:
+        - "devices"
+        - "users"
+      summary: "Delete device"
+      operationId: "deleteDevice"
+      parameters:
+      - in: path
+        name: "user_id"
+        required: true
+        type: integer
+        description: "The ID of the user who owns the device to delete"
+      - in: path
+        name: "device_id"
+        required: true
+        type: integer
+        description: "The ID of the device to delete"
+      responses:
+        204:
+          description: "Device deleted"
+        401:
+          $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
   /groups:
     get:
       tags:
