@@ -53,6 +53,9 @@ var endpointSetCmd = &cobra.Command{
 		insecureUseHTTP, _ := cmd.Flags().GetBool("insecure-use-http")
 		authViper.Set(ckeyAuthUseInsecureHTTP, insecureUseHTTP)
 
+		useCache, _ := cmd.Flags().GetBool("experimental-use-cache")
+		authViper.Set(ckeyAuthUseCache, useCache)
+
 		if global.WriteFiles {
 			err := authViper.WriteConfig()
 			if err != nil {
@@ -74,4 +77,5 @@ func init() {
 
 	endpointSetCmd.Flags().Bool("insecure-skip-verify", false, "Skip TLS certificate verification for the endpoint. INSECURE, use only if you know what you are doing")
 	endpointSetCmd.Flags().Bool("insecure-use-http", false, "Communicate with the management console over HTTP instead of HTTPS. INSECURE, use only if you know what you are doing")
+	endpointSetCmd.Flags().Bool("experimental-use-cache", false, "Enable HTTP response caching (experimental)")
 }

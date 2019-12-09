@@ -24,6 +24,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/gbl08ma/httpcache"
+	"github.com/gbl08ma/httpcache/diskcache"
 	"github.com/motemen/go-loghttp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -136,13 +138,24 @@ func initClient() {
 		}
 	}
 
-	global.Transport = httptransport.New(endpoint, "/api/v1", schemes)
+	if authViper.GetBool(ckeyAuthUseCache) {
+		path := cfgViper.GetString(ckeyCachePath)
+		path = filepath.Join(path, "httpcache")
+		cache := diskcache.New(path)
+		// wrap transport in httpcache
+		cachedTransport := httpcache.NewTransport(cache)
+		cachedTransport.Transport = transport
+		transport = cachedTransport
+	}
+
 	if global.VerboseLevel > 1 {
 		// wrap transport in loghttp
 		transport = &loghttp.Transport{
 			Transport: transport,
 		}
 	}
+
+	global.Transport = httptransport.New(endpoint, "/api/v1", schemes)
 	global.Transport.Transport = transport
 
 	if global.VerboseLevel > 2 {
@@ -172,7 +185,6 @@ func initClient() {
 		global.AuthWriter = FydeAPIKeyAuth(accessToken, client, uid)
 	default:
 	}
-
 }
 
 // FydeAPIKeyAuth provides an API key auth info writer

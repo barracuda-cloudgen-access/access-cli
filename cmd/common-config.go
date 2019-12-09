@@ -31,10 +31,14 @@ import (
 func setConfigDefaults() {
 	cfgViper.SetDefault(ckeyRecordsPerGetRequest, 50)
 	cfgViper.SetDefault(ckeyDefaultRangeSize, 20)
+
+	configDirs := configdir.New(ConfigVendorName, ConfigApplicationName)
+	cfgViper.SetDefault(ckeyCachePath, configDirs.QueryCacheFolder().Path)
 }
 
 func setAuthDefaults() {
 	authViper.SetDefault(ckeyAuthEndpoint, DefaultEndpoint)
+	authViper.SetDefault(ckeyAuthUseCache, false)
 }
 
 // initConfig reads in the config file
