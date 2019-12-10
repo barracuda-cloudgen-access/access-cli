@@ -21,8 +21,10 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"net/http/httputil"
 	"os"
 	"path/filepath"
+	goruntime "runtime"
 
 	"github.com/gbl08ma/httpcache"
 	"github.com/gbl08ma/httpcache/diskcache"
@@ -148,19 +150,28 @@ func initClient() {
 		transport = cachedTransport
 	}
 
+	// the order of these two wrappings is important for output to make more sense when VerboseLevel > 2
 	if global.VerboseLevel > 1 {
 		// wrap transport in loghttp
 		transport = &loghttp.Transport{
 			Transport: transport,
 		}
 	}
+	if global.VerboseLevel > 2 {
+		transport = &dumpRequestResponseTransport{
+			T: transport,
+		}
+	}
+
+	// setUserAgentTransport must wrap at the end,
+	// otherwise the updated user agent does not show in the dumpRequestResponseTransport dumps
+	transport = &setUserAgentTransport{
+		T: transport,
+	}
 
 	global.Transport = httptransport.New(endpoint, "/api/v1", schemes)
 	global.Transport.Transport = transport
 
-	if global.VerboseLevel > 2 {
-		global.Transport.SetDebug(true)
-	}
 	global.Client = apiclient.New(global.Transport, strfmt.Default)
 	global.FetchPerPage = cfgViper.GetInt(ckeyRecordsPerGetRequest)
 	if global.FetchPerPage > 200 {
@@ -202,4 +213,36 @@ func FydeAPIKeyAuth(accessToken, client, uid string) runtime.ClientAuthInfoWrite
 
 		return r.SetHeaderParam("uid", uid)
 	})
+}
+
+type setUserAgentTransport struct {
+	T http.RoundTripper
+}
+
+func (t *setUserAgentTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Add("User-Agent", fmt.Sprintf("fyde-cli/%s (%s; %s)", version.Version, goruntime.GOOS, goruntime.GOARCH))
+	return t.T.RoundTrip(req)
+}
+
+type dumpRequestResponseTransport struct {
+	T http.RoundTripper
+}
+
+func (t *dumpRequestResponseTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	b, err := httputil.DumpRequestOut(req, true)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("%s\n", string(b))
+
+	res, err := t.T.RoundTrip(req)
+	if err != nil {
+		return res, err
+	}
+	b, err = httputil.DumpResponse(res, true)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("%s\n", string(b))
+	return res, err
 }
