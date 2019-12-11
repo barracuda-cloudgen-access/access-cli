@@ -22,8 +22,9 @@ The following operations are implemented:
  - Get info about specific user, group, device, resource, proxy or policy
  - Create users, groups, resources, policies, proxies and domains, using command line flags or in batch mode, from files
  - Edit users, groups, resources, policies and proxies, using command line flags or in batch mode, from files
- - Delete users, groups, resources, policies, proxies and domains
+ - Delete users, groups, devices, resources, policies, proxies and domains
  - Generate, view, and revoke user enrollment links
+ - Revoke device authentication
  - List activity records and get info about specific record
  - Watch activity records as they happen in real-time
 
