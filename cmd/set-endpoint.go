@@ -19,6 +19,8 @@ limitations under the License.
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"regexp"
 
 	"github.com/spf13/cobra"
@@ -35,8 +37,6 @@ var endpointSetCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// TODO perform some sort of validation of the endpoint
-
 		// if someone passes in a URL, ensure we only extract user:pass@host:port without protocol, slashes, etc.
 		re := regexp.MustCompile(`^(?:https?:(?:\/\/)?)?([^\/?\n]+)`)
 		args[0] = re.FindStringSubmatch(args[0])[1]
@@ -55,6 +55,10 @@ var endpointSetCmd = &cobra.Command{
 
 		useCache, _ := cmd.Flags().GetBool("experimental-use-cache")
 		authViper.Set(ckeyAuthUseCache, useCache)
+
+		path := cfgViper.GetString(ckeyCachePath)
+		path = filepath.Join(path, "httpcache")
+		os.RemoveAll(path)
 
 		if global.WriteFiles {
 			err := authViper.WriteConfig()
