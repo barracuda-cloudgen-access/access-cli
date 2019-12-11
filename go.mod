@@ -3,6 +3,7 @@ module github.com/fyde/fyde-cli
 go 1.12
 
 require (
+	github.com/gbl08ma/httpcache v1.0.2
 	github.com/go-openapi/errors v0.19.2
 	github.com/go-openapi/runtime v0.19.5
 	github.com/go-openapi/strfmt v0.19.3

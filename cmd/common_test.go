@@ -23,7 +23,9 @@ limitations under the License.
 
 func init() {
 	authViper = viper.New()
+	setAuthDefaults()
 	cfgViper = viper.New()
+	setConfigDefaults()
 	authViper.Set(ckeyAuthEndpoint, "mocked")
 	authViper.Set(ckeyAuthMethod, authMethodBearerToken)
 	authViper.Set(ckeyAuthAccessToken, "testAccessToken")

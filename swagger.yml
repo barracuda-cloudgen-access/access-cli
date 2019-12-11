@@ -439,6 +439,31 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
+  /users/{user_id}/devices/{device_id}:
+    delete:
+      tags:
+        - "devices"
+        - "users"
+      summary: "Delete device"
+      operationId: "deleteDevice"
+      parameters:
+      - in: path
+        name: "user_id"
+        required: true
+        type: integer
+        description: "The ID of the user who owns the device to delete"
+      - in: path
+        name: "device_id"
+        required: true
+        type: integer
+        description: "The ID of the device to delete"
+      responses:
+        204:
+          description: "Device deleted"
+        401:
+          $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
   /groups:
     get:
       tags:
@@ -528,6 +553,8 @@ paths:
                           example: "John Doe"
         401:
           $ref: "#/responses/Unauthorized"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /groups/{id}:
     get:
       tags:
@@ -612,6 +639,8 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
     delete:
       tags:
         - "groups"
@@ -687,6 +716,10 @@ paths:
                   enabled:
                     type: boolean
                     example: true
+                  last_successful_auth:
+                    type: string
+                    format: date-time
+                    x-nullable: true
                   # User is returned with more properties in this one
                   user:
                     type: object
@@ -707,6 +740,61 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
+  /devices/{id}/revoke_auth_attempt:
+    get:
+      tags:
+        - "devices"
+      produces:
+      - "application/json"
+      summary: "Revoke device authentication"
+      operationId: "revokeDevice"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the device to revoke"
+      responses:
+        200:
+          description: "Device revoked"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Device"
+              - type: object
+                properties:
+                  notes:
+                    type: string
+                    x-nullable: true
+                    example: null
+                  enabled:
+                    type: boolean
+                    example: true
+                  last_successful_auth:
+                    type: string
+                    format: date-time
+                    x-nullable: true
+                  # User is returned with more properties in this one
+                  user:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                        format: email
+                      phone_number:
+                        type: string
+                      # we must still include these two because go-swagger is bad at merging allOf
+                      id:
+                        type: integer
+                        example: 23
+                      name:
+                        type: string
+                        example: "John Doe"
+        401:
+          $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /access_resources:
     get:
       tags:
@@ -1059,6 +1147,8 @@ paths:
                           x-nullable: true
         401:
           $ref: "#/responses/Unauthorized"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /access_policies/{id}:
     get:
       tags:
@@ -1324,6 +1414,8 @@ paths:
                 enum: [proxy_pending, proxy_enabled]
         401:
           $ref: "#/responses/Unauthorized"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /access_proxies/{id}:
     get:
       tags:

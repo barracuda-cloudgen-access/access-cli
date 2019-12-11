@@ -28,11 +28,20 @@ import (
 	"github.com/spf13/viper"
 )
 
-func setAuthDefaults() {
-	authViper.SetDefault(ckeyAuthEndpoint, DefaultEndpoint)
+func setConfigDefaults() {
+	cfgViper.SetDefault(ckeyRecordsPerGetRequest, 50)
+	cfgViper.SetDefault(ckeyDefaultRangeSize, 20)
+
+	configDirs := configdir.New(ConfigVendorName, ConfigApplicationName)
+	cfgViper.SetDefault(ckeyCachePath, configDirs.QueryCacheFolder().Path)
 }
 
-// initConfig reads in config file and ENV variables if set.
+func setAuthDefaults() {
+	authViper.SetDefault(ckeyAuthEndpoint, DefaultEndpoint)
+	authViper.SetDefault(ckeyAuthUseCache, false)
+}
+
+// initConfig reads in the config file
 func initConfig() {
 	if cfgViper != nil {
 		// already init (e.g. in tests)
@@ -40,6 +49,7 @@ func initConfig() {
 	}
 	global.WriteFiles = true
 	cfgViper = viper.New()
+	setConfigDefaults()
 	if cfgFile == "" {
 		cfgFile = os.Getenv(ConfigFileEnvVar)
 	}
@@ -70,7 +80,12 @@ func initConfig() {
 	}
 }
 
-// initAuthConfig reads in credentials file and ENV variables if set.
+func cfgViperInConfig(key string) bool {
+	// it's not documented anywhere, but InConfig expects the key to be lowercase...
+	return cfgViper.InConfig(strings.ToLower(key))
+}
+
+// initAuthConfig reads in the credentials file
 func initAuthConfig() {
 	if authViper != nil {
 		// already init (e.g. in tests)

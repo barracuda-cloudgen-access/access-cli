@@ -21,9 +21,13 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"net/http/httputil"
 	"os"
 	"path/filepath"
+	goruntime "runtime"
 
+	"github.com/gbl08ma/httpcache"
+	"github.com/gbl08ma/httpcache/diskcache"
 	"github.com/motemen/go-loghttp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -43,14 +47,15 @@ var cfgViper *viper.Viper
 var authViper *viper.Viper
 
 type globalInfo struct {
-	Transport    *httptransport.Runtime
-	Client       *apiclient.FydeEnterpriseConsole
-	AuthWriter   runtime.ClientAuthInfoWriter
-	VerboseLevel int
-	WriteFiles   bool
-	FetchPerPage int
-	FilterData   map[*cobra.Command]*filterData
-	InputData    map[*cobra.Command]*inputData
+	Transport        *httptransport.Runtime
+	Client           *apiclient.FydeEnterpriseConsole
+	AuthWriter       runtime.ClientAuthInfoWriter
+	VerboseLevel     int
+	WriteFiles       bool
+	FetchPerPage     int
+	DefaultRangeSize int
+	FilterData       map[*cobra.Command]*filterData
+	InputData        map[*cobra.Command]*inputData
 }
 
 var global globalInfo
@@ -70,7 +75,6 @@ var rootCmd = &cobra.Command{
 func Execute(versionInfo *VersionInformation) {
 	version = *versionInfo
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
 		os.Exit(1)
 	}
 }
@@ -136,20 +140,53 @@ func initClient() {
 		}
 	}
 
-	global.Transport = httptransport.New(endpoint, "/api/v1", schemes)
+	if authViper.GetBool(ckeyAuthUseCache) {
+		path := cfgViper.GetString(ckeyCachePath)
+		path = filepath.Join(path, "httpcache")
+		cache := diskcache.New(path)
+		// wrap transport in httpcache
+		cachedTransport := httpcache.NewTransport(cache)
+		cachedTransport.Transport = transport
+		transport = cachedTransport
+	}
+
+	// the order of these two wrappings is important for output to make more sense when VerboseLevel > 2
 	if global.VerboseLevel > 1 {
 		// wrap transport in loghttp
 		transport = &loghttp.Transport{
 			Transport: transport,
 		}
 	}
+	if global.VerboseLevel > 2 {
+		transport = &dumpRequestResponseTransport{
+			T: transport,
+		}
+	}
+
+	// setUserAgentTransport must wrap at the end,
+	// otherwise the updated user agent does not show in the dumpRequestResponseTransport dumps
+	transport = &setUserAgentTransport{
+		T: transport,
+	}
+
+	global.Transport = httptransport.New(endpoint, "/api/v1", schemes)
 	global.Transport.Transport = transport
 
-	if global.VerboseLevel > 2 {
-		global.Transport.SetDebug(true)
-	}
 	global.Client = apiclient.New(global.Transport, strfmt.Default)
-	global.FetchPerPage = 50
+	global.FetchPerPage = cfgViper.GetInt(ckeyRecordsPerGetRequest)
+	if global.FetchPerPage > 100 {
+		fmt.Fprintf(os.Stderr, "WARNING: %s setting exceeds limit of 100. Limiting to 100.\n", ckeyRecordsPerGetRequest)
+		global.FetchPerPage = 100
+	} else if global.FetchPerPage < 1 {
+		fmt.Fprintf(os.Stderr, "WARNING: %s setting is invalid. Setting to 50.\n", ckeyRecordsPerGetRequest)
+		global.FetchPerPage = 50
+	}
+
+	global.DefaultRangeSize = cfgViper.GetInt(ckeyDefaultRangeSize)
+	if global.DefaultRangeSize < 1 {
+		fmt.Fprintf(os.Stderr, "WARNING: %s setting is invalid. Setting to 20.\n", ckeyDefaultRangeSize)
+		global.DefaultRangeSize = 20
+	}
 
 	switch authViper.GetString(ckeyAuthMethod) {
 	case authMethodBearerToken:
@@ -159,7 +196,6 @@ func initClient() {
 		global.AuthWriter = FydeAPIKeyAuth(accessToken, client, uid)
 	default:
 	}
-
 }
 
 // FydeAPIKeyAuth provides an API key auth info writer
@@ -177,4 +213,36 @@ func FydeAPIKeyAuth(accessToken, client, uid string) runtime.ClientAuthInfoWrite
 
 		return r.SetHeaderParam("uid", uid)
 	})
+}
+
+type setUserAgentTransport struct {
+	T http.RoundTripper
+}
+
+func (t *setUserAgentTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Add("User-Agent", fmt.Sprintf("fyde-cli/%s (%s; %s)", version.Version, goruntime.GOOS, goruntime.GOARCH))
+	return t.T.RoundTrip(req)
+}
+
+type dumpRequestResponseTransport struct {
+	T http.RoundTripper
+}
+
+func (t *dumpRequestResponseTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	b, err := httputil.DumpRequestOut(req, true)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("%s\n", string(b))
+
+	res, err := t.T.RoundTrip(req)
+	if err != nil {
+		return res, err
+	}
+	b, err = httputil.DumpResponse(res, true)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("%s\n", string(b))
+	return res, err
 }

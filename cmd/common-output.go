@@ -50,6 +50,20 @@ func preRunFlagCheckOutput(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+
+	// customize default output format based on config
+	key := ckeyPipeOutputFormat
+	if terminal.IsTerminal(int(os.Stdout.Fd())) {
+		key = ckeyOutputFormat
+	}
+	if !cmd.Flags().Changed("output") && cfgViperInConfig(key) {
+		output = cfgViper.GetString(key)
+		err = cmd.Flags().Set("output", output)
+		if err != nil {
+			return err
+		}
+	}
+
 	if !funk.Contains([]string{"table", "json", "json-pretty", "csv"}, output) {
 		return fmt.Errorf("invalid output format %s", output)
 	}
