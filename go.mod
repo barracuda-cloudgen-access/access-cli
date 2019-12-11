@@ -21,6 +21,7 @@ require (
 	github.com/spf13/pflag v1.0.3
 	github.com/spf13/viper v1.3.2
 	github.com/thoas/go-funk v0.4.0
+	github.com/twpayne/httpcache v1.0.0 // indirect
 	golang.org/x/crypto v0.0.0-20190617133340-57b3e21c3d56
 	gopkg.in/h2non/gock.v1 v1.0.15
 )
