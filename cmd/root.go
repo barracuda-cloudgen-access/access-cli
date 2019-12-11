@@ -174,9 +174,9 @@ func initClient() {
 
 	global.Client = apiclient.New(global.Transport, strfmt.Default)
 	global.FetchPerPage = cfgViper.GetInt(ckeyRecordsPerGetRequest)
-	if global.FetchPerPage > 200 {
+	if global.FetchPerPage > 100 {
 		fmt.Fprintf(os.Stderr, "WARNING: %s setting exceeds limit of 100. Limiting to 100.\n", ckeyRecordsPerGetRequest)
-		global.FetchPerPage = 200
+		global.FetchPerPage = 100
 	} else if global.FetchPerPage < 1 {
 		fmt.Fprintf(os.Stderr, "WARNING: %s setting is invalid. Setting to 50.\n", ckeyRecordsPerGetRequest)
 		global.FetchPerPage = 50
