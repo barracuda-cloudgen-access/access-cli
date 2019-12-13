@@ -270,6 +270,8 @@ paths:
                       $ref: "#/definitions/DevicePartial"
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
     patch:
@@ -328,6 +330,8 @@ paths:
                       $ref: "#/definitions/DevicePartial"
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
         422:
@@ -441,6 +445,8 @@ paths:
           description: "Enrollment link changed"
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
   /users/{user_id}/devices/{device_id}:
@@ -594,6 +600,8 @@ paths:
                           example: "John Doe"
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
     patch:
@@ -641,6 +649,8 @@ paths:
                           example: "John Doe"
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
         422:
@@ -742,6 +752,8 @@ paths:
                         example: "John Doe"
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
   /devices/{id}/revoke_auth_attempt:
@@ -795,6 +807,8 @@ paths:
                         example: "John Doe"
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
         422:
@@ -956,6 +970,8 @@ paths:
                         type: integer
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
     patch:
@@ -1005,6 +1021,8 @@ paths:
                     type: string
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
         422:
@@ -1207,6 +1225,8 @@ paths:
                           x-nullable: true
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
     patch:
@@ -1304,6 +1324,8 @@ paths:
                           x-nullable: true
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
         422:
@@ -1548,6 +1570,8 @@ paths:
                       format: date-time
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
         422:
@@ -1638,6 +1662,8 @@ paths:
             $ref: "#/definitions/DeviceEvent"
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
   /assets:
@@ -1729,6 +1755,8 @@ paths:
             $ref: "#/definitions/Asset"
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
     delete:
@@ -1814,6 +1842,8 @@ paths:
             $ref: "#/definitions/AssetSource"
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
 
