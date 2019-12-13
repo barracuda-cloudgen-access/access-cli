@@ -45,8 +45,8 @@ type inputField struct {
 	Validator       func(interface{}) bool
 	VarType         string
 	Mandatory       bool
-	IsIDOnError     bool
-	SchemaName      string // only used if IsIDOnError is true, so that error handling functions can get an identifier for the failing record
+	MainField       bool
+	SchemaName      string // only used if MainField is true, so that error handling functions can get an identifier for the failing record
 	DefaultValue    interface{}
 }
 
@@ -180,6 +180,7 @@ func getFlagValue(cmd *cobra.Command, varType, flagName string) (interface{}, er
 }
 
 func forAllInput(cmd *cobra.Command,
+	args []string,
 	writeDefaultValues bool,
 	do func(entry *inputEntry) (interface{}, error),
 	printSuccess func(interface{}),
@@ -209,8 +210,16 @@ func forAllInput(cmd *cobra.Command,
 		var d interface{}
 
 		if !cmd.Flags().Changed(field.FlagName) && field.Mandatory {
-			// user did not supply the field value in a flag, must ask interactively
-			d = interactivelyReadField(cmd, field)
+			// user did not supply the field value in a flag
+			fieldInArgs := false
+			if field.MainField {
+				// attempt to get it from the arg
+				d, fieldInArgs = readFieldFromArgs(args, field)
+			}
+			if !fieldInArgs {
+				// must ask interactively
+				d = interactivelyReadField(cmd, field)
+			}
 		} else if !cmd.Flags().Changed(field.FlagName) && !writeDefaultValues {
 			// in placeInputValues, we only call the respective function for this field
 			// if the value for the entry is not nil. so, we just leave it nil, to indicate this value is not provided
@@ -237,6 +246,23 @@ func forAllInput(cmd *cobra.Command,
 		return err
 	}
 	return nil
+}
+
+func readFieldFromArgs(args []string, field inputField) (interface{}, bool) {
+	if len(args) == 0 {
+		return nil, false
+	}
+
+	switch field.VarType {
+	case "int":
+		i, err := strconv.Atoi(args[0])
+		return i, err == nil
+	case "string":
+		return strings.Join(args, " "), true
+	default:
+		// we don't need to support other vartypes in this function
+		return nil, false
+	}
 }
 
 func interactivelyReadField(cmd *cobra.Command, field inputField) interface{} {
@@ -477,19 +503,19 @@ func getIDinputValue(cmd *cobra.Command, entry *inputEntry) interface{} {
 	}
 	data := global.InputData[cmd]
 
-	// identify the index of the field that was marked as IsIDOnError
-	indexOfIDfield := func(fields []inputField) int {
+	// identify the index of the field that was marked as MainField
+	indexOfMainfield := func(fields []inputField) int {
 		for i, field := range fields {
-			if field.IsIDOnError {
+			if field.MainField {
 				return i
 			}
 		}
 		return -1
 	}
 
-	idIdx := indexOfIDfield(data.fields)
+	idIdx := indexOfMainfield(data.fields)
 	if idIdx < 0 {
-		// no field marked as ID on error, we can't help the user pinpoint the failure
+		// no field marked as main, we can't help the user pinpoint the failure
 		return nil
 	}
 

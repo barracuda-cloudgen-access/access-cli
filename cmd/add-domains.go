@@ -47,7 +47,7 @@ var domainsAddCmd = &cobra.Command{
 		tw := domainBuildTableWriter()
 		createdList := []*models.Asset{}
 		total := 0
-		err := forAllInput(cmd, true,
+		err := forAllInput(cmd, args, true,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				asset := &apiassets.CreateAssetBody{
@@ -103,7 +103,7 @@ func init() {
 			VarType:         "string",
 			Mandatory:       true,
 			DefaultValue:    "",
-			IsIDOnError:     true,
+			MainField:       true,
 			SchemaName:      "name",
 		},
 		inputField{

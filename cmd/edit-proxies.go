@@ -46,7 +46,7 @@ var proxiesEditCmd = &cobra.Command{
 		tw := proxyBuildTableWriter()
 		createdList := []*apiproxies.EditProxyOKBody{}
 		total := 0
-		err := forAllInput(cmd, false,
+		err := forAllInput(cmd, args, false,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				params := apiproxies.NewEditProxyParams()
@@ -111,7 +111,7 @@ func init() {
 			VarType:         "string",
 			Mandatory:       true,
 			DefaultValue:    "",
-			IsIDOnError:     true,
+			MainField:       true,
 			SchemaName:      "id",
 		},
 		inputField{

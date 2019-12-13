@@ -46,7 +46,7 @@ var usersEditCmd = &cobra.Command{
 		tw := userBuildTableWriter()
 		createdList := []*models.User{}
 		total := 0
-		err := forAllInput(cmd, false,
+		err := forAllInput(cmd, args, false,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				params := apiusers.NewEditUserParams()
@@ -116,7 +116,7 @@ func init() {
 			VarType:         "int",
 			Mandatory:       true,
 			DefaultValue:    0,
-			IsIDOnError:     true,
+			MainField:       true,
 			SchemaName:      "id",
 		},
 		inputField{
