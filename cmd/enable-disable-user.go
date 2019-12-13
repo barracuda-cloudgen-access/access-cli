@@ -24,7 +24,6 @@ import (
 	"github.com/spf13/cobra"
 
 	apiusers "github.com/fyde/fyde-cli/client/users"
-	"github.com/fyde/fyde-cli/models"
 )
 
 // userEnableCmd represents the enable command
@@ -50,37 +49,40 @@ var userEnableCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		enable := cmd.Use == "enable"
-		tw := userBuildTableWriter()
-		createdList := []*models.User{}
-		var loopErr error
-		for _, arg := range args {
-			userID, err := strconv.ParseInt(arg, 10, 64)
+
+		intArgs := make([]int64, len(args))
+		for i, arg := range args {
+			var err error
+			intArgs[i], err = strconv.ParseInt(arg, 10, 64)
 			if err != nil {
 				return err
 			}
+		}
 
+		tw, j := multiOpBuildTableWriter()
+
+		var err error
+		for _, arg := range intArgs {
 			params := apiusers.NewEditUserParams()
-			params.SetID(userID)
+			params.SetID(arg)
 			params.SetUser(apiusers.EditUserBody{
 				User: &apiusers.EditUserParamsBodyUser{
 					Enabled: &enable,
 				},
 			})
 
-			resp, err := global.Client.Users.EditUser(params, global.AuthWriter)
+			_, err = global.Client.Users.EditUser(params, global.AuthWriter)
 			if err != nil {
-				createdList = append(createdList, nil)
-				userTableWriterAppendError(tw, err, userID)
-				if !loopControlContinueOnError(cmd) {
-					loopErr = err
-					break
+				multiOpTableWriterAppend(tw, &j, arg, processErrorResponse(err))
+				if loopControlContinueOnError(cmd) {
+					err = nil
+					continue
 				}
-				continue
+				return printListOutputAndError(cmd, j, tw, len(args), err)
 			}
-			createdList = append(createdList, &resp.Payload.User)
-			userTableWriterAppend(tw, resp.Payload.User)
+			multiOpTableWriterAppend(tw, &j, arg, "success")
 		}
-		return printListOutputAndError(cmd, createdList, tw, len(args), loopErr)
+		return printListOutputAndError(cmd, j, tw, len(args), err)
 	},
 }
 

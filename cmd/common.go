@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/jedib0t/go-pretty/table"
+	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
 	"github.com/fyde/fyde-cli/models"
@@ -146,4 +148,37 @@ func preRunFlagChecks(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
+}
+
+type multiOpJSONResult struct {
+	ID     string `json:"id"`
+	OK     bool   `json:"ok"`
+	Result string `json:"result"`
+}
+
+func multiOpBuildTableWriter() (table.Writer, []multiOpJSONResult) {
+	tw := table.NewWriter()
+	tw.Style().Format.Header = text.FormatDefault
+	tw.AppendHeader(table.Row{
+		"ID",
+		"Result",
+	})
+	tw.SetAlign([]text.Align{
+		text.AlignRight,
+		text.AlignLeft})
+	tw.SetAllowedColumnLengths([]int{36, 60})
+	return tw, make([]multiOpJSONResult, 0)
+}
+
+func multiOpTableWriterAppend(tw table.Writer, j *[]multiOpJSONResult, id interface{}, result interface{}) {
+	tw.AppendRow(table.Row{
+		id,
+		result,
+	})
+	_, isError := result.(error)
+	*j = append(*j, multiOpJSONResult{
+		ID:     fmt.Sprint(id),
+		OK:     !isError,
+		Result: fmt.Sprint(result),
+	})
 }

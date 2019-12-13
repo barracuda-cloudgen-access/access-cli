@@ -49,6 +49,10 @@ var sourceEnableCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		enable := cmd.Use == "enable"
+
+		tw, j := multiOpBuildTableWriter()
+
+		var err error
 		for _, arg := range args {
 			params := apisources.NewEditAssetSourceParams()
 			params.SetID(strfmt.UUID(arg))
@@ -58,22 +62,18 @@ var sourceEnableCmd = &cobra.Command{
 				},
 			})
 
-			resp, err := global.Client.AssetSources.EditAssetSource(params, global.AuthWriter)
+			_, err = global.Client.AssetSources.EditAssetSource(params, global.AuthWriter)
 			if err != nil {
+				multiOpTableWriterAppend(tw, &j, arg, processErrorResponse(err))
 				if loopControlContinueOnError(cmd) {
-					cmd.PrintErrln(processErrorResponse(err))
+					err = nil
 					continue
 				}
-				return processErrorResponse(err)
+				return printListOutputAndError(cmd, j, tw, len(args), err)
 			}
-
-			if resp.Payload.Enabled {
-				cmd.Println("Source", resp.Payload.ID, "enabled")
-			} else {
-				cmd.Println("Source", resp.Payload.ID, "disabled")
-			}
+			multiOpTableWriterAppend(tw, &j, arg, "success")
 		}
-		return nil
+		return printListOutputAndError(cmd, j, tw, len(args), err)
 	},
 }
 
@@ -97,6 +97,9 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// sourceEnableCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	initOutputFlags(sourceEnableCmd)
+	initOutputFlags(sourceDisableCmd)
 
 	initLoopControlFlags(sourceEnableCmd)
 	initLoopControlFlags(sourceDisableCmd)
