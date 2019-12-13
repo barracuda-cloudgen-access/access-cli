@@ -59,34 +59,64 @@ var enrollmentGenerateCmd = &cobra.Command{
 	Short:   "Generate user enrollment link",
 	PreRunE: enrollmentPreRunE,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		userID, err := strconv.ParseInt(args[0], 10, 64)
-		if err != nil {
-			return err
-		}
-
-		params := apiusers.NewGenerateEnrollmentLinkParams()
-		params.SetID(userID)
-
-		resp, err := global.Client.Users.GenerateEnrollmentLink(params, global.AuthWriter)
-		if err != nil {
-			return processErrorResponse(err)
+		intArgs := make([]int64, len(args))
+		for i, arg := range args {
+			var err error
+			intArgs[i], err = strconv.ParseInt(arg, 10, 64)
+			if err != nil {
+				return err
+			}
 		}
 
 		tw := table.NewWriter()
 		tw.Style().Format.Header = text.FormatDefault
 		tw.AppendHeader(table.Row{
+			"ID",
 			"Slots",
 			"Expiration",
 			"URL",
 		})
-		tw.SetAllowedColumnLengths([]int{10, 30, 140})
+		tw.SetAllowedColumnLengths([]int{15, 10, 30, 140})
 
-		tw.AppendRow(table.Row{
-			resp.GetPayload().Count,
-			resp.GetPayload().Expiration,
-			resp.GetPayload().URL,
-		})
-		return printListOutputAndError(cmd, resp.Payload, tw, 1, err)
+		createdList := []*apiusers.GenerateEnrollmentLinkCreatedBody{}
+
+		var err error
+		for _, arg := range intArgs {
+			params := apiusers.NewGenerateEnrollmentLinkParams()
+			params.SetID(arg)
+
+			resp, err := global.Client.Users.GenerateEnrollmentLink(params, global.AuthWriter)
+			if err != nil {
+				// best possible workaround for https://github.com/go-swagger/go-swagger/issues/1929
+				// (without resorting to fixing the go-swagger code generator)
+				if strings.Contains(err.Error(), "(*models.NotFoundResponse) is not supported by the TextConsumer, can be resolved by supporting TextUnmarshaler interface") {
+					err = fmt.Errorf("user does not exist")
+				}
+
+				tw.AppendRow(table.Row{
+					fmt.Sprintf("[ERR] %v", arg),
+					"-",
+					"-",
+					processErrorResponse(err),
+				})
+				createdList = append(createdList, nil)
+
+				if loopControlContinueOnError(cmd) {
+					err = nil
+					continue
+				}
+				return printListOutputAndError(cmd, createdList, tw, len(intArgs), err)
+			}
+
+			tw.AppendRow(table.Row{
+				arg,
+				resp.GetPayload().Count,
+				resp.GetPayload().Expiration,
+				resp.GetPayload().URL,
+			})
+			createdList = append(createdList, resp.Payload)
+		}
+		return printListOutputAndError(cmd, createdList, tw, len(intArgs), err)
 	},
 }
 
@@ -96,28 +126,40 @@ var enrollmentRevokeCmd = &cobra.Command{
 	Short:   "Revoke user enrollment link",
 	PreRunE: enrollmentPreRunE,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		userID, err := strconv.ParseInt(args[0], 10, 64)
-		if err != nil {
-			return err
-		}
-
-		params := apiusers.NewRevokeEnrollmentLinkParams()
-		params.SetID(userID)
-
-		cmd.SilenceUsage = true
-		_, err = global.Client.Users.RevokeEnrollmentLink(params, global.AuthWriter)
-		if err != nil {
-			// best possible workaround for https://github.com/go-swagger/go-swagger/issues/1929
-			// (without resorting to fixing the go-swagger code generator)
-			if strings.Contains(err.Error(), "(*models.NotFoundResponse) is not supported by the TextConsumer, can be resolved by supporting TextUnmarshaler interface") {
-				cmd.Println("User", userID, "does not exist or does not have an enrollment link")
-				return nil
+		intArgs := make([]int64, len(args))
+		for i, arg := range args {
+			var err error
+			intArgs[i], err = strconv.ParseInt(arg, 10, 64)
+			if err != nil {
+				return err
 			}
-			return processErrorResponse(err)
 		}
 
-		cmd.Println("Enrollment link for user", userID, "revoked")
-		return nil
+		tw, j := multiOpBuildTableWriter()
+
+		var err error
+		for _, arg := range intArgs {
+			params := apiusers.NewRevokeEnrollmentLinkParams()
+			params.SetID(arg)
+
+			_, err = global.Client.Users.RevokeEnrollmentLink(params, global.AuthWriter)
+			if err != nil {
+				// best possible workaround for https://github.com/go-swagger/go-swagger/issues/1929
+				// (without resorting to fixing the go-swagger code generator)
+				if strings.Contains(err.Error(), "(*models.NotFoundResponse) is not supported by the TextConsumer, can be resolved by supporting TextUnmarshaler interface") {
+					err = fmt.Errorf("user does not exist or does not have an enrollment link")
+				}
+
+				multiOpTableWriterAppend(tw, &j, arg, processErrorResponse(err))
+				if loopControlContinueOnError(cmd) {
+					err = nil
+					continue
+				}
+				return printListOutputAndError(cmd, j, tw, len(args), err)
+			}
+			multiOpTableWriterAppend(tw, &j, arg, "success")
+		}
+		return printListOutputAndError(cmd, j, tw, len(args), err)
 	},
 }
 
@@ -127,26 +169,37 @@ var enrollmentGetCmd = &cobra.Command{
 	Short:   "Get user enrollment link",
 	PreRunE: enrollmentPreRunE,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		userID, err := strconv.ParseInt(args[0], 10, 64)
-		if err != nil {
-			return err
+		intArgs := make([]int64, len(args))
+		for i, arg := range args {
+			var err error
+			intArgs[i], err = strconv.ParseInt(arg, 10, 64)
+			if err != nil {
+				return err
+			}
 		}
 
-		params := apiusers.NewGetUserParams()
-		params.SetID(userID)
+		cmd.SilenceUsage = true // errors beyond this point are no longer due to malformed input
 
-		cmd.SilenceUsage = true
-		resp, err := global.Client.Users.GetUser(params, global.AuthWriter)
-		if err != nil {
-			return processErrorResponse(err)
-		}
+		for _, arg := range intArgs {
+			params := apiusers.NewGetUserParams()
+			params.SetID(arg)
 
-		if resp.Payload.Enrollment == nil ||
-			resp.Payload.EnrollmentStatus == "revoked" ||
-			resp.Payload.EnrollmentStatus == "expired" {
-			cmd.Println("No shareable enrollment link available for this user")
-		} else {
-			cmd.Println(resp.Payload.Enrollment.URL)
+			resp, err := global.Client.Users.GetUser(params, global.AuthWriter)
+			if err != nil {
+				if loopControlContinueOnError(cmd) {
+					cmd.PrintErrln(processErrorResponse(err))
+					continue
+				}
+				return processErrorResponse(err)
+			}
+
+			if resp.Payload.Enrollment == nil ||
+				resp.Payload.EnrollmentStatus == "revoked" ||
+				resp.Payload.EnrollmentStatus == "expired" {
+				cmd.Println("No shareable enrollment link available for this user")
+			} else {
+				cmd.Println(resp.Payload.Enrollment.URL)
+			}
 		}
 		return nil
 	},
@@ -169,4 +222,10 @@ func init() {
 	// enrollmentCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(enrollmentGenerateCmd)
+	initLoopControlFlags(enrollmentGenerateCmd)
+
+	initOutputFlags(enrollmentRevokeCmd)
+	initLoopControlFlags(enrollmentRevokeCmd)
+
+	initLoopControlFlags(enrollmentGetCmd)
 }
