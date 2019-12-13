@@ -66,6 +66,10 @@ func processErrorResponse(err error) error {
 		GetPayload() *models.UnauthorizedResponse
 	}
 
+	type forbiddenResponse interface {
+		GetPayload() models.ForbiddenResponse
+	}
+
 	type notFoundResponse interface {
 		GetPayload() models.NotFoundResponse
 	}
@@ -77,6 +81,8 @@ func processErrorResponse(err error) error {
 	switch r := err.(type) {
 	case unauthorizedResponse:
 		return fmt.Errorf(strings.Join(r.GetPayload().Errors, "\n"))
+	case forbiddenResponse:
+		return fmt.Errorf("forbidden")
 	case notFoundResponse:
 		return fmt.Errorf("not found")
 	case unprocessableEntityResponse:

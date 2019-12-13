@@ -402,6 +402,8 @@ paths:
           description: "Enrollment link revoked"
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
   /users/{id}/enrollment/change_slots:
@@ -2511,6 +2513,7 @@ definitions:
         type: string
   
   NotFoundResponse: {}
+  ForbiddenResponse: {}
 
 responses:
   NotFound:
@@ -2522,6 +2525,11 @@ responses:
     description: "unauthorized: invalid credentials or missing authentication headers"
     schema:
       $ref: "#/definitions/UnauthorizedResponse"
+
+  Forbidden:
+    description: "forbidden"
+    schema:
+      $ref: "#/definitions/ForbiddenResponse"
   
   UnprocessableEntity:
     description: "unprocessable entity"
