@@ -65,33 +65,34 @@ var proxyDeleteCmd = &cobra.Command{
 			return nil
 		}
 
+		tw, j := multiOpBuildTableWriter()
+
+		var err error
 		if loopControlContinueOnError(cmd) {
 			// then we must delete individually, because on a request for multiple deletions,
 			// the server does nothing if one fails
-			i := 0
-			for _, proxyID := range proxyIDs {
-				err := delete([]strfmt.UUID{proxyID})
+
+			for _, id := range proxyIDs {
+				err = delete([]strfmt.UUID{id})
+				var result interface{}
+				result = "success"
 				if err != nil {
-					cmd.PrintErrln(err)
-				} else {
-					// only keep successful deletions in list of proxyIDs
-					// this rewrites the array in place and lets us "delete" as we iterate
-					// (junk is removed after the loop)
-					proxyIDs[i] = proxyID
-					i++
+					result = err
 				}
+				multiOpTableWriterAppend(tw, &j, id, result)
 			}
-			// remove junk left at end of slice
-			proxyIDs = proxyIDs[:i]
+			err = nil
 		} else {
-			err := delete(proxyIDs)
+			err = delete(proxyIDs)
+			var result interface{}
+			result = "success"
 			if err != nil {
-				return err
+				result = err
 			}
+			multiOpTableWriterAppend(tw, &j, "*", result)
 		}
 
-		printMultiOpOutput(cmd, "Proxy", proxyIDs, "deleted")
-		return nil
+		return printListOutputAndError(cmd, j, tw, len(proxyIDs), err)
 	},
 }
 
@@ -108,5 +109,6 @@ func init() {
 	// is called directly, e.g.:
 	// proxyDeleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initOutputFlags(proxyDeleteCmd)
 	initLoopControlFlags(proxyDeleteCmd)
 }

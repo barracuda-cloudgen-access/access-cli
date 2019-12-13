@@ -77,27 +77,21 @@ var deviceDeleteCmd = &cobra.Command{
 			return nil
 		}
 
-		i := 0
-		for _, deviceID := range deviceIDs {
-			err = delete(deviceID)
-			if err != nil {
-				if !loopControlContinueOnError(cmd) {
-					return err
-				}
-				cmd.PrintErrln(err)
-			} else {
-				// only keep successful deletions in list of deviceIDs
-				// this rewrites the array in place and lets us "delete" as we iterate
-				// (junk is removed after the loop)
-				deviceIDs[i] = deviceID
-				i++
-			}
-		}
-		// remove junk left at end of slice
-		deviceIDs = deviceIDs[:i]
+		tw, j := multiOpBuildTableWriter()
 
-		printMultiOpOutput(cmd, "Device", deviceIDs, "deleted")
-		return nil
+		for _, arg := range deviceIDs {
+			err = delete(arg)
+			if err != nil {
+				multiOpTableWriterAppend(tw, &j, arg, processErrorResponse(err))
+				if loopControlContinueOnError(cmd) {
+					err = nil
+					continue
+				}
+				return printListOutputAndError(cmd, j, tw, len(args), err)
+			}
+			multiOpTableWriterAppend(tw, &j, arg, "success")
+		}
+		return printListOutputAndError(cmd, j, tw, len(args), err)
 	},
 }
 
@@ -114,5 +108,6 @@ func init() {
 	// is called directly, e.g.:
 	// deviceDeleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initOutputFlags(deviceDeleteCmd)
 	initLoopControlFlags(deviceDeleteCmd)
 }

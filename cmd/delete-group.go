@@ -69,33 +69,33 @@ var groupDeleteCmd = &cobra.Command{
 			return nil
 		}
 
+		tw, j := multiOpBuildTableWriter()
+
 		if loopControlContinueOnError(cmd) {
 			// then we must delete individually, because on a request for multiple deletions,
 			// the server does nothing if one fails
-			i := 0
-			for _, groupID := range groupIDs {
-				err = delete([]int64{groupID})
+
+			for _, id := range groupIDs {
+				err = delete([]int64{id})
+				var result interface{}
+				result = "success"
 				if err != nil {
-					cmd.PrintErrln(err)
-				} else {
-					// only keep successful deletions in list of groupIDs
-					// this rewrites the array in place and lets us "delete" as we iterate
-					// (junk is removed after the loop)
-					groupIDs[i] = groupID
-					i++
+					result = err
 				}
+				multiOpTableWriterAppend(tw, &j, id, result)
 			}
-			// remove junk left at end of slice
-			groupIDs = groupIDs[:i]
+			err = nil
 		} else {
 			err = delete(groupIDs)
+			var result interface{}
+			result = "success"
 			if err != nil {
-				return err
+				result = err
 			}
+			multiOpTableWriterAppend(tw, &j, "*", result)
 		}
 
-		printMultiOpOutput(cmd, "Group", groupIDs, "deleted")
-		return nil
+		return printListOutputAndError(cmd, j, tw, len(groupIDs), err)
 	},
 }
 
@@ -112,5 +112,6 @@ func init() {
 	// is called directly, e.g.:
 	// groupDeleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initOutputFlags(groupDeleteCmd)
 	initLoopControlFlags(groupDeleteCmd)
 }

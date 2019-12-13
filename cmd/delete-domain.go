@@ -69,33 +69,33 @@ var domainDeleteCmd = &cobra.Command{
 			return nil
 		}
 
+		tw, j := multiOpBuildTableWriter()
+
 		if loopControlContinueOnError(cmd) {
 			// then we must delete individually, because on a request for multiple deletions,
 			// the server does nothing if one fails
-			i := 0
-			for _, assetID := range assetIDs {
-				err = delete([]int64{assetID})
+
+			for _, id := range assetIDs {
+				err = delete([]int64{id})
+				var result interface{}
+				result = "success"
 				if err != nil {
-					cmd.PrintErrln(err)
-				} else {
-					// only keep successful deletions in list of assetIDs
-					// this rewrites the array in place and lets us "delete" as we iterate
-					// (junk is removed after the loop)
-					assetIDs[i] = assetID
-					i++
+					result = err
 				}
+				multiOpTableWriterAppend(tw, &j, id, result)
 			}
-			// remove junk left at end of slice
-			assetIDs = assetIDs[:i]
+			err = nil
 		} else {
 			err = delete(assetIDs)
+			var result interface{}
+			result = "success"
 			if err != nil {
-				return err
+				result = err
 			}
+			multiOpTableWriterAppend(tw, &j, "*", result)
 		}
 
-		printMultiOpOutput(cmd, "Domain", assetIDs, "deleted")
-		return nil
+		return printListOutputAndError(cmd, j, tw, len(assetIDs), err)
 	},
 }
 
@@ -112,5 +112,6 @@ func init() {
 	// is called directly, e.g.:
 	// domainDeleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initOutputFlags(domainDeleteCmd)
 	initLoopControlFlags(domainDeleteCmd)
 }

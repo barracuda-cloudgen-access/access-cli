@@ -69,33 +69,33 @@ var policyDeleteCmd = &cobra.Command{
 			return nil
 		}
 
+		tw, j := multiOpBuildTableWriter()
+
 		if loopControlContinueOnError(cmd) {
 			// then we must delete individually, because on a request for multiple deletions,
 			// the server does nothing if one fails
-			i := 0
-			for _, policyID := range policyIDs {
-				err = delete([]int64{policyID})
+
+			for _, id := range policyIDs {
+				err = delete([]int64{id})
+				var result interface{}
+				result = "success"
 				if err != nil {
-					cmd.PrintErrln(err)
-				} else {
-					// only keep successful deletions in list of policyIDs
-					// this rewrites the array in place and lets us "delete" as we iterate
-					// (junk is removed after the loop)
-					policyIDs[i] = policyID
-					i++
+					result = err
 				}
+				multiOpTableWriterAppend(tw, &j, id, result)
 			}
-			// remove junk left at end of slice
-			policyIDs = policyIDs[:i]
+			err = nil
 		} else {
 			err = delete(policyIDs)
+			var result interface{}
+			result = "success"
 			if err != nil {
-				return err
+				result = err
 			}
+			multiOpTableWriterAppend(tw, &j, "*", result)
 		}
 
-		printMultiOpOutput(cmd, "Policy", policyIDs, "deleted")
-		return nil
+		return printListOutputAndError(cmd, j, tw, len(policyIDs), err)
 	},
 }
 
@@ -112,5 +112,6 @@ func init() {
 	// is called directly, e.g.:
 	// policyDeleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initOutputFlags(policyDeleteCmd)
 	initLoopControlFlags(policyDeleteCmd)
 }

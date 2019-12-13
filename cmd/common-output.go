@@ -21,10 +21,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 
-	"github.com/go-openapi/strfmt"
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/spf13/cobra"
 	"github.com/thoas/go-funk"
@@ -88,11 +86,15 @@ func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Wr
 			}
 		}
 		totalsMessage := ""
+		plural := "s"
+		if tableWriter.Length() == 1 {
+			plural = ""
+		}
 		if tableWriter.Length() != total {
-			totalsMessage = fmt.Sprintf("\n(%d records out of %d)",
-				tableWriter.Length(), total)
+			totalsMessage = fmt.Sprintf("\n(%d record%s out of %d)",
+				tableWriter.Length(), plural, total)
 		} else {
-			totalsMessage = fmt.Sprintf("\n(%d records)", total)
+			totalsMessage = fmt.Sprintf("\n(%d record%s)", total, plural)
 		}
 		return tableWriter.Render() + totalsMessage, nil
 	case "csv":
@@ -114,54 +116,6 @@ func printListOutputAndError(cmd *cobra.Command, data interface{}, tableWriter t
 		return processErrorResponse(loopErr)
 	}
 	return err2
-}
-
-func printMultiOpOutput(cmd *cobra.Command, itemName string, itemIDs interface{}, operationVerb string) {
-	output := itemName
-	length := 2
-	niceIDs := fmt.Sprint(itemIDs)
-	switch ids := itemIDs.(type) {
-	case []string:
-		length = len(ids)
-		niceIDs = strings.Join(ids, ", ")
-	case []strfmt.UUID:
-		length = len(ids)
-		niceIDs = strings.Join(
-			funk.Map(
-				ids,
-				func(uuid strfmt.UUID) string {
-					return string(uuid)
-				}).([]string),
-			", ")
-	case []int:
-		length = len(ids)
-		niceIDs = strings.Join(
-			funk.Map(
-				ids,
-				func(i int) string {
-					return strconv.Itoa(i)
-				}).([]string),
-			", ")
-	case []int64:
-		length = len(ids)
-		niceIDs = strings.Join(
-			funk.Map(
-				ids,
-				func(i int64) string {
-					return strconv.Itoa(int(i))
-				}).([]string),
-			", ")
-	}
-	if length != 1 {
-		output = pluralize(output)
-	}
-	if length == 0 {
-		output = "No " + strings.ToLower(output)
-	} else {
-		niceIDs += " "
-	}
-	output += " " + niceIDs + operationVerb
-	cmd.Println(output)
 }
 
 func renderWatchOutput(cmd *cobra.Command, data interface{}, tableWriter table.Writer) (bool, string, error) {
