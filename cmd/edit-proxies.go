@@ -129,7 +129,6 @@ func init() {
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",
-			IsIDOnError:     true,
 			SchemaName:      "name",
 		},
 		inputField{
