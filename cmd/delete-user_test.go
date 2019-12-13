@@ -19,8 +19,8 @@ limitations under the License.
 
 import (
 	"bytes"
+	"encoding/json"
 	"io/ioutil"
-	"strings"
 	"testing"
 
 	"github.com/nbio/st"
@@ -43,6 +43,7 @@ func TestDeleteUsersOneRequest(t *testing.T) {
 	cmd.SetArgs([]string{
 		"users",
 		"delete",
+		"-o=json",
 		"345",
 		"9845",
 		"2202",
@@ -54,8 +55,13 @@ func TestDeleteUsersOneRequest(t *testing.T) {
 
 	output, err := ioutil.ReadAll(buf)
 	st.Expect(t, err, nil)
-	if strings.Count(string(output), ",") != 2 || !strings.Contains(string(output), "deleted") {
-		t.Fatal("Unexpected output")
+
+	r := []multiOpJSONResult{}
+	err = json.Unmarshal(output, &r)
+	st.Expect(t, err, nil)
+	st.Expect(t, len(r), 1)
+	for _, o := range r {
+		st.Expect(t, o.OK, true)
 	}
 }
 
@@ -86,6 +92,7 @@ func TestDeleteUsersIndividualRequests(t *testing.T) {
 		"users",
 		"delete",
 		"--continue-on-error",
+		"-o=json",
 		"345",
 		"9845",
 		"2202",
@@ -97,8 +104,13 @@ func TestDeleteUsersIndividualRequests(t *testing.T) {
 
 	output, err := ioutil.ReadAll(buf)
 	st.Expect(t, err, nil)
-	if !strings.Contains(string(output), "Users 345, 9845, 2202 deleted") {
-		t.Fatal("Unexpected output")
+
+	r := []multiOpJSONResult{}
+	err = json.Unmarshal(output, &r)
+	st.Expect(t, err, nil)
+	st.Expect(t, len(r), 3)
+	for _, o := range r {
+		st.Expect(t, o.OK, true)
 	}
 }
 
@@ -124,6 +136,7 @@ func TestDeleteUsersIndividualRequestsOneFail(t *testing.T) {
 		"users",
 		"delete",
 		"--continue-on-error",
+		"-o=json",
 		"345",
 		"9845",
 		"2202",
@@ -135,7 +148,12 @@ func TestDeleteUsersIndividualRequestsOneFail(t *testing.T) {
 
 	output, err := ioutil.ReadAll(buf)
 	st.Expect(t, err, nil)
-	if !strings.Contains(string(output), "Users 345, 2202 deleted") {
-		t.Fatal("Unexpected output")
-	}
+
+	r := []multiOpJSONResult{}
+	err = json.Unmarshal(output, &r)
+	st.Expect(t, err, nil)
+	st.Expect(t, len(r), 3)
+	st.Expect(t, r[0].OK, true)
+	st.Expect(t, r[1].OK, false)
+	st.Expect(t, r[2].OK, true)
 }
