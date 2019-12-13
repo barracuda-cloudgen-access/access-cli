@@ -48,21 +48,33 @@ var deviceRevokeCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		deviceID, err := strconv.ParseInt(args[0], 10, 64)
-		if err != nil {
-			return err
+		ids := make([]int64, len(args))
+		var err error
+		for i, arg := range args {
+			ids[i], err = strconv.ParseInt(arg, 10, 64)
+			if err != nil {
+				return err
+			}
 		}
 
-		params := apidevices.NewRevokeDeviceParams()
-		params.SetID(deviceID)
+		tw, j := multiOpBuildTableWriter()
 
-		resp, err := global.Client.Devices.RevokeDevice(params, global.AuthWriter)
-		if err != nil {
-			return processErrorResponse(err)
+		for _, id := range ids {
+			params := apidevices.NewRevokeDeviceParams()
+			params.SetID(id)
+
+			_, err = global.Client.Devices.RevokeDevice(params, global.AuthWriter)
+			if err != nil {
+				multiOpTableWriterAppend(tw, &j, id, processErrorResponse(err))
+				if loopControlContinueOnError(cmd) {
+					err = nil
+					continue
+				}
+				return printListOutputAndError(cmd, j, tw, len(ids), err)
+			}
+			multiOpTableWriterAppend(tw, &j, id, "success")
 		}
-
-		cmd.Println("Authentication revoked for device", resp.Payload.ID)
-		return nil
+		return printListOutputAndError(cmd, j, tw, len(ids), err)
 	},
 }
 
@@ -80,4 +92,5 @@ func init() {
 	// deviceRevokeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(deviceRevokeCmd)
+	initLoopControlFlags(deviceRevokeCmd)
 }
