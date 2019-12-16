@@ -157,7 +157,7 @@ func preRunFlagChecks(cmd *cobra.Command, args []string) error {
 }
 
 type multiOpJSONResult struct {
-	ID     string `json:"id"`
+	ID     interface{} `json:"id"`
 	OK     bool   `json:"ok"`
 	Result string `json:"result"`
 }
@@ -181,10 +181,20 @@ func multiOpTableWriterAppend(tw table.Writer, j *[]multiOpJSONResult, id interf
 		id,
 		result,
 	})
+
 	_, isError := result.(error)
-	*j = append(*j, multiOpJSONResult{
-		ID:     fmt.Sprint(id),
+	r := multiOpJSONResult{
 		OK:     !isError,
 		Result: fmt.Sprint(result),
-	})
+	}
+	switch v := id.(type) {
+	case int:
+		r.ID = v
+	case int64:
+		r.ID = v
+	default:
+		r.ID = fmt.Sprint(id)
+	}
+
+	*j = append(*j, r)
 }
