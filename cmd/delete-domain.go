@@ -19,7 +19,6 @@ limitations under the License.
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/spf13/cobra"
 
@@ -42,20 +41,16 @@ var domainDeleteCmd = &cobra.Command{
 			return err
 		}
 
-		if len(args) == 0 {
+		if !multiOpCheckArgsPresent(cmd, args) {
 			return fmt.Errorf("missing domain ID argument")
 		}
 
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		assetIDs := make([]int64, len(args))
-		var err error
-		for i, arg := range args {
-			assetIDs[i], err = strconv.ParseInt(arg, 10, 64)
-			if err != nil {
-				return err
-			}
+		assetIDs, err := multiOpParseInt64Args(cmd, args, "id")
+		if err != nil {
+			return err
 		}
 
 		delete := func(ids []int64) error {

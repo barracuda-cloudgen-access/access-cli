@@ -42,16 +42,16 @@ var proxyDeleteCmd = &cobra.Command{
 			return err
 		}
 
-		if len(args) == 0 {
+		if !multiOpCheckArgsPresent(cmd, args) {
 			return fmt.Errorf("missing proxy ID argument")
 		}
 
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		proxyIDs := make([]strfmt.UUID, len(args))
-		for i, arg := range args {
-			proxyIDs[i] = strfmt.UUID(arg)
+		proxyIDs, err := multiOpParseUUIDArgs(cmd, args, "id")
+		if err != nil {
+			return err
 		}
 
 		delete := func(ids []strfmt.UUID) error {
@@ -67,7 +67,6 @@ var proxyDeleteCmd = &cobra.Command{
 
 		tw, j := multiOpBuildTableWriter()
 
-		var err error
 		if loopControlContinueOnError(cmd) {
 			// then we must delete individually, because on a request for multiple deletions,
 			// the server does nothing if one fails

@@ -42,16 +42,16 @@ var resourceDeleteCmd = &cobra.Command{
 			return err
 		}
 
-		if len(args) == 0 {
+		if !multiOpCheckArgsPresent(cmd, args) {
 			return fmt.Errorf("missing resource ID argument")
 		}
 
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		resourceIDs := make([]strfmt.UUID, len(args))
-		for i, arg := range args {
-			resourceIDs[i] = strfmt.UUID(arg)
+		resourceIDs, err := multiOpParseUUIDArgs(cmd, args, "id")
+		if err != nil {
+			return err
 		}
 
 		delete := func(ids []strfmt.UUID) error {
@@ -67,7 +67,6 @@ var resourceDeleteCmd = &cobra.Command{
 
 		tw, j := multiOpBuildTableWriter()
 
-		var err error
 		if loopControlContinueOnError(cmd) {
 			// then we must delete individually, because on a request for multiple deletions,
 			// the server does nothing if one fails

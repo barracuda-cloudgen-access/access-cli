@@ -19,7 +19,6 @@ limitations under the License.
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/spf13/cobra"
 
@@ -41,7 +40,7 @@ var userEnableCmd = &cobra.Command{
 			return err
 		}
 
-		if len(args) == 0 {
+		if !multiOpCheckArgsPresent(cmd, args) {
 			return fmt.Errorf("missing user ID argument")
 		}
 
@@ -50,18 +49,13 @@ var userEnableCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		enable := cmd.Use == "enable"
 
-		intArgs := make([]int64, len(args))
-		for i, arg := range args {
-			var err error
-			intArgs[i], err = strconv.ParseInt(arg, 10, 64)
-			if err != nil {
-				return err
-			}
+		intArgs, err := multiOpParseInt64Args(cmd, args, "id")
+		if err != nil {
+			return err
 		}
 
 		tw, j := multiOpBuildTableWriter()
 
-		var err error
 		for _, arg := range intArgs {
 			params := apiusers.NewEditUserParams()
 			params.SetID(arg)

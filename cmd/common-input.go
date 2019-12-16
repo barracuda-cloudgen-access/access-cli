@@ -28,6 +28,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/go-openapi/strfmt"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cobra"
 	"github.com/thoas/go-funk"
@@ -534,4 +535,102 @@ func getIDinputValue(cmd *cobra.Command, entry *inputEntry) interface{} {
 		return m[data.fields[idIdx].SchemaName]
 	}
 	return nil
+}
+
+func multiOpCheckArgsPresent(cmd *cobra.Command, args []string) bool {
+	if len(args) > 0 {
+		return true
+	}
+
+	// check if there's piped input
+	stdinInfo, err := os.Stdin.Stat()
+	return err == nil && (stdinInfo.Mode()&os.ModeCharDevice == 0)
+}
+
+func multiOpParseInt64Args(cmd *cobra.Command, args []string, idFieldName string) ([]int64, error) {
+	if len(args) > 0 {
+		intArgs := make([]int64, len(args))
+		for i, arg := range args {
+			var err error
+			intArgs[i], err = strconv.ParseInt(arg, 10, 64)
+			if err != nil {
+				return intArgs, err
+			}
+		}
+		return intArgs, nil
+	}
+
+	stdinInfo, err := os.Stdin.Stat()
+	hasPiped := err == nil && (stdinInfo.Mode()&os.ModeCharDevice == 0)
+	if !hasPiped {
+		return []int64{}, fmt.Errorf("missing arguments")
+	}
+
+	d := json.NewDecoder(os.Stdin)
+	d.UseNumber() // important, otherwise all numbers are decoded as float64
+
+	var jsonArray []map[string]interface{}
+	if err := d.Decode(&jsonArray); err != nil {
+		return []int64{}, fmt.Errorf("decoding JSON from pipe: %w", err)
+	}
+
+	intArgs := make([]int64, len(jsonArray))
+	for i, itemMap := range jsonArray {
+		numIface, present := itemMap[idFieldName]
+		if !present {
+			return intArgs, fmt.Errorf("key %s not present in piped JSON", idFieldName)
+		}
+
+		num, ok := numIface.(json.Number)
+		if !ok {
+			return intArgs, fmt.Errorf("value of %s is not a number in piped JSON", idFieldName)
+		}
+
+		intArgs[i], err = num.Int64()
+		if err != nil {
+			return intArgs, fmt.Errorf("error converting value of %s to integer: %w", idFieldName, err)
+		}
+	}
+
+	return intArgs, nil
+}
+
+func multiOpParseUUIDArgs(cmd *cobra.Command, args []string, idFieldName string) ([]strfmt.UUID, error) {
+	if len(args) > 0 {
+		uuidArgs := make([]strfmt.UUID, len(args))
+		for i, arg := range args {
+			uuidArgs[i] = strfmt.UUID(arg)
+		}
+		return uuidArgs, nil
+	}
+
+	stdinInfo, err := os.Stdin.Stat()
+	hasPiped := err == nil && (stdinInfo.Mode()&os.ModeCharDevice == 0)
+	if !hasPiped {
+		return []strfmt.UUID{}, fmt.Errorf("missing arguments")
+	}
+
+	d := json.NewDecoder(os.Stdin)
+
+	var jsonArray []map[string]interface{}
+	if err := d.Decode(&jsonArray); err != nil {
+		return []strfmt.UUID{}, fmt.Errorf("decoding JSON from pipe: %w", err)
+	}
+
+	uuidArgs := make([]strfmt.UUID, len(jsonArray))
+	for i, itemMap := range jsonArray {
+		numIface, present := itemMap[idFieldName]
+		if !present {
+			return uuidArgs, fmt.Errorf("key %s not present in piped JSON", idFieldName)
+		}
+
+		s, ok := numIface.(string)
+		if !ok {
+			return uuidArgs, fmt.Errorf("value of %s is not a string in piped JSON", idFieldName)
+		}
+
+		uuidArgs[i] = strfmt.UUID(s)
+	}
+
+	return uuidArgs, nil
 }

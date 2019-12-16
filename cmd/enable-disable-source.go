@@ -20,7 +20,6 @@ limitations under the License.
 import (
 	"fmt"
 
-	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
 	apisources "github.com/fyde/fyde-cli/client/asset_sources"
@@ -41,7 +40,7 @@ var sourceEnableCmd = &cobra.Command{
 			return err
 		}
 
-		if len(args) == 0 {
+		if !multiOpCheckArgsPresent(cmd, args) {
 			return fmt.Errorf("missing source ID argument")
 		}
 
@@ -50,12 +49,16 @@ var sourceEnableCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		enable := cmd.Use == "enable"
 
+		uuidArgs, err := multiOpParseUUIDArgs(cmd, args, "id")
+		if err != nil {
+			return err
+		}
+
 		tw, j := multiOpBuildTableWriter()
 
-		var err error
-		for _, arg := range args {
+		for _, arg := range uuidArgs {
 			params := apisources.NewEditAssetSourceParams()
-			params.SetID(strfmt.UUID(arg))
+			params.SetID(arg)
 			params.SetAssetSource(apisources.EditAssetSourceBody{
 				AssetSource: &apisources.EditAssetSourceParamsBodyAssetSource{
 					Enabled: &enable,

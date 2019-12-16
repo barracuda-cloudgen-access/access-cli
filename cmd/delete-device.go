@@ -19,7 +19,6 @@ limitations under the License.
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/spf13/cobra"
 
@@ -42,20 +41,16 @@ var deviceDeleteCmd = &cobra.Command{
 			return err
 		}
 
-		if len(args) == 0 {
+		if !multiOpCheckArgsPresent(cmd, args) {
 			return fmt.Errorf("missing device ID argument")
 		}
 
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		deviceIDs := make([]int64, len(args))
-		var err error
-		for i, arg := range args {
-			deviceIDs[i], err = strconv.ParseInt(arg, 10, 64)
-			if err != nil {
-				return err
-			}
+		deviceIDs, err := multiOpParseInt64Args(cmd, args, "id")
+		if err != nil {
+			return err
 		}
 
 		delete := func(id int64) error {

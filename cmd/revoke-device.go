@@ -19,7 +19,6 @@ limitations under the License.
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/spf13/cobra"
 
@@ -41,25 +40,21 @@ var deviceRevokeCmd = &cobra.Command{
 			return err
 		}
 
-		if len(args) == 0 {
+		if !multiOpCheckArgsPresent(cmd, args) {
 			return fmt.Errorf("missing device ID argument")
 		}
 
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		ids := make([]int64, len(args))
-		var err error
-		for i, arg := range args {
-			ids[i], err = strconv.ParseInt(arg, 10, 64)
-			if err != nil {
-				return err
-			}
+		intArgs, err := multiOpParseInt64Args(cmd, args, "id")
+		if err != nil {
+			return err
 		}
 
 		tw, j := multiOpBuildTableWriter()
 
-		for _, id := range ids {
+		for _, id := range intArgs {
 			params := apidevices.NewRevokeDeviceParams()
 			params.SetID(id)
 
@@ -70,11 +65,11 @@ var deviceRevokeCmd = &cobra.Command{
 					err = nil
 					continue
 				}
-				return printListOutputAndError(cmd, j, tw, len(ids), err)
+				return printListOutputAndError(cmd, j, tw, len(intArgs), err)
 			}
 			multiOpTableWriterAppend(tw, &j, id, "success")
 		}
-		return printListOutputAndError(cmd, j, tw, len(ids), err)
+		return printListOutputAndError(cmd, j, tw, len(intArgs), err)
 	},
 }
 

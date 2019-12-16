@@ -19,7 +19,6 @@ limitations under the License.
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/jedib0t/go-pretty/table"
@@ -46,7 +45,7 @@ var enrollmentPreRunE = func(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	if len(args) == 0 {
+	if !multiOpCheckArgsPresent(cmd, args) {
 		return fmt.Errorf("missing user ID argument")
 	}
 
@@ -59,13 +58,9 @@ var enrollmentGenerateCmd = &cobra.Command{
 	Short:   "Generate user enrollment link",
 	PreRunE: enrollmentPreRunE,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		intArgs := make([]int64, len(args))
-		for i, arg := range args {
-			var err error
-			intArgs[i], err = strconv.ParseInt(arg, 10, 64)
-			if err != nil {
-				return err
-			}
+		intArgs, err := multiOpParseInt64Args(cmd, args, "id")
+		if err != nil {
+			return err
 		}
 
 		tw := table.NewWriter()
@@ -80,7 +75,6 @@ var enrollmentGenerateCmd = &cobra.Command{
 
 		createdList := []*apiusers.GenerateEnrollmentLinkCreatedBody{}
 
-		var err error
 		for _, arg := range intArgs {
 			params := apiusers.NewGenerateEnrollmentLinkParams()
 			params.SetID(arg)
@@ -126,18 +120,13 @@ var enrollmentRevokeCmd = &cobra.Command{
 	Short:   "Revoke user enrollment link",
 	PreRunE: enrollmentPreRunE,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		intArgs := make([]int64, len(args))
-		for i, arg := range args {
-			var err error
-			intArgs[i], err = strconv.ParseInt(arg, 10, 64)
-			if err != nil {
-				return err
-			}
+		intArgs, err := multiOpParseInt64Args(cmd, args, "id")
+		if err != nil {
+			return err
 		}
 
 		tw, j := multiOpBuildTableWriter()
 
-		var err error
 		for _, arg := range intArgs {
 			params := apiusers.NewRevokeEnrollmentLinkParams()
 			params.SetID(arg)
@@ -169,13 +158,9 @@ var enrollmentGetCmd = &cobra.Command{
 	Short:   "Get user enrollment link",
 	PreRunE: enrollmentPreRunE,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		intArgs := make([]int64, len(args))
-		for i, arg := range args {
-			var err error
-			intArgs[i], err = strconv.ParseInt(arg, 10, 64)
-			if err != nil {
-				return err
-			}
+		intArgs, err := multiOpParseInt64Args(cmd, args, "id")
+		if err != nil {
+			return err
 		}
 
 		cmd.SilenceUsage = true // errors beyond this point are no longer due to malformed input
