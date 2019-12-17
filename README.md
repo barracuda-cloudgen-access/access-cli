@@ -44,7 +44,7 @@ Don't forget to add the executable to `$PATH`, or equivalent, if desired.
 
 ### Installing from source
 
-If we do not provide a pre-built binary for your platform, or if you want to make changes to fyde-cli, you can compile it yourself, following the [instructions in the wiki](https://github.com/fyde/fyde-cli/wiki/Compiling-from-source).
+If we do not provide a pre-built binary for your platform, or if you want to make changes to fyde-cli, you can compile it yourself, following the [instructions in the documentation](https://fyde.github.io/docs/fyde-cli/compile-from-source/).
 
 ## Usage
 
@@ -59,7 +59,7 @@ Endpoint changed to fydeconsole.example.com.
 Credentials cleared, please login again using `fyde-cli login`
 ```
 
-See [this page](https://github.com/fyde/fyde-cli/wiki/Working-with-different-MC-endpoints) for more information about using different endpoints.
+See [this page](https://fyde.github.io/docs/fyde-cli/set-EC-endpoint/) for more information about using different endpoints.
 
 You can then proceed to log in with your console credentials:
 
@@ -103,7 +103,7 @@ When adding or editing records, fyde-cli can receive input in three different wa
  - From CSV files, using `--from-file=filename.csv --file-format=csv`
    - In this case, fyde-cli will expect a file containing comma-separated values, with one record per line. The first record must be a header mapping each column to the correct record field
 
-The expected formats when using JSON and CSV files are documented in [the fyde-cli wiki](https://github.com/fyde/fyde-cli/wiki#batch-mode-operations).
+The expected formats when using JSON and CSV files are documented in [the fyde-cli docs](https://fyde.github.io/docs/fyde-cli/batch-mode-operations/).
 
 ### Behavior on error
 
