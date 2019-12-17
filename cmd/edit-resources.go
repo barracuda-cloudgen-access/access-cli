@@ -70,7 +70,7 @@ var resourcesEditCmd = &cobra.Command{
 							resource.AccessPolicyIds = []int64{int64(s)}
 						}
 					},
-					func(s string) { resource.Notes = s })
+					func(s string) { resource.Notes = &s })
 				if err != nil {
 					return nil, err
 				}
@@ -157,7 +157,7 @@ func init() {
 			FlagName:        "ports",
 			FlagDescription: "specify the new port mappings (external:internal) for the resource",
 			VarType:         "[]string",
-			Mandatory:       true,
+			Mandatory:       false,
 			DefaultValue:    []string{},
 		},
 		inputField{
