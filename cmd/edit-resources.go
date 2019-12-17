@@ -91,7 +91,7 @@ var resourcesEditCmd = &cobra.Command{
 			}, func(data interface{}) { // printSuccess func
 				resp := data.(*apiresources.EditResourceOKBody)
 				createdList = append(createdList, &resp.AccessResource)
-				resourceTableWriterAppend(tw, resp.AccessResource, resp.AccessProxyName)
+				resourceTableWriterAppend(tw, resp.AccessResource)
 			}, func(err error, id interface{}) { // doOnError func
 				createdList = append(createdList, nil)
 				resourceTableWriterAppendError(tw, err, id)

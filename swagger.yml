@@ -853,13 +853,7 @@ paths:
           schema:
             type: array
             items:
-              allOf:
-                - $ref: "#/definitions/AccessResource"
-                - type: object
-                  properties:
-                    access_proxy_id:
-                      type: string
-                      format: uuid
+              $ref: "#/definitions/AccessResource"
         401:
           $ref: "#/responses/Unauthorized"
     post:
@@ -919,12 +913,7 @@ paths:
         201:
           description: "Resource created"
           schema:
-            allOf:
-                - $ref: "#/definitions/AccessResource"
-                - type: object
-                  properties:
-                    access_proxy_name:
-                      type: string
+            $ref: "#/definitions/AccessResource"
         401:
           $ref: "#/responses/Unauthorized"
         404:
@@ -954,8 +943,6 @@ paths:
               - $ref: "#/definitions/AccessResource"
               - type: object
                 properties:
-                  access_proxy_name:
-                    type: string
                   last_access_at:
                     # TODO guessing it's a string
                     type: string
@@ -2246,6 +2233,14 @@ definitions:
             name:
               type: string
               example: "Deny All"
+      access_proxy:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uuid
+          name:
+            type: string
   AccessPolicy:
     type: object
     properties:

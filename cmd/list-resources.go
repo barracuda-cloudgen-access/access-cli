@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	apiresources "github.com/fyde/fyde-cli/client/access_resources"
+	"github.com/fyde/fyde-cli/models"
 )
 
 // resourcesListCmd represents the list command
@@ -46,7 +47,7 @@ var resourcesListCmd = &cobra.Command{
 		setSort(cmd, params)
 		setFilter(cmd, params.SetPolicyID, params.SetProxyID)
 		setSearchQuery(cmd, params)
-		completePayload := []*apiresources.ListResourcesOKBodyItems0{}
+		completePayload := []*models.AccessResource{}
 		total := 0
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
 			resp, err := global.Client.AccessResources.ListResources(params, global.AuthWriter)
@@ -65,7 +66,7 @@ var resourcesListCmd = &cobra.Command{
 		tw := resourceBuildTableWriter()
 
 		for _, item := range completePayload {
-			resourceTableWriterAppend(tw, item.AccessResource, item.AccessProxyID)
+			resourceTableWriterAppend(tw, *item)
 		}
 
 		return printListOutputAndError(cmd, completePayload, tw, total, err)

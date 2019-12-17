@@ -62,7 +62,7 @@ var resourceGetCmd = &cobra.Command{
 		}
 
 		tw := resourceBuildTableWriter()
-		resourceTableWriterAppend(tw, resp.Payload.AccessResource, resp.Payload.AccessProxyName)
+		resourceTableWriterAppend(tw, resp.Payload.AccessResource)
 
 		return printListOutputAndError(cmd, resp.Payload, tw, 1, err)
 	},
@@ -83,7 +83,7 @@ func resourceBuildTableWriter() table.Writer {
 	return tw
 }
 
-func resourceTableWriterAppend(tw table.Writer, resource models.AccessResource, accessProxy interface{}) {
+func resourceTableWriterAppend(tw table.Writer, resource models.AccessResource) {
 	accessPolicies := strings.Join(funk.Map(resource.AccessPolicies, func(g *models.AccessResourceAccessPoliciesItems0) string {
 		return g.Name
 	}).([]string), ",")
@@ -94,7 +94,7 @@ func resourceTableWriterAppend(tw table.Writer, resource models.AccessResource, 
 		resource.PublicHost,
 		accessPolicies,
 		strings.Join(resource.Ports, ","),
-		accessProxy,
+		resource.AccessProxy.ID,
 	})
 }
 

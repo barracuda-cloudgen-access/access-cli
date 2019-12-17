@@ -22,6 +22,7 @@ import (
 	"github.com/spf13/cobra"
 
 	apiresources "github.com/fyde/fyde-cli/client/access_resources"
+	"github.com/fyde/fyde-cli/models"
 )
 
 // resourcesAddCmd represents the add command
@@ -44,7 +45,7 @@ var resourcesAddCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		tw := resourceBuildTableWriter()
-		createdList := []*apiresources.CreateResourceCreatedBody{}
+		createdList := []*models.AccessResource{}
 		total := 0
 		err := forAllInput(cmd, args, true,
 			func(values *inputEntry) (interface{}, error) { // do func
@@ -76,9 +77,9 @@ var resourcesAddCmd = &cobra.Command{
 				}
 				return resp.Payload, nil
 			}, func(data interface{}) { // printSuccess func
-				resp := data.(*apiresources.CreateResourceCreatedBody)
+				resp := data.(*models.AccessResource)
 				createdList = append(createdList, resp)
-				resourceTableWriterAppend(tw, resp.AccessResource, resp.AccessProxyName)
+				resourceTableWriterAppend(tw, *resp)
 			}, func(err error, id interface{}) { // doOnError func
 				createdList = append(createdList, nil)
 				resourceTableWriterAppendError(tw, err, id)
