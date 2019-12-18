@@ -152,6 +152,69 @@ var enrollmentRevokeCmd = &cobra.Command{
 	},
 }
 
+// enrollmentChangeCmd represents the change command
+var enrollmentChangeCmd = &cobra.Command{
+	Use:   "change [user ID]...",
+	Short: "Change user enrollment link slots",
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		err := enrollmentPreRunE(cmd, args)
+		if err != nil {
+			return err
+		}
+
+		if !cmd.Flags().Changed("slots") {
+			return fmt.Errorf("missing slots argument")
+		}
+
+		return nil
+	},
+	RunE: func(cmd *cobra.Command, args []string) error {
+		intArgs, err := multiOpParseInt64Args(cmd, args, "id")
+		if err != nil {
+			return err
+		}
+
+		slots, err := cmd.Flags().GetInt("slots")
+		if err != nil {
+			return err
+		}
+
+		tw, j := multiOpBuildTableWriter()
+
+		for _, arg := range intArgs {
+			params := apiusers.NewChangeEnrollmentLinkSlotsParams()
+			params.SetID(arg)
+
+			enrollment := &apiusers.ChangeEnrollmentLinkSlotsParamsBodyEnrollment{
+				Refcount: int64(slots),
+			}
+			body := apiusers.ChangeEnrollmentLinkSlotsBody{
+				UserID:     arg,
+				Enrollment: enrollment,
+			}
+			params.SetRequest(body)
+
+			_, err = global.Client.Users.ChangeEnrollmentLinkSlots(params, global.AuthWriter)
+			if err != nil {
+				// best possible workaround for https://github.com/go-swagger/go-swagger/issues/1929
+				// (without resorting to fixing the go-swagger code generator)
+				if strings.Contains(err.Error(), "(*models.NotFoundResponse) is not supported by the TextConsumer, can be resolved by supporting TextUnmarshaler interface") {
+					err = fmt.Errorf("user does not exist or does not have an enrollment link")
+				}
+
+				multiOpTableWriterAppend(tw, &j, arg, processErrorResponse(err))
+				if loopControlContinueOnError(cmd) {
+					err = nil
+					continue
+				}
+				return printListOutputAndError(cmd, j, tw, len(args), err)
+			}
+			multiOpTableWriterAppend(tw, &j, arg, "success")
+		}
+		return printListOutputAndError(cmd, j, tw, len(args), err)
+	},
+}
+
 // enrollmentGetCmd represents the get command
 var enrollmentGetCmd = &cobra.Command{
 	Use:     "get [user ID]...",
@@ -194,6 +257,7 @@ func init() {
 	usersCmd.AddCommand(enrollmentCmd)
 	enrollmentCmd.AddCommand(enrollmentGenerateCmd)
 	enrollmentCmd.AddCommand(enrollmentRevokeCmd)
+	enrollmentCmd.AddCommand(enrollmentChangeCmd)
 	enrollmentCmd.AddCommand(enrollmentGetCmd)
 
 	// Here you will define your flags and configuration settings.
@@ -213,6 +277,11 @@ func init() {
 	initMultiOpArgFlags(enrollmentRevokeCmd, "user", "revoke enrollments for", "id", "[]int64")
 	initOutputFlags(enrollmentRevokeCmd)
 	initLoopControlFlags(enrollmentRevokeCmd)
+
+	initMultiOpArgFlags(enrollmentChangeCmd, "user", "change enrollments for", "id", "[]int64")
+	enrollmentChangeCmd.Flags().Int("slots", 0, "specify the new number of slots for the enrollment link")
+	initOutputFlags(enrollmentChangeCmd)
+	initLoopControlFlags(enrollmentChangeCmd)
 
 	initMultiOpArgFlags(enrollmentGetCmd, "user", "get enrollments for", "id", "[]int64")
 	initLoopControlFlags(enrollmentGetCmd)

@@ -449,6 +449,8 @@ paths:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /users/{user_id}/devices/{device_id}:
     delete:
       tags:
