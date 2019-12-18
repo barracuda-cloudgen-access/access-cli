@@ -19,6 +19,7 @@ limitations under the License.
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -27,7 +28,7 @@ import (
 
 // userEnableCmd represents the enable command
 var userEnableCmd = &cobra.Command{
-	Use:   "enable",
+	Use:   "enable [source ID]...",
 	Short: "enable user",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
@@ -47,7 +48,7 @@ var userEnableCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		enable := cmd.Use == "enable"
+		enable := strings.HasPrefix(cmd.Use, "enable")
 
 		intArgs, err := multiOpParseInt64Args(cmd, args, "id")
 		if err != nil {
@@ -85,7 +86,7 @@ var userDisableCmd *cobra.Command
 
 func init() {
 	disableCmd := *userEnableCmd
-	disableCmd.Use = "disable"
+	disableCmd.Use = "disable [source ID]..."
 	disableCmd.Short = "disable user"
 	userDisableCmd = &disableCmd
 	usersCmd.AddCommand(userEnableCmd)

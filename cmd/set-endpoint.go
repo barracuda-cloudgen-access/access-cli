@@ -28,7 +28,7 @@ import (
 
 // endpointSetCmd represents the endpoint set command
 var endpointSetCmd = &cobra.Command{
-	Use:   "set",
+	Use:   "set [endpoint]",
 	Short: "Set console endpoint to use",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {

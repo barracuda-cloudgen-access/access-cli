@@ -28,7 +28,7 @@ import (
 
 // resourceDeleteCmd represents the delete command
 var resourceDeleteCmd = &cobra.Command{
-	Use:     "delete",
+	Use:     "delete [resource ID]...",
 	Aliases: []string{"remove", "rm"},
 	Short:   "Delete resources",
 	PreRunE: func(cmd *cobra.Command, args []string) error {

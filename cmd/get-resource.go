@@ -33,7 +33,7 @@ import (
 
 // resourceGetCmd represents the get command
 var resourceGetCmd = &cobra.Command{
-	Use:   "get",
+	Use:   "get [resource ID]",
 	Short: "Get resource",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)

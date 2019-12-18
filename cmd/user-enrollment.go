@@ -54,7 +54,7 @@ var enrollmentPreRunE = func(cmd *cobra.Command, args []string) error {
 
 // enrollmentGenerateCmd represents the generate command
 var enrollmentGenerateCmd = &cobra.Command{
-	Use:     "generate",
+	Use:     "generate [user ID]...",
 	Short:   "Generate user enrollment link",
 	PreRunE: enrollmentPreRunE,
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -116,7 +116,7 @@ var enrollmentGenerateCmd = &cobra.Command{
 
 // enrollmentRevokeCmd represents the revoke command
 var enrollmentRevokeCmd = &cobra.Command{
-	Use:     "revoke",
+	Use:     "revoke [user ID]...",
 	Short:   "Revoke user enrollment link",
 	PreRunE: enrollmentPreRunE,
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -154,7 +154,7 @@ var enrollmentRevokeCmd = &cobra.Command{
 
 // enrollmentGetCmd represents the get command
 var enrollmentGetCmd = &cobra.Command{
-	Use:     "get",
+	Use:     "get [user ID]...",
 	Short:   "Get user enrollment link",
 	PreRunE: enrollmentPreRunE,
 	RunE: func(cmd *cobra.Command, args []string) error {

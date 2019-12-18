@@ -27,7 +27,7 @@ import (
 
 // deviceDeleteCmd represents the delete command
 var deviceDeleteCmd = &cobra.Command{
-	Use:     "delete",
+	Use:     "delete [device ID]...",
 	Aliases: []string{"remove", "rm"},
 	Short:   "Delete devices",
 	PreRunE: func(cmd *cobra.Command, args []string) error {

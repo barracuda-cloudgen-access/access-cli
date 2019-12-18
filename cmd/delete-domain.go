@@ -27,7 +27,7 @@ import (
 
 // domainDeleteCmd represents the delete command
 var domainDeleteCmd = &cobra.Command{
-	Use:     "delete",
+	Use:     "delete [domain ID]...",
 	Aliases: []string{"remove", "rm"},
 	Short:   "Delete domains",
 	PreRunE: func(cmd *cobra.Command, args []string) error {

@@ -33,7 +33,7 @@ import (
 
 // userGetCmd represents the get command
 var userGetCmd = &cobra.Command{
-	Use:   "get",
+	Use:   "get [user ID]",
 	Short: "Get user",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)

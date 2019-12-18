@@ -28,7 +28,7 @@ import (
 
 // proxyDeleteCmd represents the delete command
 var proxyDeleteCmd = &cobra.Command{
-	Use:     "delete",
+	Use:     "delete [proxy ID]...",
 	Aliases: []string{"remove", "rm"},
 	Short:   "Delete proxies",
 	PreRunE: func(cmd *cobra.Command, args []string) error {

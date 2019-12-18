@@ -31,7 +31,7 @@ import (
 
 // domainGetCmd represents the get command
 var domainGetCmd = &cobra.Command{
-	Use:   "get",
+	Use:   "get [domain ID]",
 	Short: "Get domain",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)

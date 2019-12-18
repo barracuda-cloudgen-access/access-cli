@@ -30,7 +30,7 @@ import (
 
 // deviceGetCmd represents the get command
 var deviceGetCmd = &cobra.Command{
-	Use:   "get",
+	Use:   "get [device ID]",
 	Short: "Get device",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)

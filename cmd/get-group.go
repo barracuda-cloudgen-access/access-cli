@@ -31,7 +31,7 @@ import (
 
 // groupGetCmd represents the get command
 var groupGetCmd = &cobra.Command{
-	Use:   "get",
+	Use:   "get [group ID]",
 	Short: "Get group",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)

@@ -27,7 +27,7 @@ import (
 
 // groupDeleteCmd represents the delete command
 var groupDeleteCmd = &cobra.Command{
-	Use:     "delete",
+	Use:     "delete [group ID]...",
 	Aliases: []string{"remove", "rm"},
 	Short:   "Delete groups",
 	PreRunE: func(cmd *cobra.Command, args []string) error {

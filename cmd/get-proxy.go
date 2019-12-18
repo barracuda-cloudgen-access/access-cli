@@ -31,7 +31,7 @@ import (
 
 // proxyGetCmd represents the get command
 var proxyGetCmd = &cobra.Command{
-	Use:   "get",
+	Use:   "get [proxy ID]",
 	Short: "Get proxy",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)

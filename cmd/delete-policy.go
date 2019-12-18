@@ -27,7 +27,7 @@ import (
 
 // policyDeleteCmd represents the delete command
 var policyDeleteCmd = &cobra.Command{
-	Use:     "delete",
+	Use:     "delete [policy ID]...",
 	Aliases: []string{"remove", "rm"},
 	Short:   "Delete policies",
 	PreRunE: func(cmd *cobra.Command, args []string) error {

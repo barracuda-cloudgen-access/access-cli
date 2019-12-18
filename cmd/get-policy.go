@@ -31,7 +31,7 @@ import (
 
 // policyGetCmd represents the get command
 var policyGetCmd = &cobra.Command{
-	Use:   "get",
+	Use:   "get [policy ID]",
 	Short: "Get policy",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)

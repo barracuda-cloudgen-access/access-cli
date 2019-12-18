@@ -27,7 +27,7 @@ import (
 
 // deviceRevokeCmd represents the revoke command
 var deviceRevokeCmd = &cobra.Command{
-	Use:   "revoke",
+	Use:   "revoke [device ID]...",
 	Short: "Revoke device authentication",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
