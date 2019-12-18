@@ -206,11 +206,14 @@ func init() {
 	// is called directly, e.g.:
 	// enrollmentCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initMultiOpArgFlags(enrollmentGenerateCmd, "user", "generate enrollments for", "id", "[]int64")
 	initOutputFlags(enrollmentGenerateCmd)
 	initLoopControlFlags(enrollmentGenerateCmd)
 
+	initMultiOpArgFlags(enrollmentRevokeCmd, "user", "revoke enrollments for", "id", "[]int64")
 	initOutputFlags(enrollmentRevokeCmd)
 	initLoopControlFlags(enrollmentRevokeCmd)
 
+	initMultiOpArgFlags(enrollmentGetCmd, "user", "get enrollments for", "id", "[]int64")
 	initLoopControlFlags(enrollmentGetCmd)
 }

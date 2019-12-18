@@ -107,6 +107,7 @@ func init() {
 	// is called directly, e.g.:
 	// policyDeleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initMultiOpArgFlags(policyDeleteCmd, "policy", "delete", "id", "[]int64")
 	initOutputFlags(policyDeleteCmd)
 	initLoopControlFlags(policyDeleteCmd)
 }

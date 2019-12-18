@@ -102,6 +102,9 @@ func init() {
 	// is called directly, e.g.:
 	// userEnableCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initMultiOpArgFlags(userEnableCmd, "user", "enable", "id", "[]int64")
+	initMultiOpArgFlags(userDisableCmd, "user", "disable", "id", "[]int64")
+
 	initOutputFlags(userEnableCmd)
 	initOutputFlags(userDisableCmd)
 

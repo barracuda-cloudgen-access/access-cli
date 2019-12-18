@@ -44,15 +44,26 @@ var proxyGetCmd = &cobra.Command{
 			return err
 		}
 
-		if len(args) == 0 {
+		if len(args) == 0 && !cmd.Flags().Changed("id") {
 			return fmt.Errorf("missing proxy ID argument")
 		}
 
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
+		var id string
+		var err error
+		if cmd.Flags().Changed("id") {
+			id, err = cmd.Flags().GetString("id")
+			if err != nil {
+				return err
+			}
+		} else {
+			id = args[0]
+		}
+
 		params := apiproxies.NewGetProxyParams()
-		params.SetID(strfmt.UUID(args[0]))
+		params.SetID(strfmt.UUID(id))
 
 		resp, err := global.Client.AccessProxies.GetProxy(params, global.AuthWriter)
 		if err != nil {
@@ -139,4 +150,5 @@ func init() {
 	// proxyGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(proxyGetCmd)
+	proxyGetCmd.Flags().String("id", "", "id of proxy to get")
 }

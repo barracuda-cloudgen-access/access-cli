@@ -56,6 +56,7 @@ type globalInfo struct {
 	DefaultRangeSize int
 	FilterData       map[*cobra.Command]*filterData
 	InputData        map[*cobra.Command]*inputData
+	MultiOpData      map[*cobra.Command]*multiOpData
 }
 
 var global globalInfo

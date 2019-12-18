@@ -108,6 +108,7 @@ func init() {
 	// is called directly, e.g.:
 	// resourceDeleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initMultiOpArgFlags(resourceDeleteCmd, "resource", "delete", "id", "[]strfmt.UUID")
 	initOutputFlags(resourceDeleteCmd)
 	initLoopControlFlags(resourceDeleteCmd)
 }

@@ -108,6 +108,7 @@ func init() {
 	// is called directly, e.g.:
 	// proxyDeleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initMultiOpArgFlags(proxyDeleteCmd, "proxy", "delete", "id", "[]strfmt.UUID")
 	initOutputFlags(proxyDeleteCmd)
 	initLoopControlFlags(proxyDeleteCmd)
 }

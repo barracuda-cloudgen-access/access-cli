@@ -44,14 +44,22 @@ var domainGetCmd = &cobra.Command{
 			return err
 		}
 
-		if len(args) == 0 {
+		if len(args) == 0 && !cmd.Flags().Changed("id") {
 			return fmt.Errorf("missing domain ID argument")
 		}
 
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		domainID, err := strconv.ParseInt(args[0], 10, 64)
+		var domainID int64
+		var err error
+		if cmd.Flags().Changed("id") {
+			var d int
+			d, err = cmd.Flags().GetInt("id")
+			domainID = int64(d)
+		} else {
+			domainID, err = strconv.ParseInt(args[0], 10, 64)
+		}
 		if err != nil {
 			return err
 		}
@@ -120,4 +128,5 @@ func init() {
 	// domainGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(domainGetCmd)
+	domainGetCmd.Flags().Int("id", 0, "id of domain to get")
 }

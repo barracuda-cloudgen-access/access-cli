@@ -102,6 +102,9 @@ func init() {
 	// is called directly, e.g.:
 	// sourceEnableCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initMultiOpArgFlags(sourceEnableCmd, "source", "enable", "id", "[]strfmt.UUID")
+	initMultiOpArgFlags(sourceDisableCmd, "source", "disable", "id", "[]strfmt.UUID")
+
 	initOutputFlags(sourceEnableCmd)
 	initOutputFlags(sourceDisableCmd)
 

@@ -107,6 +107,7 @@ func init() {
 	// is called directly, e.g.:
 	// groupDeleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initMultiOpArgFlags(groupDeleteCmd, "group", "delete", "id", "[]int64")
 	initOutputFlags(groupDeleteCmd)
 	initLoopControlFlags(groupDeleteCmd)
 }

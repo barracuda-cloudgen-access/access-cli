@@ -54,6 +54,7 @@ const (
 	flagInitSearch      = "search_flags_init"
 	flagInitOutput      = "output_flags_init"
 	flagInitInput       = "input_flags_init"
+	flagInitMultiOpArg  = "multi_op_arg_flags_init"
 	flagInitLoopControl = "loop_control_flags_init"
 
 	authMethodBearerToken = "bearerToken"

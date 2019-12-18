@@ -43,14 +43,22 @@ var deviceGetCmd = &cobra.Command{
 			return err
 		}
 
-		if len(args) == 0 {
+		if len(args) == 0 && !cmd.Flags().Changed("id") {
 			return fmt.Errorf("missing device ID argument")
 		}
 
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		deviceID, err := strconv.ParseInt(args[0], 10, 64)
+		var deviceID int64
+		var err error
+		if cmd.Flags().Changed("id") {
+			var d int
+			d, err = cmd.Flags().GetInt("id")
+			deviceID = int64(d)
+		} else {
+			deviceID, err = strconv.ParseInt(args[0], 10, 64)
+		}
 		if err != nil {
 			return err
 		}
@@ -114,4 +122,5 @@ func init() {
 	// deviceGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(deviceGetCmd)
+	deviceGetCmd.Flags().Int("id", 0, "id of device to get")
 }

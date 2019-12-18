@@ -46,14 +46,22 @@ var userGetCmd = &cobra.Command{
 			return err
 		}
 
-		if len(args) == 0 {
+		if len(args) == 0 && !cmd.Flags().Changed("id") {
 			return fmt.Errorf("missing user ID argument")
 		}
 
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		userID, err := strconv.ParseInt(args[0], 10, 64)
+		var userID int64
+		var err error
+		if cmd.Flags().Changed("id") {
+			var d int
+			d, err = cmd.Flags().GetInt("id")
+			userID = int64(d)
+		} else {
+			userID, err = strconv.ParseInt(args[0], 10, 64)
+		}
 		if err != nil {
 			return err
 		}
@@ -143,4 +151,5 @@ func init() {
 	// userGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(userGetCmd)
+	userGetCmd.Flags().Int("id", 0, "id of user to get")
 }

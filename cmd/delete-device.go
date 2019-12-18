@@ -103,6 +103,7 @@ func init() {
 	// is called directly, e.g.:
 	// deviceDeleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initMultiOpArgFlags(deviceDeleteCmd, "device", "delete", "id", "[]int64")
 	initOutputFlags(deviceDeleteCmd)
 	initLoopControlFlags(deviceDeleteCmd)
 }

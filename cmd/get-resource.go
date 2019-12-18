@@ -46,15 +46,26 @@ var resourceGetCmd = &cobra.Command{
 			return err
 		}
 
-		if len(args) == 0 {
+		if len(args) == 0 && !cmd.Flags().Changed("id") {
 			return fmt.Errorf("missing resource ID argument")
 		}
 
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
+		var id string
+		var err error
+		if cmd.Flags().Changed("id") {
+			id, err = cmd.Flags().GetString("id")
+			if err != nil {
+				return err
+			}
+		} else {
+			id = args[0]
+		}
+
 		params := apiresources.NewGetResourceParams()
-		params.SetID(strfmt.UUID(args[0]))
+		params.SetID(strfmt.UUID(id))
 
 		resp, err := global.Client.AccessResources.GetResource(params, global.AuthWriter)
 		if err != nil {
@@ -127,4 +138,5 @@ func init() {
 	// resourceGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(resourceGetCmd)
+	resourceGetCmd.Flags().String("id", "", "id of resource to get")
 }

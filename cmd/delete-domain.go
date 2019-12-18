@@ -107,6 +107,7 @@ func init() {
 	// is called directly, e.g.:
 	// domainDeleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initMultiOpArgFlags(domainDeleteCmd, "domain", "delete", "id", "[]int64")
 	initOutputFlags(domainDeleteCmd)
 	initLoopControlFlags(domainDeleteCmd)
 }

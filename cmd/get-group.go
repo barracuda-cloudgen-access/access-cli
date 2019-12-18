@@ -44,14 +44,22 @@ var groupGetCmd = &cobra.Command{
 			return err
 		}
 
-		if len(args) == 0 {
+		if len(args) == 0 && !cmd.Flags().Changed("id") {
 			return fmt.Errorf("missing group ID argument")
 		}
 
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		groupID, err := strconv.ParseInt(args[0], 10, 64)
+		var groupID int64
+		var err error
+		if cmd.Flags().Changed("id") {
+			var d int
+			d, err = cmd.Flags().GetInt("id")
+			groupID = int64(d)
+		} else {
+			groupID, err = strconv.ParseInt(args[0], 10, 64)
+		}
 		if err != nil {
 			return err
 		}
@@ -140,4 +148,5 @@ func init() {
 	// groupGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(groupGetCmd)
+	groupGetCmd.Flags().Int("id", 0, "id of group to get")
 }

@@ -86,6 +86,7 @@ func init() {
 	// is called directly, e.g.:
 	// deviceRevokeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	initMultiOpArgFlags(deviceRevokeCmd, "device", "revoke", "id", "[]int64")
 	initOutputFlags(deviceRevokeCmd)
 	initLoopControlFlags(deviceRevokeCmd)
 }

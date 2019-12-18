@@ -537,8 +537,53 @@ func getIDinputValue(cmd *cobra.Command, entry *inputEntry) interface{} {
 	return nil
 }
 
+type multiOpData struct {
+	fieldName string
+	fieldType string
+}
+
+func initMultiOpArgFlags(cmd *cobra.Command, typeName, operationVerb, fieldName, fieldType string) {
+	cmd.Flags().SortFlags = false
+	if cmd.Annotations == nil {
+		cmd.Annotations = make(map[string]string)
+	}
+	cmd.Annotations[flagInitMultiOpArg] = "yes"
+	typeName = pluralize(typeName)
+
+	description := fmt.Sprintf("%s of %s to %s", pluralize(fieldName), typeName, operationVerb)
+
+	switch fieldType {
+	case "[]int64":
+		// see https://github.com/spf13/pflag/issues/222
+		// we will accept a string slice instead, and convert to a int slice later
+		cmd.Flags().StringSlice(fieldName, []string{}, description)
+	case "[]string":
+		fallthrough
+	case "[]strfmt.UUID":
+		cmd.Flags().StringSlice(fieldName, []string{}, description)
+	default:
+		panic("Unsupported field type " + fieldType)
+	}
+
+	if global.MultiOpData == nil {
+		global.MultiOpData = make(map[*cobra.Command]*multiOpData)
+	}
+	global.MultiOpData[cmd] = &multiOpData{
+		fieldName: fieldName,
+		fieldType: fieldType,
+	}
+}
+
 func multiOpCheckArgsPresent(cmd *cobra.Command, args []string) bool {
+	if _, ok := cmd.Annotations[flagInitMultiOpArg]; !ok {
+		panic("multiOpCheckArgsPresent called for command where multi-op arg flags were not initialized. This is a bug!")
+	}
+
 	if len(args) > 0 {
+		return true
+	}
+
+	if cmd.Flags().Changed(global.MultiOpData[cmd].fieldName) {
 		return true
 	}
 
@@ -548,6 +593,39 @@ func multiOpCheckArgsPresent(cmd *cobra.Command, args []string) bool {
 }
 
 func multiOpParseInt64Args(cmd *cobra.Command, args []string, idFieldName string) ([]int64, error) {
+	if _, ok := cmd.Annotations[flagInitMultiOpArg]; !ok {
+		panic("multiOpParseInt64Args called for command where multi-op arg flags were not initialized. This is a bug!")
+	}
+
+	if cmd.Flags().Changed(global.MultiOpData[cmd].fieldName) {
+		switch global.MultiOpData[cmd].fieldType {
+		case "[]int64":
+			// see https://github.com/spf13/pflag/issues/222
+			// we accepted a string slice instead, and will now convert to a int slice
+			strSlice, err := cmd.Flags().GetStringSlice(global.MultiOpData[cmd].fieldName)
+			if err != nil {
+				return nil, err
+			}
+			if len(strSlice) == 1 && strings.Trim(strSlice[0], "[] ") == "" {
+				return []int64{}, nil
+			}
+			out := make([]int64, len(strSlice))
+			for i, str := range strSlice {
+				// support [1,2,3] syntax
+				str = strings.Trim(str, "[] ")
+
+				var err error
+				out[i], err = strconv.ParseInt(str, 10, 64)
+				if err != nil {
+					return nil, err
+				}
+			}
+			return out, nil
+		default:
+			panic("multiOpParseInt64Args called where it shouldn't have been. This is a bug!")
+		}
+	}
+
 	if len(args) > 0 {
 		intArgs := make([]int64, len(args))
 		for i, arg := range args {
@@ -596,6 +674,33 @@ func multiOpParseInt64Args(cmd *cobra.Command, args []string, idFieldName string
 }
 
 func multiOpParseUUIDArgs(cmd *cobra.Command, args []string, idFieldName string) ([]strfmt.UUID, error) {
+	if _, ok := cmd.Annotations[flagInitMultiOpArg]; !ok {
+		panic("multiOpParseUUIDArgs called for command where multi-op arg flags were not initialized. This is a bug!")
+	}
+
+	if cmd.Flags().Changed(global.MultiOpData[cmd].fieldName) {
+		switch global.MultiOpData[cmd].fieldType {
+		case "[]strfmt.UUID":
+			strSlice, err := cmd.Flags().GetStringSlice(global.MultiOpData[cmd].fieldName)
+			if err != nil {
+				return nil, err
+			}
+			if len(strSlice) == 1 && strings.Trim(strSlice[0], "[] ") == "" {
+				return []strfmt.UUID{}, nil
+			}
+			out := make([]strfmt.UUID, len(strSlice))
+			for i, str := range strSlice {
+				// support [1,2,3] syntax
+				str = strings.Trim(str, "[] ")
+
+				out[i] = strfmt.UUID(str)
+			}
+			return out, nil
+		default:
+			panic("multiOpParseUUIDArgs called where it shouldn't have been. This is a bug!")
+		}
+	}
+
 	if len(args) > 0 {
 		uuidArgs := make([]strfmt.UUID, len(args))
 		for i, arg := range args {
