@@ -179,7 +179,17 @@ var enrollmentChangeCmd = &cobra.Command{
 			return err
 		}
 
-		tw, j := multiOpBuildTableWriter()
+		tw := table.NewWriter()
+		tw.Style().Format.Header = text.FormatDefault
+		tw.AppendHeader(table.Row{
+			"ID",
+			"Slots",
+			"Expiration",
+			"URL",
+		})
+		tw.SetAllowedColumnLengths([]int{15, 10, 30, 140})
+
+		editedList := []*apiusers.ChangeEnrollmentLinkSlotsOKBody{}
 
 		for _, arg := range intArgs {
 			params := apiusers.NewChangeEnrollmentLinkSlotsParams()
@@ -194,7 +204,7 @@ var enrollmentChangeCmd = &cobra.Command{
 			}
 			params.SetRequest(body)
 
-			_, err = global.Client.Users.ChangeEnrollmentLinkSlots(params, global.AuthWriter)
+			resp, err := global.Client.Users.ChangeEnrollmentLinkSlots(params, global.AuthWriter)
 			if err != nil {
 				// best possible workaround for https://github.com/go-swagger/go-swagger/issues/1929
 				// (without resorting to fixing the go-swagger code generator)
@@ -202,16 +212,30 @@ var enrollmentChangeCmd = &cobra.Command{
 					err = fmt.Errorf("user does not exist or does not have an enrollment link")
 				}
 
-				multiOpTableWriterAppend(tw, &j, arg, processErrorResponse(err))
+				tw.AppendRow(table.Row{
+					fmt.Sprintf("[ERR] %v", arg),
+					"-",
+					"-",
+					processErrorResponse(err),
+				})
+				editedList = append(editedList, nil)
+
 				if loopControlContinueOnError(cmd) {
 					err = nil
 					continue
 				}
-				return printListOutputAndError(cmd, j, tw, len(args), err)
+				return printListOutputAndError(cmd, editedList, tw, len(intArgs), err)
 			}
-			multiOpTableWriterAppend(tw, &j, arg, "success")
+
+			tw.AppendRow(table.Row{
+				arg,
+				resp.GetPayload().Count,
+				resp.GetPayload().Expiration,
+				resp.GetPayload().URL,
+			})
+			editedList = append(editedList, resp.Payload)
 		}
-		return printListOutputAndError(cmd, j, tw, len(args), err)
+		return printListOutputAndError(cmd, editedList, tw, len(intArgs), err)
 	},
 }
 

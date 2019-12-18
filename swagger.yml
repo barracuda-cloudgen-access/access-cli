@@ -443,6 +443,17 @@ paths:
       responses:
         200:
           description: "Enrollment link changed"
+          schema:
+            type: object
+            properties:
+              count:
+                type: integer
+              expiration:
+                type: string
+                format: date-time
+              url:
+                type: string
+                format: url
         401:
           $ref: "#/responses/Unauthorized"
         403:
