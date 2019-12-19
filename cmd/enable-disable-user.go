@@ -73,11 +73,11 @@ var userEnableCmd = &cobra.Command{
 					err = nil
 					continue
 				}
-				return printListOutputAndError(cmd, j, tw, len(args), err)
+				return printListOutputAndError(cmd, j, tw, len(intArgs), err)
 			}
 			multiOpTableWriterAppend(tw, &j, arg, "success")
 		}
-		return printListOutputAndError(cmd, j, tw, len(args), err)
+		return printListOutputAndError(cmd, j, tw, len(intArgs), err)
 	},
 }
 

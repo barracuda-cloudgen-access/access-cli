@@ -82,11 +82,11 @@ var deviceDeleteCmd = &cobra.Command{
 					err = nil
 					continue
 				}
-				return printListOutputAndError(cmd, j, tw, len(args), err)
+				return printListOutputAndError(cmd, j, tw, len(deviceIDs), err)
 			}
 			multiOpTableWriterAppend(tw, &j, arg, "success")
 		}
-		return printListOutputAndError(cmd, j, tw, len(args), err)
+		return printListOutputAndError(cmd, j, tw, len(deviceIDs), err)
 	},
 }
 
