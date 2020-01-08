@@ -1106,6 +1106,8 @@ paths:
                     format: uuid
                 conditions:
                   type: object
+                  additionalProperties:
+                    type: object
                   properties:
                     rbac:
                       type: object
@@ -1261,6 +1263,8 @@ paths:
                     format: uuid
                 conditions:
                   type: object
+                  additionalProperties:
+                    type: object
                   properties:
                     rbac:
                       type: object
