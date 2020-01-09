@@ -1415,8 +1415,8 @@ paths:
               type: string
               example: US-West
             port:
-              type: string
-              example: "8009"
+              type: integer
+              example: 8009
       responses:
         201:
           description: "Proxy created"

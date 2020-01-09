@@ -19,7 +19,6 @@ limitations under the License.
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/jedib0t/go-pretty/text"
@@ -58,7 +57,7 @@ var proxiesAddCmd = &cobra.Command{
 					func(s string) { proxy.Name = s },
 					func(s string) { proxy.Location = s },
 					func(s string) { proxy.Host = s },
-					func(s int) { proxy.Port = strconv.Itoa(s) })
+					func(s int) { proxy.Port = int64(s) })
 				if err != nil {
 					return nil, err
 				}
