@@ -770,7 +770,7 @@ paths:
         404:
           $ref: "#/responses/NotFound"
   /devices/{id}/revoke_auth_attempt:
-    get:
+    delete:
       tags:
         - "devices"
       produces:
