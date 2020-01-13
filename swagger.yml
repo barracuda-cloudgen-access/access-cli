@@ -768,6 +768,52 @@ paths:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
+    patch:
+      tags:
+        - "devices"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Edit device"
+      operationId: "editDevice"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the device to edit"
+      - in: body
+        name: "device"
+        description: "Device information to modify"
+        required: true
+        schema:
+          type: object
+          properties:
+            device:
+              type: object
+              required:
+                - enabled
+              properties:
+                enabled:
+                  type: boolean
+                notes:
+                  type: string
+                  x-nullable: true
+                  example: null
+      responses:
+        200:
+          description: "Device edited"
+          schema:
+            $ref: "#/definitions/DevicePartial"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /devices/{id}/revoke_auth_attempt:
     delete:
       tags:
@@ -2153,6 +2199,10 @@ definitions:
       os_version:
         type: string
         example: "13.0.0"
+      notes:
+        type: string
+        x-nullable: true
+        example: null
   DevicePartial:
     type: object
     properties:
@@ -2185,6 +2235,10 @@ definitions:
         # TODO figure out other possible enum options
         enum: [require_auth, enrolled]
         example: enrolled
+      notes:
+        type: string
+        x-nullable: true
+        example: null
       model:
         type: string
         example: "iPhone"
