@@ -392,27 +392,6 @@ paths:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
-    delete:
-      tags:
-        - "users"
-      summary: "Revoke user enrollment link"
-      operationId: "revokeEnrollmentLink"
-      parameters:
-      - in: path
-        name: "id"
-        required: true
-        type: integer
-        description: "The ID of the user for which to revoke the enrollment link"
-      responses:
-        204:
-          description: "Enrollment link revoked"
-        401:
-          $ref: "#/responses/Unauthorized"
-        403:
-          $ref: "#/responses/Forbidden"
-        404:
-          $ref: "#/responses/NotFound"
-  /users/{id}/enrollment/change_slots:
     patch:
       tags:
         - "users"
@@ -462,6 +441,26 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
+    delete:
+      tags:
+        - "users"
+      summary: "Revoke user enrollment link"
+      operationId: "revokeEnrollmentLink"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the user for which to revoke the enrollment link"
+      responses:
+        204:
+          description: "Enrollment link revoked"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
   /users/{user_id}/devices/{device_id}:
     delete:
       tags:
