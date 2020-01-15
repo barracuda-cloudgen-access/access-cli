@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"math"
 
-	apievents "github.com/fyde/fyde-cli/client/device_events"
 	"github.com/spf13/cobra"
 )
 
@@ -114,11 +113,6 @@ func forAllPages(cmd *cobra.Command, params pageable, do func() (int, int64, err
 	}
 
 	perPage := int64(global.FetchPerPage)
-	// the device_events endpoint is special, supports pagination but only with pages of 25 items
-	if _, ok := params.(*apievents.ListDeviceEventsParams); ok {
-		perPage = 25
-	}
-
 	total := int64(math.MaxInt64)
 	curPage := rangeStart / perPage
 	sliceStart = rangeStart - curPage*perPage
