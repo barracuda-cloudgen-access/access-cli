@@ -277,12 +277,52 @@ var enrollmentGetCmd = &cobra.Command{
 	},
 }
 
+// enrollmentEmailCmd represents the email command
+var enrollmentEmailCmd = &cobra.Command{
+	Use:     "email [user ID]...",
+	Aliases: []string{"send"},
+	Short:   "Send email with user enrollment link",
+	PreRunE: enrollmentPreRunE,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		intArgs, err := multiOpParseInt64Args(cmd, args, "id")
+		if err != nil {
+			return err
+		}
+
+		tw, j := multiOpBuildTableWriter()
+
+		for _, arg := range intArgs {
+			params := apiusers.NewSendEnrollmentEmailParams()
+			params.SetID(arg)
+
+			_, err = global.Client.Users.SendEnrollmentEmail(params, global.AuthWriter)
+			if err != nil {
+				// best possible workaround for https://github.com/go-swagger/go-swagger/issues/1929
+				// (without resorting to fixing the go-swagger code generator)
+				if strings.Contains(err.Error(), "(*models.NotFoundResponse) is not supported by the TextConsumer, can be resolved by supporting TextUnmarshaler interface") {
+					err = fmt.Errorf("user does not exist or does not have an enrollment link")
+				}
+
+				multiOpTableWriterAppend(tw, &j, arg, processErrorResponse(err))
+				if loopControlContinueOnError(cmd) {
+					err = nil
+					continue
+				}
+				return printListOutputAndError(cmd, j, tw, len(intArgs), err)
+			}
+			multiOpTableWriterAppend(tw, &j, arg, "success")
+		}
+		return printListOutputAndError(cmd, j, tw, len(intArgs), err)
+	},
+}
+
 func init() {
 	usersCmd.AddCommand(enrollmentCmd)
 	enrollmentCmd.AddCommand(enrollmentGenerateCmd)
 	enrollmentCmd.AddCommand(enrollmentRevokeCmd)
 	enrollmentCmd.AddCommand(enrollmentChangeCmd)
 	enrollmentCmd.AddCommand(enrollmentGetCmd)
+	enrollmentCmd.AddCommand(enrollmentEmailCmd)
 
 	// Here you will define your flags and configuration settings.
 
@@ -309,4 +349,8 @@ func init() {
 
 	initMultiOpArgFlags(enrollmentGetCmd, "user", "get enrollments for", "id", "[]int64")
 	initLoopControlFlags(enrollmentGetCmd)
+
+	initMultiOpArgFlags(enrollmentEmailCmd, "user", "send enrollment emails", "id", "[]int64")
+	initOutputFlags(enrollmentEmailCmd)
+	initLoopControlFlags(enrollmentEmailCmd)
 }

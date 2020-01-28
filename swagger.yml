@@ -469,6 +469,25 @@ paths:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
+  /users/{id}/send_confirmation_mail:
+    get:
+      tags:
+        - "users"
+      produces:
+      - "application/json"
+      summary: "Send email with enrollment link"
+      operationId: "sendEnrollmentEmail"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the user for which to send the email"
+      responses:
+        204:
+          description: "Email sent"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /users/{user_id}/devices/{device_id}:
     delete:
       tags:
