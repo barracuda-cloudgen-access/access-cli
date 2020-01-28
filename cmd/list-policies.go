@@ -44,6 +44,7 @@ var policiesListCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apipolicies.NewListPoliciesParams()
 		setSort(cmd, params)
+		setSearchQuery(cmd, params)
 		completePayload := []*apipolicies.ListPoliciesOKBodyItems0{}
 		total := 0
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
@@ -85,5 +86,6 @@ func init() {
 
 	initPaginationFlags(policiesListCmd)
 	initSortFlags(policiesListCmd)
+	initSearchFlags(policiesListCmd)
 	initOutputFlags(policiesListCmd)
 }

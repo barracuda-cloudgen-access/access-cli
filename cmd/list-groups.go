@@ -44,6 +44,7 @@ var groupsListCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apigroups.NewListGroupsParams()
 		setSort(cmd, params)
+		setSearchQuery(cmd, params)
 		completePayload := []*apigroups.ListGroupsOKBodyItems0{}
 		total := 0
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
@@ -85,6 +86,7 @@ func init() {
 
 	initPaginationFlags(groupsListCmd)
 	initSortFlags(groupsListCmd)
+	initSearchFlags(groupsListCmd)
 	initOutputFlags(groupsListCmd)
 	groupsListCmd.Flags().StringP("filter", "f", "", "filter groups")
 }

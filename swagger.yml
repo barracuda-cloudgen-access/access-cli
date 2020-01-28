@@ -498,6 +498,7 @@ paths:
       - $ref: '#/parameters/sortParam'
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
+      - $ref: '#/parameters/searchParam'
       responses:
         200:
           description: "successful operation"
@@ -1100,6 +1101,7 @@ paths:
       - $ref: '#/parameters/sortParam'
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
+      - $ref: '#/parameters/searchParam'
       responses:
         200:
           description: "successful operation"
