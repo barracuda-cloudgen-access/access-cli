@@ -55,7 +55,15 @@ jobs:
     - name: Lint
       run: go vet ./...
 
-    - uses: actions/upload-artifact@v1
+    - name: Upload binary to bintray
+      uses: gbl08ma/github-action-upload-bintray@master
       with:
-        name: snapshot_linux_amd64
-        path: dist/fyde-cli_linux_amd64
+        file: ./dist/fyde-cli_linux_amd64/fyde-cli
+        api_user: gbl08ma
+        api_key: ${{ secrets.BINTRAY_API_KEY }}
+        repository_user: fyde
+        repository: fyde-cli
+        package: fyde-cli
+        version: ${{ github.sha }}
+        upload_path: snapshot
+        publish: 1
