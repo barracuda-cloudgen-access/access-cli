@@ -67,3 +67,4 @@ jobs:
         version: ${{ github.sha }}
         upload_path: snapshot
         publish: 1
+        calculate_metadata: false
