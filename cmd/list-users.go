@@ -44,7 +44,7 @@ var usersListCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apiusers.NewListUsersParams()
 		setSort(cmd, params)
-		setFilter(cmd, params.SetGroupName, params.SetStatus, params.SetEnrollmentStatus)
+		setFilter(cmd, params.SetGroupID, params.SetGroupName, params.SetStatus, params.SetEnrollmentStatus)
 		setSearchQuery(cmd, params)
 		completePayload := []*apiusers.ListUsersOKBodyItems0{}
 		total := 0
@@ -88,7 +88,8 @@ func init() {
 	initPaginationFlags(usersListCmd)
 	initSortFlags(usersListCmd)
 	initFilterFlags(usersListCmd,
-		filterType{"group", "[]string"},
+		filterType{"group", "[]int"},
+		filterType{"group-name", "[]string"},
 		filterType{"enabled-status", "string"},
 		filterType{"status", "string"})
 	initSearchFlags(usersListCmd)

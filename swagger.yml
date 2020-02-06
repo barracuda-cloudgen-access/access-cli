@@ -165,6 +165,14 @@ paths:
         collectionFormat: multi
         items:
           type: string
+      - in: query
+        name: "group_id[]"
+        description: "Restrict groups of the returned users"
+        required: false
+        type: array
+        collectionFormat: multi
+        items:
+          type: integer
       - $ref: '#/parameters/sortParam'
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'

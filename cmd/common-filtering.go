@@ -51,7 +51,9 @@ func initFilterFlags(cmd *cobra.Command, filterTypes ...filterType) {
 		case "string":
 			cmd.Flags().String(name, "", desc)
 		case "[]int":
-			cmd.Flags().IntSlice(name, []int{}, desc)
+			// see https://github.com/spf13/pflag/issues/222
+			// we will accept a string slice instead, and convert to a int slice later
+			cmd.Flags().StringSlice(name, []string{}, desc)
 		case "[]string":
 			cmd.Flags().StringSlice(name, []string{}, desc)
 		default:
