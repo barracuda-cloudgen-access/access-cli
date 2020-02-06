@@ -65,6 +65,6 @@ jobs:
         repository: fyde-cli
         package: fyde-cli
         version: ${{ github.sha }}
-        upload_path: snapshot
+        upload_path: snapshot/${{ github.sha }}/Linux_x86_64
         publish: 1
         calculate_metadata: false
