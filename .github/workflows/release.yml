@@ -21,19 +21,19 @@ jobs:
 
     - name: Install GoReleaser v0.123.3
       run: |
-        goreleaserdir=$(mktemp -d) 
+        goreleaserdir=$(mktemp -d)
         cd "$goreleaserdir"
         wget -O - https://github.com/goreleaser/goreleaser/releases/download/v0.123.3/goreleaser_Linux_x86_64.tar.gz | tar -z --extract goreleaser
         echo "::add-path::$goreleaserdir"
 
     - name: Install go-swagger v0.21.0
       run: |
-        swaggerdir=$(mktemp -d) 
+        swaggerdir=$(mktemp -d)
         cd "$swaggerdir"
         wget -O swagger https://github.com/go-swagger/go-swagger/releases/download/v0.21.0/swagger_linux_amd64
         chmod +x swagger
         echo "::add-path::$swaggerdir"
-    
+
     - name: Change directory
       run: |
         WORKDIR="${HOME}/go/src/github.com/${GITHUB_REPOSITORY}"
@@ -44,7 +44,7 @@ jobs:
         mkdir -p "$(dirname "${WORKDIR}")"
         ln -s "${PWD}" "${WORKDIR}"
         cd "${WORKDIR}"
-      
+
     - name: GoReleaser (generates client code from Swagger spec; fetches dependencies)
       run: goreleaser -f .goreleaser-release.yml
       env:
