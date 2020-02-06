@@ -87,8 +87,7 @@ func resourceBuildTableWriter() table.Writer {
 		"Name",
 		"Public host",
 		"Access policy",
-		"Port ext:int",
-		"Access Proxy",
+		"Access proxy",
 	})
 	tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 30, 36})
 	return tw
@@ -104,7 +103,6 @@ func resourceTableWriterAppend(tw table.Writer, resource models.AccessResource) 
 		resource.Name,
 		resource.PublicHost,
 		accessPolicies,
-		strings.Join(resource.Ports, ","),
 		resource.AccessProxy.ID,
 	})
 }
@@ -117,7 +115,6 @@ func resourceTableWriterAppendError(tw table.Writer, err error, id interface{}) 
 	tw.AppendRow(table.Row{
 		idStr,
 		processErrorResponse(err),
-		"-",
 		"-",
 		"-",
 		"-",

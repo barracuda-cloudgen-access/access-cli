@@ -336,7 +336,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-        
+
     delete:
       tags:
         - "users"
@@ -935,6 +935,9 @@ paths:
             access_resource:
               type: object
               properties:
+                name:
+                  type: string
+                  example: "Graphite"
                 access_policy_ids:
                   type: array
                   items:
@@ -943,22 +946,18 @@ paths:
                 access_proxy_id:
                   type: string
                   format: uuid
-                internal_host:
-                  type: string
-                  example: "10.1.1.3"
-                name:
-                  type: string
-                  example: "Graphite"
-                notes:
-                  type: string
-                ports:
-                  type: array
-                  items:
-                    type: string
-                    example: "80:80"
                 public_host:
                   type: string
                   example: "graphite.local"
+                internal_host:
+                  type: string
+                  example: "10.1.1.3"
+                port_mappings:
+                  type: array
+                  items:
+                    $ref: "#/definitions/AccessResourcePortMapping"
+                notes:
+                  type: string
                 enabled:
                   type: boolean
                   example: true
@@ -2259,21 +2258,10 @@ definitions:
         example: Graphite
       enabled:
         type: boolean
-      internal_ports:
+      port_mappings:
         type: array
         items:
-          type: string
-          example: "80"
-      public_ports:
-        type: array
-        items:
-          type: string
-          example: "80"
-      ports:
-        type: array
-        items:
-          type: string
-          example: "80:80"
+          $ref: "#/definitions/AccessResourcePortMapping"
       internal_host:
         type: string
         example: "10.0.3.14"
@@ -2301,6 +2289,22 @@ definitions:
             format: uuid
           name:
             type: string
+  AccessResourcePortMapping:
+    type: object
+    properties:
+      label:
+        type: string
+        example: "Example mapping"
+      public_ports:
+        type: array
+        items:
+          type: string
+          example: "80-100"
+      internal_ports:
+        type: array
+        items:
+          type: string
+          example: "8080-8100"
   AccessPolicy:
     type: object
     properties:

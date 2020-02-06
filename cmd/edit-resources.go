@@ -63,7 +63,11 @@ var resourcesEditCmd = &cobra.Command{
 					func(s string) { resource.Name = s },
 					func(s string) { resource.PublicHost = s },
 					func(s string) { resource.InternalHost = s },
-					func(s []string) { resource.Ports = s },
+					func(s []string) {
+						resource.PortMappings = []*models.AccessResourcePortMapping{
+							colonMappingsToPortMappings(s),
+						}
+					},
 					func(s string) { resource.AccessProxyID = strfmt.UUID(s) },
 					func(s int) {
 						if s >= 0 {

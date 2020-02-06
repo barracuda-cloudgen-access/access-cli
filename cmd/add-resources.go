@@ -20,6 +20,7 @@ limitations under the License.
 import (
 	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
+	"strings"
 
 	apiresources "github.com/fyde/fyde-cli/client/access_resources"
 	"github.com/fyde/fyde-cli/models"
@@ -56,7 +57,11 @@ var resourcesAddCmd = &cobra.Command{
 					func(s string) { resource.Name = s },
 					func(s string) { resource.PublicHost = s },
 					func(s string) { resource.InternalHost = s },
-					func(s []string) { resource.Ports = s },
+					func(s []string) {
+						resource.PortMappings = []*models.AccessResourcePortMapping{
+							colonMappingsToPortMappings(s),
+						}
+					},
 					func(s string) { resource.AccessProxyID = strfmt.UUID(s) },
 					func(s int) {
 						if s >= 0 {
@@ -86,6 +91,20 @@ var resourcesAddCmd = &cobra.Command{
 			})
 		return printListOutputAndError(cmd, createdList, tw, total, err)
 	},
+}
+
+func colonMappingsToPortMappings(mappings []string) *models.AccessResourcePortMapping {
+	publicPorts := make([]string, len(mappings))
+	internalPorts := make([]string, len(mappings))
+	for i, mapping := range mappings {
+		parts := strings.SplitN(mapping, ":", 2)
+		publicPorts[i] = parts[0]
+		internalPorts[i] = parts[len(parts)-1]
+	}
+	return &models.AccessResourcePortMapping{
+		PublicPorts:   publicPorts,
+		InternalPorts: internalPorts,
+	}
 }
 
 func init() {
