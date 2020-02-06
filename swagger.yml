@@ -2067,7 +2067,7 @@ definitions:
         type: string
         format: email
       enabled:
-        type: boolean 
+        type: boolean
         example: true
       modifiable:
         type: boolean
@@ -2130,7 +2130,7 @@ definitions:
       color:
         type: string
       description:
-        type: string 
+        type: string
         example: "An example group"
       external_id:
         type: string
@@ -2612,7 +2612,7 @@ definitions:
       type: array
       items:
         type: string
-  
+
   NotFoundResponse: {}
   ForbiddenResponse: {}
 
@@ -2631,7 +2631,7 @@ responses:
     description: "forbidden"
     schema:
       $ref: "#/definitions/ForbiddenResponse"
-  
+
   UnprocessableEntity:
     description: "unprocessable entity"
     schema:
