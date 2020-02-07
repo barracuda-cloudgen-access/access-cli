@@ -1533,30 +1533,30 @@ paths:
           description: "Proxy info"
           schema:
             allOf:
-                - $ref: "#/definitions/AccessProxy"
-                - type: object
-                  properties:
-                    proxy_version:
-                      type: string
-                      example: "1.1.6"
-                    access_resources:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          id:
-                            type: string
-                            format: uuid
-                          name:
-                            type: string
-                          enabled:
-                            type: boolean
-                          created_at:
-                            type: string
-                            format: date-time
-                          updated_at:
-                            type: string
-                            format: date-time
+              - $ref: "#/definitions/AccessProxy"
+              - type: object
+                properties:
+                  proxy_version:
+                    type: string
+                    example: "1.1.6"
+                  access_resources:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        name:
+                          type: string
+                        enabled:
+                          type: boolean
+                        created_at:
+                          type: string
+                          format: date-time
+                        updated_at:
+                          type: string
+                          format: date-time
         401:
           $ref: "#/responses/Unauthorized"
         404:
@@ -1586,30 +1586,30 @@ paths:
           properties:
             access_proxy:
               allOf:
-              - $ref: "#/definitions/AccessProxy"
-              - type: object
-                properties:
-                  proxy_version:
-                    type: string
-                    example: "1.1.6"
-                  access_resources:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                          format: uuid
-                        name:
-                          type: string
-                        enabled:
-                          type: boolean
-                        created_at:
-                          type: string
-                          format: date-time
-                        updated_at:
-                          type: string
-                          format: date-time
+                - $ref: "#/definitions/AccessProxy"
+                - type: object
+                  properties:
+                    proxy_version:
+                      type: string
+                      example: "1.1.6"
+                    access_resources:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                          name:
+                            type: string
+                          enabled:
+                            type: boolean
+                          created_at:
+                            type: string
+                            format: date-time
+                          updated_at:
+                            type: string
+                            format: date-time
       responses:
         200:
           description: "Proxy edited"
@@ -2628,9 +2628,7 @@ definitions:
       error:
         type: string
     additionalProperties:
-      type: array
-      items:
-        type: string
+      type: object
 
   NotFoundResponse: {}
   ForbiddenResponse: {}

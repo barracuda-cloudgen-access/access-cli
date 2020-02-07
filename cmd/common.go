@@ -61,6 +61,10 @@ func preRunCheckAuth(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+type unprocessableEntityResponse interface {
+	GetPayload() *models.UnprocessableEntityResponse
+}
+
 func processErrorResponse(err error) error {
 	type unauthorizedResponse interface {
 		GetPayload() *models.UnauthorizedResponse
@@ -74,10 +78,6 @@ func processErrorResponse(err error) error {
 		GetPayload() models.NotFoundResponse
 	}
 
-	type unprocessableEntityResponse interface {
-		GetPayload() *models.UnprocessableEntityResponse
-	}
-
 	switch r := err.(type) {
 	case unauthorizedResponse:
 		return fmt.Errorf(strings.Join(r.GetPayload().Errors, "\n"))
@@ -86,17 +86,42 @@ func processErrorResponse(err error) error {
 	case notFoundResponse:
 		return fmt.Errorf("not found")
 	case unprocessableEntityResponse:
-		msgs := []string{}
-		if r.GetPayload().Error != "" {
-			msgs = []string{r.GetPayload().Error}
-		}
-		for k, v := range r.GetPayload().UnprocessableEntityResponse {
-			msgs = append(msgs, fmt.Sprintf("%s %s", k, strings.Join(v, ", ")))
-		}
-		return fmt.Errorf(strings.Join(msgs, "\n"))
+		return parseUnprocessableEntityResponse(r)
 	default:
 		return err
 	}
+}
+
+func parseUnprocessableEntityResponse(r unprocessableEntityResponse) error {
+	msgs := []string{}
+	if r.GetPayload().Error != "" {
+		msgs = []string{r.GetPayload().Error}
+	}
+	for k, v := range r.GetPayload().UnprocessableEntityResponse {
+		if ifaceArray, ok := v.([]interface{}); ok {
+			for _, arrElem := range ifaceArray {
+				switch conv := arrElem.(type) {
+				case string:
+					msgs = append(msgs, fmt.Sprintf("%s: %s", k, conv))
+				case map[string]interface{}:
+					msgs = append(msgs, parseLimitsError(conv))
+				}
+			}
+		}
+	}
+	return fmt.Errorf(strings.Join(msgs, "\n"))
+}
+
+func parseLimitsError(data map[string]interface{}) string {
+	_, present := data["limit"]
+	if _, present2 := data["kind"]; !present || !present2 {
+		return ""
+	}
+	limitFloat, ok := data["limit"].(float64)
+	if !ok {
+		return ""
+	}
+	return fmt.Sprintf("limit of %d %ss reached", int(limitFloat), data["kind"])
 }
 
 func preRunFlagChecks(cmd *cobra.Command, args []string) error {
@@ -158,8 +183,8 @@ func preRunFlagChecks(cmd *cobra.Command, args []string) error {
 
 type multiOpJSONResult struct {
 	ID     interface{} `json:"id"`
-	OK     bool   `json:"ok"`
-	Result string `json:"result"`
+	OK     bool        `json:"ok"`
+	Result string      `json:"result"`
 }
 
 func multiOpBuildTableWriter() (table.Writer, []multiOpJSONResult) {
