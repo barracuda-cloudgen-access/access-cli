@@ -57,6 +57,7 @@ jobs:
 
     - name: Upload binary to bintray
       uses: gbl08ma/github-action-upload-bintray@master
+      continue-on-error: true
       with:
         file: ./dist/fyde-cli_linux_amd64/fyde-cli
         api_user: gbl08ma
