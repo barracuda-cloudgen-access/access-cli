@@ -53,10 +53,10 @@ var usersEditCmd = &cobra.Command{
 				// IDs are not part of the request body, so we use this workaround
 				enabledDefault := true
 				user := &struct {
-					*apiusers.EditUserParamsBodyUser
+					apiusers.EditUserParamsBodyUser
 					ID int64 `json:"id"`
 				}{
-					EditUserParamsBodyUser: &apiusers.EditUserParamsBodyUser{
+					EditUserParamsBodyUser: apiusers.EditUserParamsBodyUser{
 						Enabled: &enabledDefault, // the UI on the web console enables by default
 					},
 				}
@@ -72,7 +72,7 @@ var usersEditCmd = &cobra.Command{
 				}
 				// here, map the ID from the "fake request body" to the correct place
 				params.SetID(user.ID)
-				body := apiusers.EditUserBody{User: user.EditUserParamsBodyUser}
+				body := apiusers.EditUserBody{User: &user.EditUserParamsBodyUser}
 				params.SetUser(body)
 
 				resp, err := global.Client.Users.EditUser(params, global.AuthWriter)

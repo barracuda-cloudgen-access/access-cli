@@ -51,11 +51,9 @@ var groupsEditCmd = &cobra.Command{
 				params := apigroups.NewEditGroupParams()
 				// IDs are not part of the request body, so we use this workaround
 				group := &struct {
-					*models.Group
+					models.Group
 					ID int64 `json:"id"`
-				}{
-					Group: &models.Group{},
-				}
+				}{}
 				err := placeInputValues(cmd, values, group,
 					func(s int) { group.ID = int64(s) },
 					func(s string) { group.Name = s },
@@ -66,7 +64,7 @@ var groupsEditCmd = &cobra.Command{
 				}
 				// here, map the ID from the "fake request body" to the correct place
 				params.SetID(group.ID)
-				body := apigroups.EditGroupBody{Group: group.Group}
+				body := apigroups.EditGroupBody{Group: &group.Group}
 				params.SetGroup(body)
 
 				resp, err := global.Client.Groups.EditGroup(params, global.AuthWriter)

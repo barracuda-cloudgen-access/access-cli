@@ -51,11 +51,9 @@ var policiesEditCmd = &cobra.Command{
 				params := apipolicies.NewEditPolicyParams()
 				// IDs are not part of the request body, so we use this workaround
 				policy := &struct {
-					*apipolicies.EditPolicyParamsBodyAccessPolicy
+					apipolicies.EditPolicyParamsBodyAccessPolicy
 					ID int64 `json:"id"`
-				}{
-					EditPolicyParamsBodyAccessPolicy: &apipolicies.EditPolicyParamsBodyAccessPolicy{},
-				}
+				}{}
 				err := placeInputValues(cmd, values, policy,
 					func(s int) { policy.ID = int64(s) },
 					func(s string) { policy.Name = s },
@@ -97,7 +95,7 @@ var policiesEditCmd = &cobra.Command{
 				}
 				// here, map the ID from the "fake request body" to the correct place
 				params.SetID(policy.ID)
-				body := apipolicies.EditPolicyBody{AccessPolicy: policy.EditPolicyParamsBodyAccessPolicy}
+				body := apipolicies.EditPolicyBody{AccessPolicy: &policy.EditPolicyParamsBodyAccessPolicy}
 				params.SetPolicy(body)
 
 				resp, err := global.Client.AccessPolicies.EditPolicy(params, global.AuthWriter)
