@@ -28,8 +28,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/fyde/fyde-cli/models"
+	"github.com/gbl08ma/mapstructure"
 	"github.com/go-openapi/strfmt"
-	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cobra"
 	"github.com/thoas/go-funk"
 )
@@ -429,7 +430,18 @@ func forAllInputFromCSV(cmd *cobra.Command,
 
 		m := make(map[string]interface{})
 		for i := range record {
-			m[header[i]] = record[i]
+			// special behavior for access resource port mappings, to keep compatibility with previous versions
+			if strings.ToLower(header[i]) == "ports" {
+				header[i] = "PortMappings"
+			}
+			if strings.ToLower(header[i]) == "port_mappings" ||
+				strings.ToLower(header[i]) == "portmappings" {
+				m[header[i]] = []*models.AccessResourcePortMapping{
+					colonMappingsToPortMappings(commaSeparatedListToStringSlice(record[i])),
+				}
+			} else {
+				m[header[i]] = record[i]
+			}
 		}
 
 		entry := &inputEntry{
@@ -474,6 +486,7 @@ func placeInputValues(cmd *cobra.Command,
 		config := &mapstructure.DecoderConfig{
 			DecodeHook:       csvMapstructureDecodeHook,
 			WeaklyTypedInput: true,
+			Squash:           true,
 			Result:           object,
 		}
 		decoder, err := mapstructure.NewDecoder(config)
@@ -490,9 +503,16 @@ func csvMapstructureDecodeHook(from reflect.Type, to reflect.Type, data interfac
 		return data, nil
 	}
 	s := data.(string)
-	s = strings.TrimLeft(s, "[")
-	s = strings.TrimRight(s, "]")
-	return strings.Split(s, ","), nil
+	return commaSeparatedListToStringSlice(s), nil
+}
+
+func commaSeparatedListToStringSlice(s string) []string {
+	s = strings.TrimRight(strings.TrimLeft(s, "["), "]")
+	split := strings.Split(s, ",")
+	for i := range split {
+		split[i] = strings.TrimSpace(split[i])
+	}
+	return split
 }
 
 // the sole purpose of this function is to attempt to recover the ID of an object

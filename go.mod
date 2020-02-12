@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/gbl08ma/httpcache v1.0.2
+	github.com/gbl08ma/mapstructure v1.1.3-0.20200212105501-f0444470d003
 	github.com/go-openapi/errors v0.19.2
 	github.com/go-openapi/runtime v0.19.5
 	github.com/go-openapi/strfmt v0.19.3
@@ -12,7 +13,6 @@ require (
 	github.com/howeyc/gopass v0.0.0-20170109162249-bf9dde6d0d2c
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
 	github.com/mattn/go-runewidth v0.0.4 // indirect
-	github.com/mitchellh/mapstructure v1.1.2
 	github.com/motemen/go-loghttp v0.0.0-20170804080138-974ac5ceac27
 	github.com/motemen/go-nuts v0.0.0-20190725124253-1d2432db96b0 // indirect
 	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32

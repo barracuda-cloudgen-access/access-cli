@@ -98,8 +98,8 @@ func colonMappingsToPortMappings(mappings []string) *models.AccessResourcePortMa
 	internalPorts := make([]string, len(mappings))
 	for i, mapping := range mappings {
 		parts := strings.SplitN(mapping, ":", 2)
-		publicPorts[i] = parts[0]
-		internalPorts[i] = parts[len(parts)-1]
+		publicPorts[i] = strings.TrimSpace(parts[0])
+		internalPorts[i] = strings.TrimSpace(parts[len(parts)-1])
 	}
 	return &models.AccessResourcePortMapping{
 		PublicPorts:   publicPorts,
