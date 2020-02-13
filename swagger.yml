@@ -469,8 +469,8 @@ paths:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
-  /users/{id}/send_confirmation_mail:
-    get:
+  /users/{id}/send_enrollment_email:
+    post:
       tags:
         - "users"
       produces:
