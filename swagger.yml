@@ -738,7 +738,19 @@ paths:
           schema:
             type: array
             items:
-              $ref: "#/definitions/Device"
+              allOf:
+                - $ref: "#/definitions/Device"
+                - type: object
+                  properties:
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 23
+                        name:
+                          type: string
+                          example: "John Doe"
         401:
           $ref: "#/responses/Unauthorized"
   /devices/{id}:
@@ -2191,15 +2203,6 @@ definitions:
         type: string
         enum: [pending, require_auth, enrolled]
         example: enrolled
-      user:
-        type: object
-        properties:
-          id:
-            type: integer
-            example: 23
-          name:
-            type: string
-            example: "John Doe"
       security_checks:
         type: array
         items:
@@ -2224,6 +2227,7 @@ definitions:
       last_report_at:
         type: string
         format: date-time
+        x-nullable: true
       os_version:
         type: string
         example: "13.0.0"

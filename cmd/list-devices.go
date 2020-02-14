@@ -22,8 +22,8 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
+	"github.com/fyde/fyde-cli/client/devices"
 	apidevices "github.com/fyde/fyde-cli/client/devices"
-	"github.com/fyde/fyde-cli/models"
 )
 
 // devicesListCmd represents the list command
@@ -47,7 +47,7 @@ var devicesListCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apidevices.NewListDevicesParams()
 		//setSort(cmd, params) // TODO re-enable when/if devices supports sort
-		completePayload := []*models.Device{}
+		completePayload := []*devices.ListDevicesOKBodyItems0{}
 		total := 0
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
 			resp, err := global.Client.Devices.ListDevices(params, global.AuthWriter)
