@@ -50,14 +50,14 @@ var deviceEnableCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		enable := strings.HasPrefix(cmd.Use, "enable")
 
-		intArgs, err := multiOpParseInt64Args(cmd, args, "id")
+		uuidArgs, err := multiOpParseUUIDArgs(cmd, args, "id")
 		if err != nil {
 			return err
 		}
 
 		tw, j := multiOpBuildTableWriter()
 
-		for _, arg := range intArgs {
+		for _, arg := range uuidArgs {
 			params := apidevices.NewEditDeviceParams()
 			params.SetID(arg)
 			params.SetDevice(apidevices.EditDeviceBody{
@@ -73,11 +73,11 @@ var deviceEnableCmd = &cobra.Command{
 					err = nil
 					continue
 				}
-				return printListOutputAndError(cmd, j, tw, len(intArgs), err)
+				return printListOutputAndError(cmd, j, tw, len(uuidArgs), err)
 			}
 			multiOpTableWriterAppend(tw, &j, arg, "success")
 		}
-		return printListOutputAndError(cmd, j, tw, len(intArgs), err)
+		return printListOutputAndError(cmd, j, tw, len(uuidArgs), err)
 	},
 }
 
@@ -102,8 +102,8 @@ func init() {
 	// is called directly, e.g.:
 	// deviceEnableCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	initMultiOpArgFlags(deviceEnableCmd, "device", "enable", "id", "[]int64")
-	initMultiOpArgFlags(deviceDisableCmd, "device", "disable", "id", "[]int64")
+	initMultiOpArgFlags(deviceEnableCmd, "device", "enable", "id", "[]strfmt.UUID")
+	initMultiOpArgFlags(deviceDisableCmd, "device", "disable", "id", "[]strfmt.UUID")
 
 	initOutputFlags(deviceEnableCmd)
 	initOutputFlags(deviceDisableCmd)

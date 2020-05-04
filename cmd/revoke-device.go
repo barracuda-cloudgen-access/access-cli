@@ -47,14 +47,14 @@ var deviceRevokeCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		intArgs, err := multiOpParseInt64Args(cmd, args, "id")
+		uuidArgs, err := multiOpParseUUIDArgs(cmd, args, "id")
 		if err != nil {
 			return err
 		}
 
 		tw, j := multiOpBuildTableWriter()
 
-		for _, id := range intArgs {
+		for _, id := range uuidArgs {
 			params := apidevices.NewRevokeDeviceParams()
 			params.SetID(id)
 
@@ -65,11 +65,11 @@ var deviceRevokeCmd = &cobra.Command{
 					err = nil
 					continue
 				}
-				return printListOutputAndError(cmd, j, tw, len(intArgs), err)
+				return printListOutputAndError(cmd, j, tw, len(uuidArgs), err)
 			}
 			multiOpTableWriterAppend(tw, &j, id, "success")
 		}
-		return printListOutputAndError(cmd, j, tw, len(intArgs), err)
+		return printListOutputAndError(cmd, j, tw, len(uuidArgs), err)
 	},
 }
 
@@ -86,7 +86,7 @@ func init() {
 	// is called directly, e.g.:
 	// deviceRevokeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	initMultiOpArgFlags(deviceRevokeCmd, "device", "revoke", "id", "[]int64")
+	initMultiOpArgFlags(deviceRevokeCmd, "device", "revoke", "id", "[]strfmt.UUID")
 	initOutputFlags(deviceRevokeCmd)
 	initLoopControlFlags(deviceRevokeCmd)
 }

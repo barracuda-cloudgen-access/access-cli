@@ -504,7 +504,8 @@ paths:
       - in: path
         name: "device_id"
         required: true
-        type: integer
+        type: string
+        format: uuid
         description: "The ID of the device to delete"
       responses:
         204:
@@ -765,7 +766,8 @@ paths:
       - in: path
         name: "id"
         required: true
-        type: integer
+        type: string
+        format: uuid
         description: "The ID of the device to retrieve"
       responses:
         200:
@@ -821,7 +823,8 @@ paths:
       - in: path
         name: "id"
         required: true
-        type: integer
+        type: string
+        format: uuid
         description: "The ID of the device to edit"
       - in: body
         name: "device"
@@ -866,7 +869,8 @@ paths:
       - in: path
         name: "id"
         required: true
-        type: integer
+        type: string
+        format: uuid
         description: "The ID of the device to revoke"
       responses:
         200:
@@ -2179,8 +2183,8 @@ definitions:
     type: object
     properties:
       id:
-        type: integer
-        example: 45
+        type: string
+        format: uuid
       enrollment_id:
         type: string
         format: uuid
@@ -2239,8 +2243,8 @@ definitions:
     type: object
     properties:
       id:
-        type: integer
-        example: 45
+        type: string
+        format: uuid
       enrollment_id:
         type: string
         format: uuid

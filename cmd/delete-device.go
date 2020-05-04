@@ -20,6 +20,7 @@ limitations under the License.
 import (
 	"fmt"
 
+	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
 	apidevices "github.com/fyde/fyde-cli/client/devices"
@@ -48,12 +49,12 @@ var deviceDeleteCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		deviceIDs, err := multiOpParseInt64Args(cmd, args, "id")
+		deviceIDs, err := multiOpParseUUIDArgs(cmd, args, "id")
 		if err != nil {
 			return err
 		}
 
-		delete := func(id int64) error {
+		delete := func(id strfmt.UUID) error {
 			gparams := apidevices.NewGetDeviceParams()
 			gparams.SetID(id)
 			resp, err := global.Client.Devices.GetDevice(gparams, global.AuthWriter)
@@ -103,7 +104,7 @@ func init() {
 	// is called directly, e.g.:
 	// deviceDeleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	initMultiOpArgFlags(deviceDeleteCmd, "device", "delete", "id", "[]int64")
+	initMultiOpArgFlags(deviceDeleteCmd, "device", "delete", "id", "[]strfmt.UUID")
 	initOutputFlags(deviceDeleteCmd)
 	initLoopControlFlags(deviceDeleteCmd)
 }

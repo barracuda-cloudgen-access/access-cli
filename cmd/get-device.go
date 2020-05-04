@@ -19,8 +19,8 @@ limitations under the License.
 
 import (
 	"fmt"
-	"strconv"
 
+	"github.com/go-openapi/strfmt"
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
@@ -50,21 +50,19 @@ var deviceGetCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var deviceID int64
+		var deviceID string
 		var err error
 		if cmd.Flags().Changed("id") {
-			var d int
-			d, err = cmd.Flags().GetInt("id")
-			deviceID = int64(d)
+			deviceID, err = cmd.Flags().GetString("id")
+			if err != nil {
+				return err
+			}
 		} else {
-			deviceID, err = strconv.ParseInt(args[0], 10, 64)
-		}
-		if err != nil {
-			return err
+			deviceID = args[0]
 		}
 
 		params := apidevices.NewGetDeviceParams()
-		params.SetID(deviceID)
+		params.SetID(strfmt.UUID(deviceID))
 
 		resp, err := global.Client.Devices.GetDevice(params, global.AuthWriter)
 		if err != nil {
@@ -124,5 +122,5 @@ func init() {
 	// deviceGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(deviceGetCmd)
-	deviceGetCmd.Flags().Int("id", 0, "id of device to get")
+	deviceGetCmd.Flags().String("id", "", "id of device to get")
 }
