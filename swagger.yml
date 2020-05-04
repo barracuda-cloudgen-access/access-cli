@@ -2449,7 +2449,8 @@ definitions:
           hardware_model:
             type: string
           id:
-            type: integer
+            type: string
+            format: uuid
           enrollment_id:
             type: string
             format: uuid
@@ -2530,7 +2531,8 @@ definitions:
           hardware_model:
             type: string
           id:
-            type: integer
+            type: string
+            format: uuid
           enrollment_id:
             type: string
             format: uuid
