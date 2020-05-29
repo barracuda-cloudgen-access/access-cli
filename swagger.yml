@@ -1995,6 +1995,9 @@ definitions:
           email:
             type: string
             format: email
+          url:
+            type: string
+            example: "https://enterprise.fyde.com/sso/start"
           tenant_id:
             type: string
             format: uuid

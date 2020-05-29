@@ -71,23 +71,38 @@ var loginCmd = &cobra.Command{
 			}
 		}
 
-		// read password from terminal, if not obtained by other means
-		if password == "" {
-			cmd.Print("Password: ")
-			passwordbytes, err := gopass.GetPasswd()
-			if err != nil {
+		// send sign-in request without password first to check if it is an SSO account
+		params := apiauth.NewSignInParams()
+		params.WithBody(&models.SignInRequest{
+			Email: email,
+		})
+		signInResponse, err := global.Client.Auth.SignIn(params)
+		if err != nil {
+			// read password from terminal, if not obtained by other means
+			if password == "" {
+				cmd.Print("Password: ")
+				passwordbytes, err := gopass.GetPasswd()
+				if err != nil {
+					return err
+				}
+				password = string(passwordbytes)
+			}
+		} else {
+			cmd.Println("Open this URL and come back: " + signInResponse.Payload.Data.URL + "&usage=cli")
+			cmd.Print("Enter code here: ")
+			i, err := fmt.Scanln(&password)
+			if i == 0 || err != nil {
 				return err
 			}
-			password = string(passwordbytes)
 		}
 
 		// send sign-in request
-		params := apiauth.NewSignInParams()
+		params = apiauth.NewSignInParams()
 		params.WithBody(&models.SignInRequest{
 			Email:    email,
 			Password: password,
 		})
-		signInResponse, err := global.Client.Auth.SignIn(params)
+		signInResponse, err = global.Client.Auth.SignIn(params)
 		if err != nil {
 			return processErrorResponse(err)
 		}
