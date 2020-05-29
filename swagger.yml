@@ -51,6 +51,8 @@ tags:
     url: "https://fydeinc.github.io/docs/fyde-enterprise-console/add-user/"
 - name: "tenants"
   description: "Operations on tenants"
+- name: "admins"
+  description: "Operations on admins"
 schemes:
 - "https"
 paths:
@@ -1931,6 +1933,195 @@ paths:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
+  /admins:
+    get:
+      tags:
+      - "admins"
+      summary: "List admins"
+      operationId: "listAdmins"
+      produces:
+      - "application/json"
+      parameters:
+      - in: query
+        name: "name"
+        description: "Restrict name of the returned admins"
+        required: false
+        type: string
+      - in: query
+        name: "email"
+        description: "Restrict email of the returned admins"
+        required: false
+        type: string
+      - in: query
+        name: "authentication_type"
+        description: "Restrict authentication_type of the returned admins"
+        required: false
+        type: string
+        enum: [sso, password]
+      - in: query
+        name: "tenant_owner"
+        description: "Restrict tenant_owner of the returned admins"
+        required: false
+        type: string
+      - $ref: '#/parameters/sortParam'
+      - $ref: '#/parameters/pageParam'
+      - $ref: '#/parameters/perPageParam'
+      - $ref: '#/parameters/searchParam'
+      responses:
+        200:
+          description: "successful operation"
+          headers:
+            total:
+              description: "Total number of items (for pagination)"
+              type: integer
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Admin"
+        401:
+          $ref: "#/responses/Unauthorized"
+    post:
+      tags:
+        - "admins"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Create admin"
+      operationId: "createAdmin"
+      parameters:
+      - in: "body"
+        name: "admin"
+        description: "Information about the admin to create"
+        required: true
+        schema:
+          type: object
+          properties:
+            admin:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "John"
+                email:
+                  type: string
+                  format: email
+                authentication_type:
+                  type: string
+                  enum: [sso, password]
+                tenant_owner:
+                  type: string
+                  enum: ["true", "false"]
+                password:
+                  type: string
+      responses:
+        201:
+          description: "Admin created"
+          schema:
+            $ref: "#/definitions/Admin"
+        401:
+          $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
+  /admins/{id}:
+    get:
+      tags:
+        - "admins"
+      produces:
+      - "application/json"
+      summary: "Retrieve information about an admin"
+      operationId: "getAdmin"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the admin to retrieve"
+      responses:
+        200:
+          description: "Admin info"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Admin"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+    patch:
+      tags:
+        - "admins"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Edit admin"
+      operationId: "editAdmin"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the admin to edit"
+      - in: body
+        name: "admin"
+        description: "Admin information to modify"
+        required: true
+        schema:
+          type: object
+          properties:
+            admin:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "John"
+                authentication_type:
+                  type: string
+                  enum: [sso, password]
+                tenant_owner:
+                  type: string
+                  enum: ["true", "false"]
+                password:
+                  type: string
+      responses:
+        200:
+          description: "Admin edited"
+          schema:
+            allOf:
+              - $ref: "#/definitions/Admin"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
+    delete:
+      tags:
+        - "admins"
+      summary: "Delete admin"
+      operationId: "deleteAdmin"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: array
+        collectionFormat: csv
+        items:
+          type: integer
+        description: "The IDs of the admins to delete, comma-separated"
+      responses:
+        204:
+          description: "Admin deleted"
+        401:
+          $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
 
 securityDefinitions:
   uid:
@@ -2619,6 +2810,31 @@ definitions:
         x-nullable: true
       assets_count:
         type: integer
+  Admin:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+        example: John
+      email:
+        type: string
+        format: email
+      tenant_owner:
+        type: boolean
+      authentication_type:
+        type: string
+        enum: [sso, password]
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      last_sign_in_at:
+        type: string
+        format: date-time
 
   UnauthorizedResponse:
     type: object
