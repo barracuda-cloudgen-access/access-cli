@@ -1959,6 +1959,12 @@ paths:
         type: string
         enum: [sso, password]
       - in: query
+        name: "authentication_email"
+        description: "Restrict authentication_email of the returned admins"
+        required: false
+        type: string
+        format: email
+      - in: query
         name: "tenant_owner"
         description: "Restrict tenant_owner of the returned admins"
         required: false
@@ -2009,6 +2015,9 @@ paths:
                 authentication_type:
                   type: string
                   enum: [sso, password]
+                authentication_email:
+                  type: string
+                  format: email
                 tenant_owner:
                   type: string
                   enum: ["true", "false"]
@@ -2082,6 +2091,9 @@ paths:
                 authentication_type:
                   type: string
                   enum: [sso, password]
+                authentication_email:
+                  type: string
+                  format: email
                 tenant_owner:
                   type: string
                   enum: ["true", "false"]
@@ -2829,6 +2841,9 @@ definitions:
       authentication_type:
         type: string
         enum: [sso, password]
+      authentication_email:
+        type: string
+        format: email
       created_at:
         type: string
         format: date-time

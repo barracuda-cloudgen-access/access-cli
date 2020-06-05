@@ -18,6 +18,7 @@ limitations under the License.
 */
 
 import (
+	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
 	apiadmins "github.com/fyde/fyde-cli/client/admins"
@@ -59,6 +60,7 @@ var adminsEditCmd = &cobra.Command{
 					func(s int) { admin.ID = int64(s) },
 					func(s string) { admin.Name = s },
 					func(s string) { admin.AuthenticationType = s },
+					func(s string) { admin.AuthenticationEmail = strfmt.Email(s) },
 					func(s string) { admin.Password = s },
 					func(s string) { admin.TenantOwner = s })
 				if err != nil {
@@ -130,6 +132,15 @@ func init() {
 			Mandatory:       false,
 			DefaultValue:    "",
 			SchemaName:      "authentication_type",
+		},
+		inputField{
+			Name:            "Authentication Email",
+			FlagName:        "authn-email",
+			FlagDescription: "specify the new email used for authentication for this admin",
+			VarType:         "string",
+			Mandatory:       false,
+			DefaultValue:    "",
+			SchemaName:      "authentication_email",
 		},
 		inputField{
 			Name:            "Password",
