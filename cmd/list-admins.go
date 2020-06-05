@@ -45,7 +45,7 @@ var adminsListCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apiadmins.NewListAdminsParams()
 		setSort(cmd, params)
-		setFilter(cmd, params.SetName, params.SetEmail, params.SetAuthenticationType, params.SetTenantOwner)
+		setFilter(cmd, params.SetName, params.SetEmail, params.SetAuthenticationType, params.SetAuthenticationEmail, params.SetTenantOwner)
 		setSearchQuery(cmd, params)
 		completePayload := []*models.Admin{}
 		total := 0
@@ -92,6 +92,7 @@ func init() {
 		filterType{"name", "string"},
 		filterType{"email", "string"},
 		filterType{"authentication_type", "string"},
+		filterType{"authentication_email", "string"},
 		filterType{"tenant_owner", "string"})
 	initSearchFlags(adminsListCmd)
 	initOutputFlags(adminsListCmd)

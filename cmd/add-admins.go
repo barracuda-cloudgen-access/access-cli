@@ -55,6 +55,7 @@ var adminsAddCmd = &cobra.Command{
 					func(s string) { admin.Name = s },
 					func(s string) { admin.Email = strfmt.Email(s) },
 					func(s string) { admin.AuthenticationType = s },
+					func(s string) { admin.AuthenticationEmail = strfmt.Email(s) },
 					func(s string) { admin.Password = s },
 					func(s string) { admin.TenantOwner = s })
 				if err != nil {
@@ -119,16 +120,25 @@ func init() {
 		inputField{
 			Name:            "Authentication Type",
 			FlagName:        "authn-type",
-			FlagDescription: "specify the new authentication type for the admin",
+			FlagDescription: "specify the authentication type for the admin",
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",
 			SchemaName:      "authentication_type",
 		},
 		inputField{
+			Name:            "Authentication Email",
+			FlagName:        "authn-email",
+			FlagDescription: "specify the email used for authentication for this admin",
+			VarType:         "string",
+			Mandatory:       false,
+			DefaultValue:    "",
+			SchemaName:      "authentication_email",
+		},
+		inputField{
 			Name:            "Password",
 			FlagName:        "password",
-			FlagDescription: "specify the new password for the admin",
+			FlagDescription: "specify the password for the admin",
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",

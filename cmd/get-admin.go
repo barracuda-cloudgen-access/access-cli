@@ -87,10 +87,11 @@ func adminBuildTableWriter() table.Writer {
 		"Name",
 		"Email",
 		"Authentication Type",
+		"Authentication Email",
 		"Tenant Owner",
 		"Last Sign In",
 	})
-	tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 30, 36})
+	tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 30, 30, 36})
 	return tw
 }
 
@@ -100,6 +101,7 @@ func adminTableWriterAppend(tw table.Writer, admin *models.Admin) {
 		admin.Name,
 		admin.Email,
 		admin.AuthenticationType,
+		admin.AuthenticationEmail,
 		admin.TenantOwner,
 		admin.LastSignInAt,
 	})
