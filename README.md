@@ -25,6 +25,7 @@ The following operations are implemented:
  - Delete users, groups, devices, resources, policies, proxies and domains
  - Generate, view, send and revoke user enrollment links, and change their number of slots
  - Revoke device authentication
+ - Evaluate a Device against a resource to access
  - List activity records and get info about specific record
  - Watch activity records as they happen in real-time
 
