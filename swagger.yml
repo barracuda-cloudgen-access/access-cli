@@ -917,6 +917,76 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
+  /devices/{id}/evaluate_resource:
+    post:
+      tags:
+        - "devices"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Evaluate access to a resource for a device"
+      operationId: "evaluateResource"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: string
+        format: uuid
+        description: "The ID of the device to use to evaluate the resource"
+      - in: body
+        name: "evaluate_resource"
+        description: "Resource domain/ip to evaluate"
+        required: true
+        schema:
+          type: object
+          required:
+            - resource_domain
+            - attributes
+          properties:
+            resource_domain:
+              type: string
+            attributes:
+              type: object
+              required:
+                - antivirus
+                - jailbroken
+                - fde
+                - firewall
+                - screen_lock
+              properties:
+                antivirus:
+                  type: boolean
+                jailbroken:
+                  type: boolean
+                fde:
+                  type: boolean
+                firewall:
+                  type: boolean
+                screen_lock:
+                  type: boolean
+      responses:
+        200:
+          description: "Resource access evaluation response"
+          schema:
+            type: object
+            properties:
+              result:
+                type: boolean
+              remediations:
+                type: array
+                items:
+                  type: object
+              errors:
+                type: array
+                items:
+                  type: object
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
   /access_resources:
     get:
       tags:
