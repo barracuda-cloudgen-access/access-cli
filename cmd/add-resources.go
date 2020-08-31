@@ -18,9 +18,10 @@ limitations under the License.
 */
 
 import (
+	"strings"
+
 	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
-	"strings"
 
 	apiresources "github.com/fyde/fyde-cli/client/access_resources"
 	"github.com/fyde/fyde-cli/models"
@@ -68,6 +69,7 @@ var resourcesAddCmd = &cobra.Command{
 							resource.AccessPolicyIds = []int64{int64(s)}
 						}
 					},
+					func(s []string) { resource.WildcardExceptions = s },
 					func(s string) { resource.Notes = s })
 				if err != nil {
 					return nil, err
@@ -173,6 +175,14 @@ func init() {
 			VarType:         "int",
 			Mandatory:       false,
 			DefaultValue:    -1,
+		},
+		inputField{
+			Name:            "Wildcard Exceptions",
+			FlagName:        "exceptions",
+			FlagDescription: "specify a list of of sub-domain wildcard exceptions that wont be proxied over (comma separated)",
+			VarType:         "[]string",
+			Mandatory:       false,
+			DefaultValue:    []string{},
 		},
 		inputField{
 			Name:            "Notes",
