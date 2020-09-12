@@ -1071,6 +1071,11 @@ paths:
                   type: array
                   items:
                     $ref: "#/definitions/AccessResourcePortMapping"
+                wildcard_exceptions:
+                  type: array
+                  items:
+                    type: string
+                    example: "mail"
                 notes:
                   type: string
                 enabled:
@@ -2600,6 +2605,11 @@ definitions:
             format: uuid
           name:
             type: string
+      wildcard_exceptions:
+        type: array
+        items:
+          type: string
+          example: "mail"
   AccessResourcePortMapping:
     type: object
     properties:
