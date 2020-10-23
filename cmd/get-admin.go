@@ -20,6 +20,7 @@ limitations under the License.
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/jedib0t/go-pretty/text"
@@ -88,7 +89,7 @@ func adminBuildTableWriter() table.Writer {
 		"Email",
 		"Authentication Type",
 		"Authentication Email",
-		"Tenant Owner",
+		"Roles",
 		"Last Sign In",
 	})
 	tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 30, 30, 36})
@@ -102,7 +103,7 @@ func adminTableWriterAppend(tw table.Writer, admin *models.Admin) {
 		admin.Email,
 		admin.AuthenticationType,
 		admin.AuthenticationEmail,
-		admin.TenantOwner,
+		strings.Join(admin.RoleNames, ","),
 		admin.LastSignInAt,
 	})
 }

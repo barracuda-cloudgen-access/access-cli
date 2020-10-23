@@ -2040,8 +2040,8 @@ paths:
         type: string
         format: email
       - in: query
-        name: "tenant_owner"
-        description: "Restrict tenant_owner of the returned admins"
+        name: "role_names"
+        description: "Restrict role names of the returned admins"
         required: false
         type: string
       - $ref: '#/parameters/sortParam'
@@ -2093,9 +2093,11 @@ paths:
                 authentication_email:
                   type: string
                   format: email
-                tenant_owner:
-                  type: string
-                  enum: ["true", "false"]
+                role_names:
+                  type: array
+                  items:
+                    type: string
+                    example: "admin"
                 password:
                   type: string
       responses:
@@ -2169,9 +2171,11 @@ paths:
                 authentication_email:
                   type: string
                   format: email
-                tenant_owner:
-                  type: string
-                  enum: ["true", "false"]
+                role_names:
+                  type: array
+                  items:
+                    type: string
+                    example: "admin"
                 password:
                   type: string
       responses:
@@ -2916,8 +2920,11 @@ definitions:
       email:
         type: string
         format: email
-      tenant_owner:
-        type: boolean
+      role_names:
+        type: array
+        items:
+          type: string
+          example: "admin"
       authentication_type:
         type: string
         enum: [sso, password]
