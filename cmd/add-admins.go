@@ -57,7 +57,7 @@ var adminsAddCmd = &cobra.Command{
 					func(s string) { admin.AuthenticationType = s },
 					func(s string) { admin.AuthenticationEmail = strfmt.Email(s) },
 					func(s string) { admin.Password = s },
-					func(s string) { admin.TenantOwner = s })
+					func(s []string) { admin.RoleNames = s })
 				if err != nil {
 					return nil, err
 				}
@@ -145,12 +145,12 @@ func init() {
 			SchemaName:      "password",
 		},
 		inputField{
-			Name:            "Tenant Owner",
-			FlagName:        "owner",
-			FlagDescription: "Is this admin a Tenant Owner (able to manage admins)",
-			VarType:         "string",
+			Name:            "Roles",
+			FlagName:        "roles",
+			FlagDescription: "List of roles for this admin",
+			VarType:         "[]string",
 			Mandatory:       false,
-			DefaultValue:    "",
-			SchemaName:      "tenant_owner",
+			DefaultValue:    []string{},
+			SchemaName:      "role_names",
 		})
 }
