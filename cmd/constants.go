@@ -1,8 +1,8 @@
-// Package cmd implements fyde-cli commands
+// Package cmd implements access-cli commands
 package cmd
 
 /*
-Copyright © 2019 Fyde, Inc. <hello@fyde.com>
+Copyright © 2020 Barracuda Networks, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ limitations under the License.
 
 const (
 	// ApplicationName is the user-facing name of the application
-	ApplicationName = "fyde-cli"
+	ApplicationName = "access-cli"
 
 	// ConfigFileName is the file name (not path, that's platform-dependent)
 	// used for the config file
@@ -27,7 +27,7 @@ const (
 
 	// ConfigFileEnvVar is the name of the environment variable used to override
 	// the config file path
-	ConfigFileEnvVar = "FYDE_CLI_CONFIG_FILE"
+	ConfigFileEnvVar = "ACCESS_CLI_CONFIG_FILE"
 
 	// AuthFileName is the file name (not path, that's platform-dependent)
 	// used for the auth file
@@ -35,15 +35,15 @@ const (
 
 	// AuthFileEnvVar is the name of the environment variable used to override
 	// the auth file path
-	AuthFileEnvVar = "FYDE_CLI_AUTH_FILE"
+	AuthFileEnvVar = "ACCESS_CLI_AUTH_FILE"
 
 	// ConfigVendorName is the vendor name used to select the default path for
 	// configuration storage
-	ConfigVendorName = "fyde"
+	ConfigVendorName = "barracuda"
 
 	// ConfigApplicationName is the application name used to select the default
 	// path for configuration storage
-	ConfigApplicationName = "fyde-cli"
+	ConfigApplicationName = "access-cli"
 
 	// DefaultEndpoint is the default endpoint used by the client
 	DefaultEndpoint = "enterprise.fyde.com"

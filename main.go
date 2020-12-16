@@ -1,5 +1,5 @@
 /*
-Copyright © 2019 Fyde, Inc. <hello@fyde.com>
+Copyright © 2020 Barracuda Networks, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "github.com/fyde/fyde-cli/cmd"
+import "github.com/fyde/access-cli/cmd"
 
 var (
 	// GitCommit is provided by govvv/goreleaser at compile-time

@@ -1,8 +1,8 @@
-// Package cmd implements fyde-cli commands
+// Package cmd implements access-cli commands
 package cmd
 
 /*
-Copyright © 2019 Fyde, Inc. <hello@fyde.com>
+Copyright © 2020 Barracuda Networks, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
-	apiclient "github.com/fyde/fyde-cli/client"
+	apiclient "github.com/fyde/access-cli/client"
 )
 
 var cfgFile string
@@ -48,7 +48,7 @@ var authViper *viper.Viper
 
 type globalInfo struct {
 	Transport        *httptransport.Runtime
-	Client           *apiclient.FydeEnterpriseConsole
+	Client           *apiclient.CloudGenAccessConsole
 	AuthWriter       runtime.ClientAuthInfoWriter
 	VerboseLevel     int
 	WriteFiles       bool
@@ -64,8 +64,8 @@ var global globalInfo
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   ApplicationName,
-	Short: "Command-line client for the Fyde Enterprise Console",
-	Long:  ApplicationName + ` allows access to all Enterprise Console APIs from the command line`,
+	Short: "Command-line client for the CloudGen Access Console",
+	Long:  ApplicationName + ` allows access to all Console APIs from the command line`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
@@ -191,13 +191,13 @@ func initClient() {
 		accessToken := authViper.GetString(ckeyAuthAccessToken)
 		client := authViper.GetString(ckeyAuthClient)
 		uid := authViper.GetString(ckeyAuthUID)
-		global.AuthWriter = FydeAPIKeyAuth(accessToken, client, uid)
+		global.AuthWriter = AccessAPIKeyAuth(accessToken, client, uid)
 	default:
 	}
 }
 
-// FydeAPIKeyAuth provides an API key auth info writer
-func FydeAPIKeyAuth(accessToken, client, uid string) runtime.ClientAuthInfoWriter {
+// AccessAPIKeyAuth provides an API key auth info writer
+func AccessAPIKeyAuth(accessToken, client, uid string) runtime.ClientAuthInfoWriter {
 	return runtime.ClientAuthInfoWriterFunc(func(r runtime.ClientRequest, _ strfmt.Registry) error {
 		err := r.SetHeaderParam("access-token", accessToken)
 		if err != nil {
@@ -218,7 +218,7 @@ type setUserAgentTransport struct {
 }
 
 func (t *setUserAgentTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	req.Header.Add("User-Agent", fmt.Sprintf("fyde-cli/%s (%s; %s)", version.Version, goruntime.GOOS, goruntime.GOARCH))
+	req.Header.Add("User-Agent", fmt.Sprintf("access-cli/%s (%s; %s)", version.Version, goruntime.GOOS, goruntime.GOARCH))
 	return t.T.RoundTrip(req)
 }
 

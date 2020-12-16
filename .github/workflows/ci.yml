@@ -37,7 +37,7 @@ jobs:
 
     - name: Test version command
       # we do NOT want to find ??? (hence the ! operator, defined in posix)
-      run: "! ./dist/fyde-cli_linux_amd64/fyde-cli version | grep -q ???"
+      run: "! ./dist/access-cli_linux_amd64/access-cli version | grep -q ???"
 
     - name: Lint
       run: go vet ./...
