@@ -69,9 +69,9 @@ var resourcesEditCmd = &cobra.Command{
 						}
 					},
 					func(s string) { resource.AccessProxyID = strfmt.UUID(s) },
-					func(s int) {
-						if s >= 0 {
-							resource.AccessPolicyIds = []int64{int64(s)}
+					func(s []int64) {
+						if len(s) > 0 {
+							resource.AccessPolicyIds = s
 						}
 					},
 					func(s []string) { resource.WildcardExceptions = s },
@@ -174,12 +174,12 @@ func init() {
 			DefaultValue:    "",
 		},
 		inputField{
-			Name:            "Policy",
-			FlagName:        "policy",
-			FlagDescription: "specify the new policy ID for the resource",
-			VarType:         "int",
+			Name:            "Policies",
+			FlagName:        "policies",
+			FlagDescription: "specify a list of comma-separated policy IDs for the created resource",
+			VarType:         "[]int",
 			Mandatory:       false,
-			DefaultValue:    -1,
+			DefaultValue:    []int{},
 		},
 		inputField{
 			Name:            "Wildcard Exceptions",
