@@ -43,9 +43,11 @@ nfpms:
       windows: Windows
       386: i386
       amd64: x86_64
-    files:
-      "dist/completions/fyde-cli.bash": "/usr/share/bash-completion/completions/fyde-cli"
-      "dist/completions/fyde-cli.zsh": "/usr/share/zsh/site-functions/_fyde-cli"
+    contents:
+      - src: "dist/completions/fyde-cli.bash"
+        dst: "/usr/share/bash-completion/completions/fyde-cli"
+      - src: "dist/completions/fyde-cli.zsh"
+        dst: "/usr/share/zsh/site-functions/_fyde-cli"
 checksum:
   name_template: 'checksums.txt'
 snapshot:
