@@ -20,11 +20,14 @@ jobs:
 
     - name: Install go-swagger v0.21.0
       run: |
+        swaggerdir=$(mktemp -d)
+        cd "$swaggerdir"
         wget -O swagger https://github.com/go-swagger/go-swagger/releases/download/v0.21.0/swagger_linux_amd64
         chmod +x swagger
+        echo "$swaggerdir" >> $GITHUB_PATH
 
     - name: Run GoReleaser
-      uses: goreleaser/goreleaser-action@master
+      uses: goreleaser/goreleaser-action@v2
       with:
         version: latest
         args: -f .goreleaser-ci.yml --snapshot

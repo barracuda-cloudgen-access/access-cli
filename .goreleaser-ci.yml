@@ -2,7 +2,7 @@ env:
   - GO111MODULE=on
 before:
   hooks:
-    - ./swagger generate client -f swagger.yml
+    - swagger generate client -f swagger.yml
     - go mod tidy
     - go generate ./...
 builds:
