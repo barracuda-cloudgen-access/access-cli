@@ -19,7 +19,13 @@ builds:
     ldflags:
       - -s -w -X main.GitCommit={{.ShortCommit}} -X main.BuildDate={{.Date}} -X main.Version={{.Version}} -X main.GitState=clean
     hooks:
-      pre: ./scripts/generate-completions.sh
+      post:
+        # Generate completion scripts only when host==target arch
+        - bash -c "if [ {{ .Target }} = linux_amd64 ]; then
+            mkdir dist/completions;
+            "{{ .Path }}" completion bash >dist/completions/fyde-cli.bash;
+            "{{ .Path }}" completion zsh >dist/completions/fyde-cli.zsh;
+          fi"
 archives:
 - replacements:
     darwin: macOS
