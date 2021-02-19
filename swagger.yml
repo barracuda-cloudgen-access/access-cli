@@ -2280,9 +2280,6 @@ definitions:
           url:
             type: string
             example: "https://enterprise.fyde.com/sso/start"
-          tenant_id:
-            type: string
-            format: uuid
           provider:
             type: string
             example: email
@@ -2298,9 +2295,6 @@ definitions:
             type: string
             x-nullable: true
             example: null
-          tenant_name:
-            type: string
-            example: "Fyde"
           last_sign_in_at:
             type: string
             format: date-time
@@ -2331,9 +2325,6 @@ definitions:
           email:
             type: string
             format: email
-          tenant_id:
-            type: string
-            format: uuid
           provider:
             type: string
             example: email
@@ -2349,9 +2340,6 @@ definitions:
             type: string
             x-nullable: true
             example: null
-          tenant_name:
-            type: string
-            example: "Fyde"
           last_sign_in_at:
             type: string
             format: date-time
