@@ -1046,6 +1046,8 @@ paths:
         required: true
         schema:
           type: object
+          required:
+            - access_proxy_id
           properties:
             access_resource:
               type: object
