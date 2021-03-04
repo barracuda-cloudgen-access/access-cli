@@ -1,7 +1,7 @@
 Fyde CLI client [![Go Report Card](https://goreportcard.com/badge/github.com/fyde/fyde-cli)](https://goreportcard.com/report/github.com/fyde/fyde-cli) [![license](https://img.shields.io/github/license/fyde/fyde-cli.svg)](https://github.com/fyde/fyde-cli/blob/master/LICENSE)
 ===============
 
-Cross-platform command line client for [Fyde Enterprise Console](https://fyde.github.io/docs/fyde-enterprise-console) APIs.
+Cross-platform command line client for [CloudGen Access Enterprise Console](https://campus.barracuda.com/product/cloudgenaccess/doc/93201513/cloudgen-access-enterprise-console/) APIs.
 
 ## Overview
 
@@ -15,7 +15,7 @@ You can use fyde-cli in other architectures by compiling from source.
 
 ## Features
 
-fyde-cli supports most operations possible with the web version of the [Fyde Enterprise Console](https://fyde.github.io/docs/fyde-enterprise-console), enabling batch mode for certain operations (like adding multiple users from a CSV file or a JSON dump).
+fyde-cli supports most operations possible with the web version of the [CloudGen Access Enterprise Console](https://campus.barracuda.com/product/cloudgenaccess/doc/93201513/cloudgen-access-enterprise-console/), enabling batch mode for certain operations (like adding multiple users from a CSV file or a JSON dump).
 The following operations are implemented:
 
  - List users, groups, devices, resources, proxies and policies
@@ -45,7 +45,7 @@ Don't forget to add the executable to `$PATH`, or equivalent, if desired.
 
 ### Installing from source
 
-If we do not provide a pre-built binary for your platform, or if you want to make changes to fyde-cli, you can compile it yourself, following the [instructions in the documentation](https://fyde.github.io/docs/fyde-cli/compile-from-source/).
+If we do not provide a pre-built binary for your platform, or if you want to make changes to fyde-cli, you can compile it yourself, following the [instructions in the documentation](https://campus.barracuda.com/product/cloudgenaccess/doc/93201563/compile-from-source/).
 
 ## Usage
 
@@ -60,7 +60,7 @@ Endpoint changed to fydeconsole.example.com.
 Credentials cleared, please login again using `fyde-cli login`
 ```
 
-See [this page](https://fyde.github.io/docs/fyde-cli/set-EC-endpoint/) for more information about using different endpoints.
+See [this page](https://campus.barracuda.com/product/cloudgenaccess/doc/93201567/set-cloudgen-access-console-endpoint/) for more information about using different endpoints.
 
 You can then proceed to log in with your console credentials:
 
@@ -104,7 +104,7 @@ When adding or editing records, fyde-cli can receive input in three different wa
  - From CSV files, using `--from-file=filename.csv --file-format=csv`
    - In this case, fyde-cli will expect a file containing comma-separated values, with one record per line. The first record must be a header mapping each column to the correct record field
 
-The expected formats when using JSON and CSV files are documented in [the fyde-cli docs](https://fyde.github.io/docs/fyde-cli/batch-mode-operations/).
+The expected formats when using JSON and CSV files are documented in [the fyde-cli docs](https://campus.barracuda.com/product/cloudgenaccess/doc/93201574/batch-mode-operations/).
 
 ### Behavior on error
 

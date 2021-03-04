@@ -18,17 +18,17 @@ tags:
   description: "Operations on access policies"
   externalDocs:
     description: "Console docs"
-    url: "https://fydeinc.github.io/docs/fyde-enterprise-console/add-policy/"
+    url: "https://campus.barracuda.com/product/cloudgenaccess/doc/93201523/add-policy/"
 - name: "access_proxies"
   description: "Operations on access proxies"
   externalDocs:
     description: "Console docs"
-    url: "https://fydeinc.github.io/docs/fyde-enterprise-console/add-fyde-access-proxy/"
+    url: "https://campus.barracuda.com/product/cloudgenaccess/doc/93201527/add-cloudgen-access-proxy/"
 - name: "access_resources"
   description: "Operations on access resources"
   externalDocs:
     description: "Console docs"
-    url: "https://fydeinc.github.io/docs/fyde-enterprise-console/add-resource/"
+    url: "https://campus.barracuda.com/product/cloudgenaccess/doc/93201529/add-resource/"
 - name: "asset_sources"
   description: "Operations on asset sources"
 - name: "assets"
@@ -41,14 +41,14 @@ tags:
   description: "Operations on groups"
   externalDocs:
     description: "Console docs"
-    url: "https://fydeinc.github.io/docs/fyde-enterprise-console/add-group/"
+    url: "https://campus.barracuda.com/product/cloudgenaccess/doc/93201517/add-group/"
 - name: "user_directories"
   description: "Operations on user directories"
 - name: "users"
   description: "Operations on users"
   externalDocs:
     description: "Console docs"
-    url: "https://fydeinc.github.io/docs/fyde-enterprise-console/add-user/"
+    url: "https://campus.barracuda.com/product/cloudgenaccess/doc/93201515/add-user/"
 - name: "tenants"
   description: "Operations on tenants"
 - name: "admins"
@@ -2976,4 +2976,4 @@ responses:
       $ref: "#/definitions/UnprocessableEntityResponse"
 externalDocs:
   description: "Find out more about Fyde"
-  url: "https://fydeinc.github.io/docs/"
+  url: "https://campus.barracuda.com/product/cloudgenaccess/doc/93201218/overview"
