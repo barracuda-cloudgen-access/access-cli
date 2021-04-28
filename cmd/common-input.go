@@ -98,6 +98,8 @@ func initInputFlags(cmd *cobra.Command, typeName string, fields ...inputField) {
 			cmd.Flags().StringSliceP(field.FlagName, field.FlagShorthand, dconv, field.FlagDescription)
 		case "[]string":
 			cmd.Flags().StringSliceP(field.FlagName, field.FlagShorthand, field.DefaultValue.([]string), field.FlagDescription)
+		case "[]string.skipcomma":
+			cmd.Flags().StringArrayP(field.FlagName, field.FlagShorthand, field.DefaultValue.([]string), field.FlagDescription)
 		default:
 			panic("Unknown filter variable type " + field.VarType)
 		}
@@ -175,6 +177,8 @@ func getFlagValue(cmd *cobra.Command, varType, flagName string) (interface{}, er
 		return out, nil
 	case "[]string":
 		value, err = cmd.Flags().GetStringSlice(flagName)
+	case "[]string.skipcomma":
+		value, err = cmd.Flags().GetStringArray(flagName)
 	default:
 		panic("Unknown variable type " + varType)
 	}
@@ -437,7 +441,7 @@ func forAllInputFromCSV(cmd *cobra.Command,
 			if strings.ToLower(header[i]) == "port_mappings" ||
 				strings.ToLower(header[i]) == "portmappings" {
 				m[header[i]] = []*models.AccessResourcePortMapping{
-					colonMappingsToPortMappings(commaSeparatedListToStringSlice(record[i])),
+					colonMappingToPortMapping(strings.TrimRight(strings.TrimLeft(record[i], "["), "]")),
 				}
 			} else {
 				m[header[i]] = record[i]

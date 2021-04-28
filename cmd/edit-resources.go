@@ -64,8 +64,9 @@ var resourcesEditCmd = &cobra.Command{
 					func(s string) { resource.PublicHost = s },
 					func(s string) { resource.InternalHost = s },
 					func(s []string) {
-						resource.PortMappings = []*models.AccessResourcePortMapping{
-							colonMappingsToPortMappings(s),
+						resource.PortMappings = []*models.AccessResourcePortMapping{}
+						for _, mapping := range s {
+							resource.PortMappings = append(resource.PortMappings, colonMappingToPortMapping(mapping))
 						}
 					},
 					func(s string) { resource.AccessProxyID = strfmt.UUID(s) },
@@ -160,8 +161,8 @@ func init() {
 		inputField{
 			Name:            "Port mappings",
 			FlagName:        "ports",
-			FlagDescription: "specify the new port mappings (external:internal) for the resource",
-			VarType:         "[]string",
+			FlagDescription: "specify the port mappings (external:internal:protocol) for the created resource. Also accepts (external:internal), considers TCP by default.",
+			VarType:         "[]string.skipcomma",
 			Mandatory:       false,
 			DefaultValue:    []string{},
 		},

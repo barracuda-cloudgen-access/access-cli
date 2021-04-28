@@ -56,6 +56,8 @@ func initFilterFlags(cmd *cobra.Command, filterTypes ...filterType) {
 			cmd.Flags().StringSlice(name, []string{}, desc)
 		case "[]string":
 			cmd.Flags().StringSlice(name, []string{}, desc)
+		case "[]string.skipcomma":
+			cmd.Flags().StringArray(name, []string{}, desc)
 		default:
 			panic("Unknown filter variable type " + filterType.vartype)
 		}
