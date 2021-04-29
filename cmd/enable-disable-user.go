@@ -59,6 +59,7 @@ var userEnableCmd = &cobra.Command{
 
 		for _, arg := range intArgs {
 			params := apiusers.NewEditUserParams()
+			setTenant(cmd, params)
 			params.SetID(arg)
 			params.SetUser(apiusers.EditUserBody{
 				User: &apiusers.EditUserParamsBodyUser{
@@ -110,4 +111,7 @@ func init() {
 
 	initLoopControlFlags(userEnableCmd)
 	initLoopControlFlags(userDisableCmd)
+
+	initTenantFlags(userEnableCmd)
+	initTenantFlags(userDisableCmd)
 }

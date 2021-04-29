@@ -77,6 +77,7 @@ var enrollmentGenerateCmd = &cobra.Command{
 
 		for _, arg := range intArgs {
 			params := apiusers.NewGenerateEnrollmentLinkParams()
+			setTenant(cmd, params)
 			params.SetID(arg)
 
 			resp, err := global.Client.Users.GenerateEnrollmentLink(params, global.AuthWriter)
@@ -129,6 +130,7 @@ var enrollmentRevokeCmd = &cobra.Command{
 
 		for _, arg := range intArgs {
 			params := apiusers.NewRevokeEnrollmentLinkParams()
+			setTenant(cmd, params)
 			params.SetID(arg)
 
 			_, err = global.Client.Users.RevokeEnrollmentLink(params, global.AuthWriter)
@@ -193,6 +195,7 @@ var enrollmentChangeCmd = &cobra.Command{
 
 		for _, arg := range intArgs {
 			params := apiusers.NewChangeEnrollmentLinkSlotsParams()
+			setTenant(cmd, params)
 			params.SetID(arg)
 
 			enrollment := &apiusers.ChangeEnrollmentLinkSlotsParamsBodyEnrollment{
@@ -254,6 +257,7 @@ var enrollmentGetCmd = &cobra.Command{
 
 		for _, arg := range intArgs {
 			params := apiusers.NewGetUserParams()
+			setTenant(cmd, params)
 			params.SetID(arg)
 
 			resp, err := global.Client.Users.GetUser(params, global.AuthWriter)
@@ -293,6 +297,7 @@ var enrollmentEmailCmd = &cobra.Command{
 
 		for _, arg := range intArgs {
 			params := apiusers.NewSendEnrollmentEmailParams()
+			setTenant(cmd, params)
 			params.SetID(arg)
 
 			_, err = global.Client.Users.SendEnrollmentEmail(params, global.AuthWriter)
@@ -337,20 +342,25 @@ func init() {
 	initMultiOpArgFlags(enrollmentGenerateCmd, "user", "generate enrollments for", "id", "[]int64")
 	initOutputFlags(enrollmentGenerateCmd)
 	initLoopControlFlags(enrollmentGenerateCmd)
+	initTenantFlags(enrollmentGenerateCmd)
 
 	initMultiOpArgFlags(enrollmentRevokeCmd, "user", "revoke enrollments for", "id", "[]int64")
 	initOutputFlags(enrollmentRevokeCmd)
 	initLoopControlFlags(enrollmentRevokeCmd)
+	initTenantFlags(enrollmentRevokeCmd)
 
 	initMultiOpArgFlags(enrollmentChangeCmd, "user", "change enrollments for", "id", "[]int64")
 	enrollmentChangeCmd.Flags().Int("slots", 0, "specify the new number of slots for the enrollment link")
 	initOutputFlags(enrollmentChangeCmd)
 	initLoopControlFlags(enrollmentChangeCmd)
+	initTenantFlags(enrollmentChangeCmd)
 
 	initMultiOpArgFlags(enrollmentGetCmd, "user", "get enrollments for", "id", "[]int64")
 	initLoopControlFlags(enrollmentGetCmd)
+	initTenantFlags(enrollmentGetCmd)
 
 	initMultiOpArgFlags(enrollmentEmailCmd, "user", "send enrollment emails", "id", "[]int64")
 	initOutputFlags(enrollmentEmailCmd)
 	initLoopControlFlags(enrollmentEmailCmd)
+	initTenantFlags(enrollmentEmailCmd)
 }

@@ -67,6 +67,7 @@ var userGetCmd = &cobra.Command{
 		}
 
 		params := apiusers.NewGetUserParams()
+		setTenant(cmd, params)
 		params.SetID(userID)
 
 		resp, err := global.Client.Users.GetUser(params, global.AuthWriter)
@@ -151,5 +152,7 @@ func init() {
 	// userGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(userGetCmd)
+	initTenantFlags(userGetCmd)
+
 	userGetCmd.Flags().Int("id", 0, "id of user to get")
 }
