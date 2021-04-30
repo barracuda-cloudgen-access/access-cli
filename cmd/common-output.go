@@ -26,7 +26,7 @@ import (
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/spf13/cobra"
 	"github.com/thoas/go-funk"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 )
 
 func initOutputFlags(cmd *cobra.Command) {
@@ -36,7 +36,7 @@ func initOutputFlags(cmd *cobra.Command) {
 	}
 	cmd.Annotations[flagInitOutput] = "yes"
 	d := "json"
-	if terminal.IsTerminal(int(os.Stdout.Fd())) {
+	if term.IsTerminal(int(os.Stdout.Fd())) {
 		d = "table"
 	}
 	cmd.Flags().StringP("output", "o", d, "output format (table, json, json-pretty or csv) (default \"json\" if pipe)")
@@ -51,7 +51,7 @@ func preRunFlagCheckOutput(cmd *cobra.Command, args []string) error {
 
 	// customize default output format based on config
 	key := ckeyPipeOutputFormat
-	if terminal.IsTerminal(int(os.Stdout.Fd())) {
+	if term.IsTerminal(int(os.Stdout.Fd())) {
 		key = ckeyOutputFormat
 	}
 	if !cmd.Flags().Changed("output") && cfgViperInConfig(key) {
@@ -79,8 +79,8 @@ func renderListOutput(cmd *cobra.Command, data interface{}, tableWriter table.Wr
 	}
 	switch outputFormat {
 	case "table":
-		if terminal.IsTerminal(int(os.Stdout.Fd())) {
-			width, _, err := terminal.GetSize(int(os.Stdout.Fd()))
+		if term.IsTerminal(int(os.Stdout.Fd())) {
+			width, _, err := term.GetSize(int(os.Stdout.Fd()))
 			if err == nil {
 				tableWriter.SetAllowedRowLength(width)
 			}
@@ -130,8 +130,8 @@ func renderWatchOutput(cmd *cobra.Command, data interface{}, tableWriter table.W
 	}
 	switch outputFormat {
 	case "table":
-		if terminal.IsTerminal(int(os.Stdout.Fd())) {
-			width, _, err := terminal.GetSize(int(os.Stdout.Fd()))
+		if term.IsTerminal(int(os.Stdout.Fd())) {
+			width, _, err := term.GetSize(int(os.Stdout.Fd()))
 			if err == nil {
 				tableWriter.SetAllowedRowLength(width)
 			}

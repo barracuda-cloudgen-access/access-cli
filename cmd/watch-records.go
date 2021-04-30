@@ -161,22 +161,22 @@ var recordsWatchCmd = &cobra.Command{
 
 			// fix column width so it looks consistent across "tables"
 			tw.SetColumnConfigs([]table.ColumnConfig{
-				table.ColumnConfig{
+				{
 					Number:   1,
 					WidthMin: 38,
 					WidthMax: 38,
 				},
-				table.ColumnConfig{
+				{
 					Number:   2,
 					WidthMin: 25,
 					WidthMax: 25,
 				},
-				table.ColumnConfig{
+				{
 					Number:   3,
 					WidthMin: 20,
 					WidthMax: 20,
 				},
-				table.ColumnConfig{
+				{
 					Number:   4,
 					WidthMin: 24,
 					WidthMax: 24,
@@ -225,7 +225,7 @@ var recordsWatchCmd = &cobra.Command{
 			if isTable {
 				if !isFirst {
 					//remove top border
-					result = result[strings.Index(result, "\n")+1 : len(result)]
+					result = result[strings.Index(result, "\n")+1:]
 				}
 				result = result[0:strings.LastIndex(result, "\n")]
 			}
