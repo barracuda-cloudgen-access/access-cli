@@ -40,7 +40,8 @@ func TestLogin(t *testing.T) {
 		Reply(200).
 		SetHeader("access-token", "testAccessToken").
 		SetHeader("client", "testClient").
-		SetHeader("uid", "testUID")
+		SetHeader("uid", "testUID").
+		BodyString(`{"data":{"tenant_id": "testNewTenantID"}}`)
 
 	cmd := rootCmd
 
@@ -67,4 +68,5 @@ func TestLogin(t *testing.T) {
 	st.Expect(t, authViper.GetString(ckeyAuthAccessToken), "testAccessToken")
 	st.Expect(t, authViper.GetString(ckeyAuthClient), "testClient")
 	st.Expect(t, authViper.GetString(ckeyAuthUID), "testUID")
+	st.Expect(t, authViper.GetString(ckeyAuthCurrentTenant), "testNewTenantID")
 }
