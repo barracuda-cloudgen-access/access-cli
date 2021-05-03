@@ -27,8 +27,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/thoas/go-funk"
 
-	apiusers "github.com/fyde/access-cli/client/users"
-	"github.com/fyde/access-cli/models"
+	apiusers "github.com/barracuda-cloudgen-access/access-cli/client/users"
+	"github.com/barracuda-cloudgen-access/access-cli/models"
 )
 
 // userGetCmd represents the get command

@@ -1,4 +1,4 @@
-module github.com/fyde/access-cli
+module github.com/barracuda-cloudgen-access/access-cli
 
 go 1.12
 

@@ -25,8 +25,8 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
-	apipolicies "github.com/fyde/access-cli/client/access_policies"
-	"github.com/fyde/access-cli/models"
+	apipolicies "github.com/barracuda-cloudgen-access/access-cli/client/access_policies"
+	"github.com/barracuda-cloudgen-access/access-cli/models"
 )
 
 // policyGetCmd represents the get command

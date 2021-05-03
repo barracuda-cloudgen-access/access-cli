@@ -23,7 +23,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	apisources "github.com/fyde/access-cli/client/asset_sources"
+	apisources "github.com/barracuda-cloudgen-access/access-cli/client/asset_sources"
 )
 
 // sourceEnableCmd represents the enable command

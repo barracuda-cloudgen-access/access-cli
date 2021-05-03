@@ -23,11 +23,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/fyde/access-cli/models"
+	"github.com/barracuda-cloudgen-access/access-cli/models"
 	"github.com/howeyc/gopass"
 	"github.com/spf13/cobra"
 
-	apiauth "github.com/fyde/access-cli/client/auth"
+	apiauth "github.com/barracuda-cloudgen-access/access-cli/client/auth"
 )
 
 // loginCmd represents the login command

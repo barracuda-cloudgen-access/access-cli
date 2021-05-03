@@ -24,7 +24,7 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
-	apiproxies "github.com/fyde/access-cli/client/access_proxies"
+	apiproxies "github.com/barracuda-cloudgen-access/access-cli/client/access_proxies"
 )
 
 // proxiesAddCmd represents the add command

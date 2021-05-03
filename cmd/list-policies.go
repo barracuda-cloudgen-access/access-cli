@@ -20,7 +20,7 @@ limitations under the License.
 import (
 	"github.com/spf13/cobra"
 
-	apipolicies "github.com/fyde/access-cli/client/access_policies"
+	apipolicies "github.com/barracuda-cloudgen-access/access-cli/client/access_policies"
 )
 
 // policiesListCmd represents the list command

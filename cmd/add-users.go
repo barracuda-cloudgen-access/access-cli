@@ -21,8 +21,8 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
-	apiusers "github.com/fyde/access-cli/client/users"
-	"github.com/fyde/access-cli/models"
+	apiusers "github.com/barracuda-cloudgen-access/access-cli/client/users"
+	"github.com/barracuda-cloudgen-access/access-cli/models"
 )
 
 // usersAddCmd represents the add command

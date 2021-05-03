@@ -21,7 +21,7 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
-	apipolicies "github.com/fyde/access-cli/client/access_policies"
+	apipolicies "github.com/barracuda-cloudgen-access/access-cli/client/access_policies"
 )
 
 // policiesAddCmd represents the add command

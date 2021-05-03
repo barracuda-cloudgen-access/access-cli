@@ -21,8 +21,8 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
-	apiresources "github.com/fyde/access-cli/client/access_resources"
-	"github.com/fyde/access-cli/models"
+	apiresources "github.com/barracuda-cloudgen-access/access-cli/client/access_resources"
+	"github.com/barracuda-cloudgen-access/access-cli/models"
 )
 
 // resourcesEditCmd represents the edit command

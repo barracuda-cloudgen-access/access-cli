@@ -25,7 +25,7 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
-	"github.com/fyde/access-cli/models"
+	"github.com/barracuda-cloudgen-access/access-cli/models"
 )
 
 func preRunCheckEndpoint(cmd *cobra.Command, args []string) error {

@@ -20,7 +20,7 @@ limitations under the License.
 import (
 	"github.com/spf13/cobra"
 
-	apiproxies "github.com/fyde/access-cli/client/access_proxies"
+	apiproxies "github.com/barracuda-cloudgen-access/access-cli/client/access_proxies"
 )
 
 // proxiesListCmd represents the list command

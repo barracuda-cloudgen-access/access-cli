@@ -22,7 +22,7 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
-	"github.com/fyde/access-cli/client/devices"
+	"github.com/barracuda-cloudgen-access/access-cli/client/devices"
 )
 
 // devicesListCmd represents the list command

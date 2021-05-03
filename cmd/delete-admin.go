@@ -22,7 +22,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	apiadmins "github.com/fyde/access-cli/client/admins"
+	apiadmins "github.com/barracuda-cloudgen-access/access-cli/client/admins"
 )
 
 // adminDeleteCmd represents the delete command

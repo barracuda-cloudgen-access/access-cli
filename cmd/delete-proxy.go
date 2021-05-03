@@ -23,7 +23,7 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
-	apiproxies "github.com/fyde/access-cli/client/access_proxies"
+	apiproxies "github.com/barracuda-cloudgen-access/access-cli/client/access_proxies"
 )
 
 // proxyDeleteCmd represents the delete command

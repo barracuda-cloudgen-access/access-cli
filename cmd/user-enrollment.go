@@ -25,7 +25,7 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
-	apiusers "github.com/fyde/access-cli/client/users"
+	apiusers "github.com/barracuda-cloudgen-access/access-cli/client/users"
 )
 
 // enrollmentCmd represents the enrollment command

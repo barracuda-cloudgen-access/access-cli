@@ -20,7 +20,7 @@ limitations under the License.
 import (
 	"github.com/spf13/cobra"
 
-	apigroups "github.com/fyde/access-cli/client/groups"
+	apigroups "github.com/barracuda-cloudgen-access/access-cli/client/groups"
 )
 
 // groupsListCmd represents the list command
