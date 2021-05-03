@@ -70,55 +70,55 @@ func TestPagination(t *testing.T) {
 	}
 
 	testCases := []tcase{
-		tcase{
+		{
 			rangeStart: 1, rangeEnd: 10, pageSize: 5,
 			data:            []int{},
 			expectedFetches: 1,
 			expected:        []int{},
 		},
-		tcase{
+		{
 			rangeStart: 1, rangeEnd: 10, pageSize: 5,
 			data:            genData[0:20],
 			expectedFetches: 2,
 			expected:        genData[0:9],
 		},
-		tcase{
+		{
 			rangeStart: 1, rangeEnd: 10, pageSize: 50,
 			data:            genData[0:20],
 			expectedFetches: 1,
 			expected:        genData[0:9],
 		},
-		tcase{
+		{
 			rangeStart: 1, rangeEnd: 10, pageSize: 10,
 			data:            genData[0:20],
 			expectedFetches: 1,
 			expected:        genData[0:9],
 		},
-		tcase{
+		{
 			rangeStart: 1, rangeEnd: 0, pageSize: 7,
 			data:            genData[0:20],
 			expectedFetches: 3,
 			expected:        genData[0:20],
 		},
-		tcase{
+		{
 			rangeStart: 99, rangeEnd: 104, pageSize: 10,
 			data:            genData,
 			expectedFetches: 2,
 			expected:        genData[98:103],
 		},
-		tcase{
+		{
 			rangeStart: 10, rangeEnd: 0, pageSize: 7,
 			data:            genData[0:20],
 			expectedFetches: 2,
 			expected:        genData[9:20],
 		},
-		tcase{
+		{
 			rangeStart: 1, rangeEnd: 0, pageSize: 34,
 			data:            genData,
 			expectedFetches: 7,
 			expected:        genData,
 		},
-		tcase{
+		{
 			rangeStart: 1, rangeEnd: 11, pageSize: 10,
 			data:            genData,
 			expectedFetches: 1,

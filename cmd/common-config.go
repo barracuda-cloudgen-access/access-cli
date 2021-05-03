@@ -71,7 +71,7 @@ func initConfig() {
 		cfgViper.AddConfigPath(p)
 		dotIdx := strings.LastIndex(ConfigFileName, ".")
 		cfgViper.SetConfigName(ConfigFileName[0:dotIdx])
-		cfgViper.SetConfigType(ConfigFileName[dotIdx+1 : len(ConfigFileName)])
+		cfgViper.SetConfigType(ConfigFileName[dotIdx+1:])
 	}
 
 	// If a config file is found, read it in.
@@ -114,7 +114,7 @@ func initAuthConfig() {
 		authViper.AddConfigPath(p)
 		dotIdx := strings.LastIndex(AuthFileName, ".")
 		authViper.SetConfigName(AuthFileName[0:dotIdx])
-		authViper.SetConfigType(AuthFileName[dotIdx+1 : len(AuthFileName)])
+		authViper.SetConfigType(AuthFileName[dotIdx+1:])
 	}
 
 	// If a credentials file is found, read it in.

@@ -23,7 +23,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/fyde/fyde-cli/client/devices"
-	apidevices "github.com/fyde/fyde-cli/client/devices"
 )
 
 // devicesListCmd represents the list command
@@ -45,7 +44,7 @@ var devicesListCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		params := apidevices.NewListDevicesParams()
+		params := devices.NewListDevicesParams()
 		//setSort(cmd, params) // TODO re-enable when/if devices supports sort
 		completePayload := []*devices.ListDevicesOKBodyItems0{}
 		total := 0

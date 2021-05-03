@@ -105,13 +105,10 @@ func aliasNormalizeFunc(f *pflag.FlagSet, name string) pflag.NormalizedName {
 	switch name {
 	case "record-start":
 		name = "range-start"
-		break
 	case "record-end":
 		name = "range-end"
-		break
 	case "format":
 		name = "output"
-		break
 	}
 	return pflag.NormalizedName(name)
 }
