@@ -22,7 +22,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	apiusers "github.com/fyde/access-cli/client/users"
+	apiusers "github.com/barracuda-cloudgen-access/access-cli/client/users"
 )
 
 // userDeleteCmd represents the delete command

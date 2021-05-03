@@ -25,8 +25,8 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
-	apiproxies "github.com/fyde/access-cli/client/access_proxies"
-	"github.com/fyde/access-cli/models"
+	apiproxies "github.com/barracuda-cloudgen-access/access-cli/client/access_proxies"
+	"github.com/barracuda-cloudgen-access/access-cli/models"
 )
 
 // proxyGetCmd represents the get command

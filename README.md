@@ -1,4 +1,4 @@
-Barracuda CloudGen Access CLI client [![Go Report Card](https://goreportcard.com/badge/github.com/fyde/access-cli)](https://goreportcard.com/report/github.com/fyde/access-cli) [![license](https://img.shields.io/github/license/fyde/access-cli.svg)](https://github.com/fyde/access-cli/blob/master/LICENSE)
+Barracuda CloudGen Access CLI client [![Go Report Card](https://goreportcard.com/badge/github.com/barracuda-cloudgen-access/access-cli)](https://goreportcard.com/report/github.com/barracuda-cloudgen-access/access-cli) [![license](https://img.shields.io/github/license/barracuda-cloudgen-access/access-cli.svg)](https://github.com/barracuda-cloudgen-access/access-cli/blob/master/LICENSE)
 ===============
 
 Cross-platform command line client for [CloudGen Access Enterprise Console](https://campus.barracuda.com/product/cloudgenaccess/doc/93201513/cloudgen-access-enterprise-console/) APIs.
@@ -33,10 +33,10 @@ access-cli will be continually updated to support new management console feature
 
 ## Installation
 
-If you use [Homebrew](https://brew.sh/) on Linux or Mac, we recommend installing access-cli through our Homebrew tap - instructions [in the tap repo](https://github.com/fyde/homebrew-tap).
+If you use [Homebrew](https://brew.sh/) on Linux or Mac, we recommend installing access-cli through our Homebrew tap - instructions [in the tap repo](https://github.com/barracuda-cloudgen-access/homebrew-tap).
 
 If you are using an operating system and architecture for which we provide pre-built binaries, we recommend using those.
-Just download the appropriate archive from the [releases page](https://github.com/fyde/access-cli/releases).
+Just download the appropriate archive from the [releases page](https://github.com/barracuda-cloudgen-access/access-cli/releases).
 We also provide deb and rpm packages.
 The access-cli binaries are statically compiled and have no external dependencies.
 
@@ -115,7 +115,7 @@ When this flag is passed, access-cli never exits with a non-zero code, as long a
 
 ## Reporting issues
 
-You can see existing issues and report new ones [on GitHub](https://github.com/fyde/access-cli/issues).
+You can see existing issues and report new ones [on GitHub](https://github.com/barracuda-cloudgen-access/access-cli/issues).
 
 ## License
 

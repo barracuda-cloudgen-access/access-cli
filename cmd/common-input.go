@@ -28,7 +28,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/fyde/access-cli/models"
+	"github.com/barracuda-cloudgen-access/access-cli/models"
 	"github.com/gbl08ma/mapstructure"
 	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"

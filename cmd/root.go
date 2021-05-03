@@ -37,7 +37,7 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
-	apiclient "github.com/fyde/access-cli/client"
+	apiclient "github.com/barracuda-cloudgen-access/access-cli/client"
 )
 
 var cfgFile string

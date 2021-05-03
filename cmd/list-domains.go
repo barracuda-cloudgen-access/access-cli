@@ -22,8 +22,8 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
-	apiassets "github.com/fyde/access-cli/client/assets"
-	"github.com/fyde/access-cli/models"
+	apiassets "github.com/barracuda-cloudgen-access/access-cli/client/assets"
+	"github.com/barracuda-cloudgen-access/access-cli/models"
 )
 
 // domainsListCmd represents the list command

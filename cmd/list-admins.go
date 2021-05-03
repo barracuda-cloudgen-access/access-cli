@@ -20,8 +20,8 @@ limitations under the License.
 import (
 	"github.com/spf13/cobra"
 
-	apiadmins "github.com/fyde/access-cli/client/admins"
-	"github.com/fyde/access-cli/models"
+	apiadmins "github.com/barracuda-cloudgen-access/access-cli/client/admins"
+	"github.com/barracuda-cloudgen-access/access-cli/models"
 )
 
 // adminsListCmd represents the list command

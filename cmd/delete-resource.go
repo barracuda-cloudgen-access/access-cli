@@ -23,7 +23,7 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
-	apiresources "github.com/fyde/access-cli/client/access_resources"
+	apiresources "github.com/barracuda-cloudgen-access/access-cli/client/access_resources"
 )
 
 // resourceDeleteCmd represents the delete command

@@ -23,7 +23,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	apidevices "github.com/fyde/access-cli/client/devices"
+	apidevices "github.com/barracuda-cloudgen-access/access-cli/client/devices"
 )
 
 // deviceEnableCmd represents the enable command

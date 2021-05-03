@@ -46,10 +46,10 @@ nfpms:
     replaces:
       - fyde-cli
     contents:
-      - src: "dist/completions/fyde-cli.bash"
-        dst: "/usr/share/bash-completion/completions/fyde-cli"
-      - src: "dist/completions/fyde-cli.zsh"
-        dst: "/usr/share/zsh/site-functions/_fyde-cli"
+      - src: "dist/completions/access-cli.bash"
+        dst: "/usr/share/bash-completion/completions/access-cli"
+      - src: "dist/completions/access-cli.zsh"
+        dst: "/usr/share/zsh/site-functions/_access-cli"
 checksum:
   name_template: 'checksums.txt'
 snapshot:

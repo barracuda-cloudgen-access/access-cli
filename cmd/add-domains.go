@@ -21,8 +21,8 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
-	apiassets "github.com/fyde/access-cli/client/assets"
-	"github.com/fyde/access-cli/models"
+	apiassets "github.com/barracuda-cloudgen-access/access-cli/client/assets"
+	"github.com/barracuda-cloudgen-access/access-cli/models"
 )
 
 // domainsAddCmd represents the add command

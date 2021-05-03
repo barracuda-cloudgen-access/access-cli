@@ -24,8 +24,8 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
-	apisources "github.com/fyde/access-cli/client/asset_sources"
-	"github.com/fyde/access-cli/models"
+	apisources "github.com/barracuda-cloudgen-access/access-cli/client/asset_sources"
+	"github.com/barracuda-cloudgen-access/access-cli/models"
 )
 
 // sourcesListCmd represents the list command

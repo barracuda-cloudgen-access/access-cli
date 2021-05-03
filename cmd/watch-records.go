@@ -27,8 +27,8 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
-	apievents "github.com/fyde/access-cli/client/device_events"
-	"github.com/fyde/access-cli/models"
+	apievents "github.com/barracuda-cloudgen-access/access-cli/client/device_events"
+	"github.com/barracuda-cloudgen-access/access-cli/models"
 )
 
 // recordsWatchCmd represents the watch command

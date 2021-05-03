@@ -22,7 +22,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	apiassets "github.com/fyde/access-cli/client/assets"
+	apiassets "github.com/barracuda-cloudgen-access/access-cli/client/assets"
 )
 
 // domainDeleteCmd represents the delete command

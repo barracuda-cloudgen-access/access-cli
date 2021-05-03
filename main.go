@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "github.com/fyde/access-cli/cmd"
+import "github.com/barracuda-cloudgen-access/access-cli/cmd"
 
 var (
 	// GitCommit is provided by govvv/goreleaser at compile-time

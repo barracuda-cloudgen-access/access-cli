@@ -20,8 +20,8 @@ limitations under the License.
 import (
 	"github.com/spf13/cobra"
 
-	apigroups "github.com/fyde/access-cli/client/groups"
-	"github.com/fyde/access-cli/models"
+	apigroups "github.com/barracuda-cloudgen-access/access-cli/client/groups"
+	"github.com/barracuda-cloudgen-access/access-cli/models"
 )
 
 // groupsEditCmd represents the edit command
