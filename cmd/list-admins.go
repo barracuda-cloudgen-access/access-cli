@@ -1,8 +1,8 @@
-// Package cmd implements fyde-cli commands
+// Package cmd implements access-cli commands
 package cmd
 
 /*
-Copyright © 2020 Fyde, Inc. <hello@fyde.com>
+Copyright © 2020 Barracuda Networks, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ limitations under the License.
 import (
 	"github.com/spf13/cobra"
 
-	apiadmins "github.com/fyde/fyde-cli/client/admins"
-	"github.com/fyde/fyde-cli/models"
+	apiadmins "github.com/fyde/access-cli/client/admins"
+	"github.com/fyde/access-cli/models"
 )
 
 // adminsListCmd represents the list command

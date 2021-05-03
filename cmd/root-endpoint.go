@@ -1,8 +1,8 @@
-// Package cmd implements fyde-cli commands
+// Package cmd implements access-cli commands
 package cmd
 
 /*
-Copyright © 2019 Fyde, Inc. <hello@fyde.com>
+Copyright © 2020 Barracuda Networks, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ var endpointCmd = &cobra.Command{
 	Short: "Get currently configured console endpoint",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) > 0 && args[0] != "get" {
-			return fmt.Errorf("use `fyde-cli endpoint set` to set the console endpoint")
+			return fmt.Errorf("use `access-cli endpoint set` to set the console endpoint")
 		}
 		return nil
 	},

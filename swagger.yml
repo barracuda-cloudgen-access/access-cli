@@ -1,11 +1,11 @@
 swagger: "2.0"
 info:
-  description: "Fyde Management API docs"
+  description: "CloudGen Access Console API docs"
   version: "1.0.0"
-  title: "Fyde Enterprise Console"
-  termsOfService: "https://www.fyde.com/terms"
+  title: "CloudGen Access Console"
+  termsOfService: "https://www.barracuda.com/company/legal/prd_trm"
   contact:
-    email: "hello@fyde.com"
+    email: "hello@barracuda.com"
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -2290,7 +2290,7 @@ definitions:
             example: "John Doe"
           uid:
             type: string
-            example: "john.doe@fyde.com"
+            example: "john.doe@acme.com"
           allow_password_change:
             type: boolean
           image:
@@ -2335,7 +2335,7 @@ definitions:
             example: "John Doe"
           uid:
             type: string
-            example: "john.doe@fyde.com"
+            example: "john.doe@acme.com"
           allow_password_change:
             type: boolean
           image:
@@ -2975,5 +2975,5 @@ responses:
     schema:
       $ref: "#/definitions/UnprocessableEntityResponse"
 externalDocs:
-  description: "Find out more about Fyde"
-  url: "https://campus.barracuda.com/product/cloudgenaccess/doc/93201218/overview"
+  description: "Find out more about Barracuda CloudGen Access"
+  url: "https://campus.barracuda.com/product/cloudgenaccess/doc/93201218/overview/"

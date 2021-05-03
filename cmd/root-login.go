@@ -1,8 +1,8 @@
-// Package cmd implements fyde-cli commands
+// Package cmd implements access-cli commands
 package cmd
 
 /*
-Copyright © 2019 Fyde, Inc. <hello@fyde.com>
+Copyright © 2020 Barracuda Networks, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/fyde/fyde-cli/models"
+	"github.com/fyde/access-cli/models"
 	"github.com/howeyc/gopass"
 	"github.com/spf13/cobra"
 
-	apiauth "github.com/fyde/fyde-cli/client/auth"
+	apiauth "github.com/fyde/access-cli/client/auth"
 )
 
 // loginCmd represents the login command

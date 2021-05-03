@@ -1,8 +1,8 @@
-// Package cmd implements fyde-cli commands
+// Package cmd implements access-cli commands
 package cmd
 
 /*
-Copyright © 2019 Fyde, Inc. <hello@fyde.com>
+Copyright © 2020 Barracuda Networks, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ func initConfig() {
 	}
 	global.WriteFiles = true
 	cfgViper = viper.New()
+	migrateConfigFolder()
 	setConfigDefaults()
 	if cfgFile == "" {
 		cfgFile = os.Getenv(ConfigFileEnvVar)
@@ -83,6 +84,22 @@ func initConfig() {
 func cfgViperInConfig(key string) bool {
 	// it's not documented anywhere, but InConfig expects the key to be lowercase...
 	return cfgViper.InConfig(strings.ToLower(key))
+}
+
+func migrateConfigFolder() {
+	// Moves fyde config folder to barracuda's
+	oldConfig := configdir.New("fyde", "fyde-cli")
+	oldConfigDir := oldConfig.QueryFolders(configdir.Global)[0]
+	if _, err := os.Stat(oldConfigDir.Path); os.IsNotExist(err) {
+		return
+	}
+
+	newConfig := configdir.New(ConfigVendorName, ConfigApplicationName)
+	newConfigDir := newConfig.QueryFolders(configdir.Global)[0]
+	// Create complete path so that we can remove+rename the last leaf
+	newConfigDir.MkdirAll()
+	os.Remove(newConfigDir.Path)
+	os.Rename(oldConfigDir.Path, newConfigDir.Path)
 }
 
 // initAuthConfig reads in the credentials file

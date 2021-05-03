@@ -29,9 +29,9 @@ archives:
     amd64: x86_64
 nfpms:
   -
-    vendor: Fyde, Inc.
-    homepage: https://fyde.github.io/docs/fyde-cli/
-    description: Command-line client for Fyde Enterprise Console APIs
+    vendor: Barracuda Networks, Inc.
+    homepage: https://campus.barracuda.com/product/cloudgenaccess/doc/93201218/overview/
+    description: Command-line client for CloudGen Access Console APIs
     license: Apache 2.0
     formats:
       - deb
@@ -43,6 +43,8 @@ nfpms:
       windows: Windows
       386: i386
       amd64: x86_64
+    replaces:
+      - fyde-cli
     contents:
       - src: "dist/completions/fyde-cli.bash"
         dst: "/usr/share/bash-completion/completions/fyde-cli"

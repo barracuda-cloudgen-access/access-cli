@@ -1,4 +1,4 @@
-module github.com/fyde/fyde-cli
+module github.com/fyde/access-cli
 
 go 1.12
 
