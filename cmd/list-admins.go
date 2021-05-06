@@ -44,6 +44,7 @@ var adminsListCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apiadmins.NewListAdminsParams()
+		setTenant(cmd, params)
 		setSort(cmd, params)
 		setFilter(cmd, params.SetName, params.SetEmail, params.SetAuthenticationType, params.SetAuthenticationEmail, params.SetRoleNames)
 		setSearchQuery(cmd, params)
@@ -96,4 +97,5 @@ func init() {
 		filterType{"role_names", "[]string"})
 	initSearchFlags(adminsListCmd)
 	initOutputFlags(adminsListCmd)
+	initTenantFlags(adminsListCmd)
 }

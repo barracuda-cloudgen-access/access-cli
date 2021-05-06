@@ -63,6 +63,7 @@ var adminsAddCmd = &cobra.Command{
 				}
 				body := apiadmins.CreateAdminBody{Admin: admin}
 				params := apiadmins.NewCreateAdminParams()
+				setTenant(cmd, params)
 				params.SetAdmin(body)
 
 				resp, err := global.Client.Admins.CreateAdmin(params, global.AuthWriter)
@@ -97,6 +98,7 @@ func init() {
 
 	initOutputFlags(adminsAddCmd)
 	initLoopControlFlags(adminsAddCmd)
+	initTenantFlags(adminsAddCmd)
 
 	initInputFlags(adminsAddCmd, "admin",
 		inputField{

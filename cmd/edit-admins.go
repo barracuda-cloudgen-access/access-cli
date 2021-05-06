@@ -51,6 +51,7 @@ var adminsEditCmd = &cobra.Command{
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				params := apiadmins.NewEditAdminParams()
+				setTenant(cmd, params)
 				// IDs are not part of the request body, so we use this workaround
 				admin := &struct {
 					apiadmins.EditAdminParamsBodyAdmin
@@ -103,7 +104,7 @@ func init() {
 
 	initOutputFlags(adminsEditCmd)
 	initLoopControlFlags(adminsEditCmd)
-
+	initTenantFlags(adminsEditCmd)
 	initInputFlags(adminsEditCmd, "admin",
 		inputField{
 			Name:            "ID",

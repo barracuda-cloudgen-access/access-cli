@@ -65,6 +65,7 @@ var domainGetCmd = &cobra.Command{
 		}
 
 		params := apiassets.NewGetAssetParams()
+		setTenant(cmd, params)
 		params.SetID(domainID)
 
 		resp, err := global.Client.Assets.GetAsset(params, global.AuthWriter)
@@ -128,5 +129,6 @@ func init() {
 	// domainGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(domainGetCmd)
+	initTenantFlags(domainGetCmd)
 	domainGetCmd.Flags().Int("id", 0, "id of domain to get")
 }

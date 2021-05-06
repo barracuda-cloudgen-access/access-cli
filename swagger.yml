@@ -1850,7 +1850,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
-  /device_events:
+  /tenants/{tenant_id}/device_events:
     get:
       tags:
       - "device_events"
@@ -1874,6 +1874,7 @@ paths:
           type: string
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "successful operation"
@@ -1887,7 +1888,9 @@ paths:
               $ref: "#/definitions/DeviceEventListItem"
         401:
           $ref: "#/responses/Unauthorized"
-  /device_events/{id}:
+        404:
+          $ref: "#/responses/NotFound"
+  /tenants/{tenant_id}/device_events/{id}:
     get:
       tags:
         - "device_events"
@@ -1901,6 +1904,7 @@ paths:
         required: true
         type: string
         description: "The ID of the event to retrieve"
+      - $ref: '#/parameters/tenantIdParam'
       - in: query
         name: "date"
         required: true
@@ -1918,7 +1922,7 @@ paths:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
-  /assets:
+  /tenants/{tenant_id}/assets:
     get:
       tags:
       - "assets"
@@ -1930,6 +1934,7 @@ paths:
       - $ref: '#/parameters/sortParam'
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
+      - $ref: '#/parameters/tenantIdParam'
       - in: query
         name: "category"
         description: "Restrict category of the returned assets"
@@ -1949,6 +1954,8 @@ paths:
               $ref: "#/definitions/Asset"
         401:
           $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
     post:
       tags:
         - "assets"
@@ -1959,6 +1966,7 @@ paths:
       summary: "Create asset"
       operationId: "createAsset"
       parameters:
+      - $ref: '#/parameters/tenantIdParam'
       - in: "body"
         name: "asset"
         description: "Information about the asset to create"
@@ -1982,9 +1990,11 @@ paths:
             $ref: "#/definitions/Asset"
         401:
           $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /assets/{id}:
+  /tenants/{tenant_id}/assets/{id}:
     get:
       tags:
         - "assets"
@@ -1998,6 +2008,7 @@ paths:
         required: true
         type: integer
         description: "The ID of the asset to retrieve"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "Asset info"
@@ -2023,6 +2034,7 @@ paths:
         items:
           type: integer
         description: "The IDs of the assets to delete, comma-separated"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         204:
           description: "Asset deleted"
@@ -2030,7 +2042,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
-  /asset_sources:
+  /tenants/{tenant_id}/asset_sources:
     get:
       tags:
       - "asset_sources"
@@ -2041,6 +2053,7 @@ paths:
       parameters:
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "successful operation"
@@ -2054,7 +2067,9 @@ paths:
               $ref: "#/definitions/AssetSource"
         401:
           $ref: "#/responses/Unauthorized"
-  /asset_sources/{id}:
+        404:
+          $ref: "#/responses/NotFound"
+  /tenants/{tenant_id}/asset_sources/{id}:
     patch:
       tags:
         - "asset_sources"
@@ -2071,6 +2086,7 @@ paths:
         type: string
         format: uuid
         description: "The ID of the asset source to edit"
+      - $ref: '#/parameters/tenantIdParam'
       - in: body
         name: "asset_source"
         description: "Asset source information to modify"
@@ -2096,7 +2112,7 @@ paths:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
-  /admins:
+  /tenants/{tenant_id}/admins:
     get:
       tags:
       - "admins"
@@ -2136,6 +2152,7 @@ paths:
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
       - $ref: '#/parameters/searchParam'
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "successful operation"
@@ -2149,6 +2166,8 @@ paths:
               $ref: "#/definitions/Admin"
         401:
           $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
     post:
       tags:
         - "admins"
@@ -2159,6 +2178,7 @@ paths:
       summary: "Create admin"
       operationId: "createAdmin"
       parameters:
+      - $ref: '#/parameters/tenantIdParam'
       - in: "body"
         name: "admin"
         description: "Information about the admin to create"
@@ -2199,7 +2219,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /admins/{id}:
+  /tenants/{tenant_id}/admins/{id}:
     get:
       tags:
         - "admins"
@@ -2213,6 +2233,7 @@ paths:
         required: true
         type: integer
         description: "The ID of the admin to retrieve"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "Admin info"
@@ -2240,6 +2261,7 @@ paths:
         required: true
         type: integer
         description: "The ID of the admin to edit"
+      - $ref: '#/parameters/tenantIdParam'
       - in: body
         name: "admin"
         description: "Admin information to modify"
@@ -2294,6 +2316,7 @@ paths:
         items:
           type: integer
         description: "The IDs of the admins to delete, comma-separated"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         204:
           description: "Admin deleted"

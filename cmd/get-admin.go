@@ -66,6 +66,7 @@ var adminGetCmd = &cobra.Command{
 		}
 
 		params := apiadmins.NewGetAdminParams()
+		setTenant(cmd, params)
 		params.SetID(id)
 
 		resp, err := global.Client.Admins.GetAdmin(params, global.AuthWriter)
@@ -137,5 +138,6 @@ func init() {
 	// adminGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(adminGetCmd)
+	initTenantFlags(adminGetCmd)
 	adminGetCmd.Flags().String("id", "", "id of admin to get")
 }
