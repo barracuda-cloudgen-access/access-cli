@@ -59,6 +59,7 @@ var deviceEnableCmd = &cobra.Command{
 
 		for _, arg := range uuidArgs {
 			params := apidevices.NewEditDeviceParams()
+			setTenant(cmd, params)
 			params.SetID(arg)
 			params.SetDevice(apidevices.EditDeviceBody{
 				Device: &apidevices.EditDeviceParamsBodyDevice{
@@ -110,4 +111,7 @@ func init() {
 
 	initLoopControlFlags(deviceEnableCmd)
 	initLoopControlFlags(deviceDisableCmd)
+
+	initTenantFlags(deviceEnableCmd)
+	initTenantFlags(deviceDisableCmd)
 }

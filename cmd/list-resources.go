@@ -44,6 +44,7 @@ var resourcesListCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apiresources.NewListResourcesParams()
+		setTenant(cmd, params)
 		setSort(cmd, params)
 		setFilter(cmd, params.SetPolicyID, params.SetProxyID)
 		setSearchQuery(cmd, params)
@@ -93,4 +94,5 @@ func init() {
 		filterType{"proxy", "[]string"})
 	initSearchFlags(resourcesListCmd)
 	initOutputFlags(resourcesListCmd)
+	initTenantFlags(resourcesListCmd)
 }

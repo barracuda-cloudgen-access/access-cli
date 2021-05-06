@@ -43,6 +43,7 @@ var proxiesListCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apiproxies.NewListProxiesParams()
+		setTenant(cmd, params)
 		setSort(cmd, params)
 		completePayload := []*apiproxies.ListProxiesOKBodyItems0{}
 		total := 0
@@ -86,4 +87,5 @@ func init() {
 	initPaginationFlags(proxiesListCmd)
 	initSortFlags(proxiesListCmd)
 	initOutputFlags(proxiesListCmd)
+	initTenantFlags(proxiesListCmd)
 }

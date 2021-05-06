@@ -49,6 +49,7 @@ var policiesEditCmd = &cobra.Command{
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				params := apipolicies.NewEditPolicyParams()
+				setTenant(cmd, params)
 				// IDs are not part of the request body, so we use this workaround
 				policy := &struct {
 					apipolicies.EditPolicyParamsBodyAccessPolicy
@@ -130,7 +131,7 @@ func init() {
 
 	initOutputFlags(policiesEditCmd)
 	initLoopControlFlags(policiesEditCmd)
-
+	initTenantFlags(policiesEditCmd)
 	initInputFlags(policiesEditCmd, "policy",
 		inputField{
 			Name:            "ID",

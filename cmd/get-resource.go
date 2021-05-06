@@ -65,6 +65,7 @@ var resourceGetCmd = &cobra.Command{
 		}
 
 		params := apiresources.NewGetResourceParams()
+		setTenant(cmd, params)
 		params.SetID(strfmt.UUID(id))
 
 		resp, err := global.Client.AccessResources.GetResource(params, global.AuthWriter)
@@ -89,7 +90,7 @@ func resourceBuildTableWriter() table.Writer {
 		"Access policy",
 		"Access proxy",
 	})
-	tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 30, 36})
+	tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 36})
 	return tw
 }
 
@@ -135,5 +136,7 @@ func init() {
 	// resourceGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(resourceGetCmd)
+	initTenantFlags(resourceGetCmd)
+
 	resourceGetCmd.Flags().String("id", "", "id of resource to get")
 }

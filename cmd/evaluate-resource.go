@@ -82,6 +82,7 @@ var evaluateResourceCmd = &cobra.Command{
 		}
 
 		params := apidevices.NewEvaluateResourceParams()
+		setTenant(cmd, params)
 
 		attributes := apidevices.EvaluateResourceParamsBodyAttributes{
 			Antivirus:  &[]bool{getBoolNoError(cmd, "antivirus")}[0],
@@ -138,4 +139,6 @@ func init() {
 	initOutputFlags(evaluateResourceCmd)
 	evaluateResourceCmd.Flags().String("id", "", "id of device to evaluate")
 	evaluateResourceCmd.Flags().String("resource", "", "Domain or IP of resource to evaluate")
+
+	initTenantFlags(evaluateResourceCmd)
 }

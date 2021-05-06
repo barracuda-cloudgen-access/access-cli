@@ -65,6 +65,7 @@ var policyGetCmd = &cobra.Command{
 		}
 
 		params := apipolicies.NewGetPolicyParams()
+		setTenant(cmd, params)
 		params.SetID(policyID)
 
 		resp, err := global.Client.AccessPolicies.GetPolicy(params, global.AuthWriter)
@@ -134,5 +135,6 @@ func init() {
 	// policyGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(policyGetCmd)
+	initTenantFlags(policyGetCmd)
 	policyGetCmd.Flags().Int("id", 0, "id of policy to get")
 }

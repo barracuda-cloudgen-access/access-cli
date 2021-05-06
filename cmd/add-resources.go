@@ -76,6 +76,7 @@ var resourcesAddCmd = &cobra.Command{
 				}
 				body := apiresources.CreateResourceBody{AccessResource: resource}
 				params := apiresources.NewCreateResourceParams()
+				setTenant(cmd, params)
 				params.SetResource(body)
 
 				resp, err := global.Client.AccessResources.CreateResource(params, global.AuthWriter)
@@ -124,7 +125,7 @@ func init() {
 
 	initOutputFlags(resourcesAddCmd)
 	initLoopControlFlags(resourcesAddCmd)
-
+	initTenantFlags(resourcesAddCmd)
 	initInputFlags(resourcesAddCmd, "resource",
 		inputField{
 			Name:            "Name",

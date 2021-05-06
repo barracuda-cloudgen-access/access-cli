@@ -56,6 +56,7 @@ var proxyDeleteCmd = &cobra.Command{
 
 		delete := func(ids []strfmt.UUID) error {
 			params := apiproxies.NewDeleteProxyParams()
+			setTenant(cmd, params)
 			params.SetID(ids)
 
 			_, err := global.Client.AccessProxies.DeleteProxy(params, global.AuthWriter)
@@ -111,4 +112,5 @@ func init() {
 	initMultiOpArgFlags(proxyDeleteCmd, "proxy", "delete", "id", "[]strfmt.UUID")
 	initOutputFlags(proxyDeleteCmd)
 	initLoopControlFlags(proxyDeleteCmd)
+	initTenantFlags(proxyDeleteCmd)
 }

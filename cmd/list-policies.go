@@ -43,6 +43,7 @@ var policiesListCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apipolicies.NewListPoliciesParams()
+		setTenant(cmd, params)
 		setSort(cmd, params)
 		setSearchQuery(cmd, params)
 		completePayload := []*apipolicies.ListPoliciesOKBodyItems0{}
@@ -88,4 +89,5 @@ func init() {
 	initSortFlags(policiesListCmd)
 	initSearchFlags(policiesListCmd)
 	initOutputFlags(policiesListCmd)
+	initTenantFlags(policiesListCmd)
 }

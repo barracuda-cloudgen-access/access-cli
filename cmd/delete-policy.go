@@ -55,6 +55,7 @@ var policyDeleteCmd = &cobra.Command{
 
 		delete := func(ids []int64) error {
 			params := apipolicies.NewDeletePolicyParams()
+			setTenant(cmd, params)
 			params.SetID(ids)
 
 			_, err = global.Client.AccessPolicies.DeletePolicy(params, global.AuthWriter)
@@ -110,4 +111,5 @@ func init() {
 	initMultiOpArgFlags(policyDeleteCmd, "policy", "delete", "id", "[]int64")
 	initOutputFlags(policyDeleteCmd)
 	initLoopControlFlags(policyDeleteCmd)
+	initTenantFlags(policyDeleteCmd)
 }
