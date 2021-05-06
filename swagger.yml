@@ -169,7 +169,7 @@ paths:
       responses:
         200:
           description: "successful operation"
-  /users:
+  /tenants/{tenant_id}/users:
     get:
       tags:
       - "users"
@@ -206,6 +206,7 @@ paths:
         collectionFormat: multi
         items:
           type: integer
+      - $ref: '#/parameters/tenantIdParam'
       - $ref: '#/parameters/sortParam'
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
@@ -229,6 +230,8 @@ paths:
                     example: 2
         401:
           $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
     post:
       tags:
         - "users"
@@ -266,6 +269,7 @@ paths:
                   type: string
                 send_email_invitation:
                   type: boolean
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         201:
           description: "User created"
@@ -281,9 +285,11 @@ paths:
                       type: object
         401:
           $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /users/{id}:
+  /tenants/{tenant_id}/users/{id}:
     get:
       tags:
         - "users"
@@ -297,6 +303,7 @@ paths:
         required: true
         type: integer
         description: "The ID of the user to retrieve"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "User info"
@@ -357,6 +364,7 @@ paths:
                   example: "John Doe"
                 phone_number:
                   type: string
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "User edited"
@@ -392,6 +400,7 @@ paths:
         items:
           type: integer
         description: "The IDs of the users to delete, comma-separated"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         204:
           description: "User deleted"
@@ -401,7 +410,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /users/{id}/enrollment:
+  /tenants/{tenant_id}/users/{id}/enrollment:
     post:
       tags:
         - "users"
@@ -413,6 +422,7 @@ paths:
         required: true
         type: integer
         description: "The ID of the user for which to generate a enrollment link"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         201:
           description: "Enrollment link created"
@@ -460,6 +470,7 @@ paths:
                 refcount:
                   type: integer
                   description: "The desired number of slots"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "Enrollment link changed"
@@ -493,6 +504,7 @@ paths:
         required: true
         type: integer
         description: "The ID of the user for which to revoke the enrollment link"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         204:
           description: "Enrollment link revoked"
@@ -502,7 +514,7 @@ paths:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
-  /users/{id}/send_enrollment_email:
+  /tenants/{tenant_id}/users/{id}/send_enrollment_email:
     post:
       tags:
         - "users"
@@ -516,12 +528,13 @@ paths:
         required: true
         type: integer
         description: "The ID of the user for which to send the email"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         204:
           description: "Email sent"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /users/{user_id}/devices/{device_id}:
+  /tenants/{tenant_id}/users/{user_id}/devices/{device_id}:
     delete:
       tags:
         - "devices"
@@ -540,6 +553,7 @@ paths:
         type: string
         format: uuid
         description: "The ID of the device to delete"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         204:
           description: "Device deleted"
@@ -2319,6 +2333,13 @@ security:
     accessToken: []
     client: []
 parameters:
+  tenantIdParam:
+    in: path
+    name: "tenant_id"
+    required: true
+    type: string
+    format: uuid
+    description: "The ID of the tenant"
   sortParam:
     in: query
     name: sort
@@ -2378,6 +2399,10 @@ definitions:
           tenant_id:
             type: string
             format: uuid
+          tenant_name:
+            type: string
+            example: "ACME Corp."
+            description: "Name of default tenant configured for the admin"
           allow_password_change:
             type: boolean
           image:

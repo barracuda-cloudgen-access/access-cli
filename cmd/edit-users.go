@@ -50,6 +50,7 @@ var usersEditCmd = &cobra.Command{
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				params := apiusers.NewEditUserParams()
+				setTenant(cmd, params)
 				// IDs are not part of the request body, so we use this workaround
 				enabledDefault := true
 				user := &struct {
@@ -107,6 +108,7 @@ func init() {
 
 	initOutputFlags(usersEditCmd)
 	initLoopControlFlags(usersEditCmd)
+	initTenantFlags(usersEditCmd)
 
 	initInputFlags(usersEditCmd, "user",
 		inputField{

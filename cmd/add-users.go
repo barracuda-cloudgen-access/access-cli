@@ -63,6 +63,7 @@ var usersAddCmd = &cobra.Command{
 				}
 				body := apiusers.CreateUserBody{User: user}
 				params := apiusers.NewCreateUserParams()
+				setTenant(cmd, params)
 				params.SetUser(body)
 
 				resp, err := global.Client.Users.CreateUser(params, global.AuthWriter)
@@ -97,6 +98,7 @@ func init() {
 
 	initOutputFlags(usersAddCmd)
 	initLoopControlFlags(usersAddCmd)
+	initTenantFlags(usersAddCmd)
 
 	initInputFlags(usersAddCmd, "user",
 		inputField{

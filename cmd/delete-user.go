@@ -55,6 +55,7 @@ var userDeleteCmd = &cobra.Command{
 
 		delete := func(ids []int64) error {
 			params := apiusers.NewDeleteUserParams()
+			setTenant(cmd, params)
 			params.SetID(ids)
 
 			_, err = global.Client.Users.DeleteUser(params, global.AuthWriter)
@@ -110,4 +111,5 @@ func init() {
 	initMultiOpArgFlags(userDeleteCmd, "user", "delete", "id", "[]int64")
 	initOutputFlags(userDeleteCmd)
 	initLoopControlFlags(userDeleteCmd)
+	initTenantFlags(userDeleteCmd)
 }

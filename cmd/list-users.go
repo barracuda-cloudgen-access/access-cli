@@ -46,6 +46,7 @@ var usersListCmd = &cobra.Command{
 		setSort(cmd, params)
 		setFilter(cmd, params.SetGroupID, params.SetGroupName, params.SetStatus, params.SetEnrollmentStatus)
 		setSearchQuery(cmd, params)
+		setTenant(cmd, params)
 		completePayload := []*apiusers.ListUsersOKBodyItems0{}
 		total := 0
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
@@ -92,6 +93,7 @@ func init() {
 		filterType{"group-name", "[]string"},
 		filterType{"enabled-status", "string"},
 		filterType{"status", "string"})
+	initTenantFlags(usersListCmd)
 	initSearchFlags(usersListCmd)
 	initOutputFlags(usersListCmd)
 }
