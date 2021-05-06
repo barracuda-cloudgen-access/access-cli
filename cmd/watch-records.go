@@ -78,6 +78,7 @@ var recordsWatchCmd = &cobra.Command{
 			newRecords := []*models.DeviceEventListItem{}
 			for page := int64(1); ; page++ {
 				params := apievents.NewListDeviceEventsParams()
+				setTenant(cmd, params)
 				params.SetPage(&page)
 				setFilter(cmd, params.SetEventName, params.SetUserID)
 				resp, err := global.Client.DeviceEvents.ListDeviceEvents(params, global.AuthWriter)
@@ -187,6 +188,7 @@ var recordsWatchCmd = &cobra.Command{
 			var toRender interface{}
 			if detailedEvents {
 				params := apievents.NewGetDeviceEventParams()
+				setTenant(cmd, params)
 				params.SetID(record.ID)
 				params.SetDate(record.Date)
 
@@ -257,6 +259,7 @@ func init() {
 		filterType{"event-name", "[]string"},
 		filterType{"user-id", "int"})
 	initOutputFlags(recordsWatchCmd)
+	initTenantFlags(recordsWatchCmd)
 
 	recordsWatchCmd.Flags().IntP("refresh-period", "r", 60, "period, in seconds, at which to check for new events")
 	recordsWatchCmd.Flags().BoolP("detailed-info", "d", false, "show detailed info for each record (slower, only for JSON output)")

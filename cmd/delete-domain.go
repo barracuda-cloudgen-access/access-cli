@@ -55,6 +55,7 @@ var domainDeleteCmd = &cobra.Command{
 
 		delete := func(ids []int64) error {
 			params := apiassets.NewDeleteAssetParams()
+			setTenant(cmd, params)
 			params.SetID(ids)
 
 			_, err = global.Client.Assets.DeleteAsset(params, global.AuthWriter)
@@ -110,4 +111,5 @@ func init() {
 	initMultiOpArgFlags(domainDeleteCmd, "domain", "delete", "id", "[]int64")
 	initOutputFlags(domainDeleteCmd)
 	initLoopControlFlags(domainDeleteCmd)
+	initTenantFlags(domainDeleteCmd)
 }

@@ -48,6 +48,7 @@ var sourcesListCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apisources.NewListAssetSourcesParams()
+		setTenant(cmd, params)
 		completePayload := []*models.AssetSource{}
 		total := 0
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
@@ -116,4 +117,5 @@ func init() {
 
 	initPaginationFlags(sourcesListCmd)
 	initOutputFlags(sourcesListCmd)
+	initTenantFlags(sourcesListCmd)
 }

@@ -46,6 +46,7 @@ var domainsListCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apiassets.NewListAssetsParams()
+		setTenant(cmd, params)
 		setSort(cmd, params)
 		setFilter(cmd, params.SetCategory)
 		completePayload := []*models.Asset{}
@@ -105,4 +106,5 @@ func init() {
 	initFilterFlags(domainsListCmd,
 		filterType{"category", "string"})
 	initOutputFlags(domainsListCmd)
+	initTenantFlags(domainsListCmd)
 }

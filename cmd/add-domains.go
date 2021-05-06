@@ -60,6 +60,7 @@ var domainsAddCmd = &cobra.Command{
 					return nil, err
 				}
 				params := apiassets.NewCreateAssetParams()
+				setTenant(cmd, params)
 				params.SetAsset(*asset)
 
 				resp, err := global.Client.Assets.CreateAsset(params, global.AuthWriter)
@@ -94,7 +95,7 @@ func init() {
 
 	initOutputFlags(domainsAddCmd)
 	initLoopControlFlags(domainsAddCmd)
-
+	initTenantFlags(domainsAddCmd)
 	initInputFlags(domainsAddCmd, "domain",
 		inputField{
 			Name:            "Name",

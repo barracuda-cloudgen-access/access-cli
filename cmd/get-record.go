@@ -51,6 +51,7 @@ var recordGetCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apievents.NewGetDeviceEventParams()
+		setTenant(cmd, params)
 		params.SetID(args[0])
 
 		date, err := strfmt.ParseDateTime(args[1])
@@ -104,4 +105,5 @@ func init() {
 	// recordGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(recordGetCmd)
+	initTenantFlags(recordGetCmd)
 }

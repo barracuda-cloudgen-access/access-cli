@@ -59,6 +59,7 @@ var sourceEnableCmd = &cobra.Command{
 
 		for _, arg := range uuidArgs {
 			params := apisources.NewEditAssetSourceParams()
+			setTenant(cmd, params)
 			params.SetID(arg)
 			params.SetAssetSource(apisources.EditAssetSourceBody{
 				AssetSource: &apisources.EditAssetSourceParamsBodyAssetSource{
@@ -110,4 +111,7 @@ func init() {
 
 	initLoopControlFlags(sourceEnableCmd)
 	initLoopControlFlags(sourceDisableCmd)
+
+	initTenantFlags(sourceEnableCmd)
+	initTenantFlags(sourceDisableCmd)
 }

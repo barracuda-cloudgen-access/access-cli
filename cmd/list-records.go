@@ -46,6 +46,7 @@ var recordsListCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apievents.NewListDeviceEventsParams()
+		setTenant(cmd, params)
 		setFilter(cmd, params.SetEventName, params.SetUserID)
 		completePayload := []*models.DeviceEventListItem{}
 		total := 0
@@ -109,4 +110,5 @@ func init() {
 		filterType{"event-name", "[]string"},
 		filterType{"user-id", "int"})
 	initOutputFlags(recordsListCmd)
+	initTenantFlags(recordsListCmd)
 }

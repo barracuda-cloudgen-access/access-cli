@@ -55,6 +55,7 @@ var adminDeleteCmd = &cobra.Command{
 
 		delete := func(ids []int64) error {
 			params := apiadmins.NewDeleteAdminParams()
+			setTenant(cmd, params)
 			params.SetID(ids)
 
 			_, err = global.Client.Admins.DeleteAdmin(params, global.AuthWriter)
@@ -110,4 +111,5 @@ func init() {
 	initMultiOpArgFlags(adminDeleteCmd, "admin", "delete", "id", "[]int64")
 	initOutputFlags(adminDeleteCmd)
 	initLoopControlFlags(adminDeleteCmd)
+	initTenantFlags(adminDeleteCmd)
 }
