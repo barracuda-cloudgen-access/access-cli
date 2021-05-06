@@ -49,6 +49,7 @@ var groupsEditCmd = &cobra.Command{
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				params := apigroups.NewEditGroupParams()
+				setTenant(cmd, params)
 				// IDs are not part of the request body, so we use this workaround
 				group := &struct {
 					models.Group
@@ -99,7 +100,7 @@ func init() {
 
 	initOutputFlags(groupsEditCmd)
 	initLoopControlFlags(groupsEditCmd)
-
+	initTenantFlags(groupsEditCmd)
 	initInputFlags(groupsEditCmd, "group",
 		inputField{
 			Name:            "ID",

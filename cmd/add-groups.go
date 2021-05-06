@@ -60,6 +60,7 @@ var groupsAddCmd = &cobra.Command{
 				}
 				body := apigroups.CreateGroupBody{Group: group}
 				params := apigroups.NewCreateGroupParams()
+				setTenant(cmd, params)
 				params.SetGroup(body)
 
 				resp, err := global.Client.Groups.CreateGroup(params, global.AuthWriter)
@@ -94,7 +95,7 @@ func init() {
 
 	initOutputFlags(groupsAddCmd)
 	initLoopControlFlags(groupsAddCmd)
-
+	initTenantFlags(groupsAddCmd)
 	initInputFlags(groupsAddCmd, "group",
 		inputField{
 			Name:            "Name",
