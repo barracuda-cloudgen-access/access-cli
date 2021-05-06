@@ -51,6 +51,7 @@ var resourcesEditCmd = &cobra.Command{
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				params := apiresources.NewEditResourceParams()
+				setTenant(cmd, params)
 				// IDs are not part of the request body, so we use this workaround
 				resource := &struct {
 					models.AccessResource
@@ -120,7 +121,7 @@ func init() {
 
 	initOutputFlags(resourcesEditCmd)
 	initLoopControlFlags(resourcesEditCmd)
-
+	initTenantFlags(resourcesEditCmd)
 	initInputFlags(resourcesEditCmd, "resource",
 		inputField{
 			Name:            "ID",

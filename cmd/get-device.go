@@ -62,6 +62,7 @@ var deviceGetCmd = &cobra.Command{
 		}
 
 		params := apidevices.NewGetDeviceParams()
+		setTenant(cmd, params)
 		params.SetID(strfmt.UUID(deviceID))
 
 		resp, err := global.Client.Devices.GetDevice(params, global.AuthWriter)
@@ -122,5 +123,6 @@ func init() {
 	// deviceGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(deviceGetCmd)
+	initTenantFlags(deviceGetCmd)
 	deviceGetCmd.Flags().String("id", "", "id of device to get")
 }

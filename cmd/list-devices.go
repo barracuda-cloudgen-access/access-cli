@@ -45,6 +45,7 @@ var devicesListCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := devices.NewListDevicesParams()
+		setTenant(cmd, params)
 		//setSort(cmd, params) // TODO re-enable when/if devices supports sort
 		completePayload := []*devices.ListDevicesOKBodyItems0{}
 		total := 0
@@ -116,5 +117,6 @@ func init() {
 	initPaginationFlags(devicesListCmd)
 	//initSortFlags(devicesListCmd) // TODO re-enable when/if devices supports sort
 	initOutputFlags(devicesListCmd)
+	initTenantFlags(devicesListCmd)
 	devicesListCmd.Flags().StringP("filter", "f", "", "filter devices")
 }

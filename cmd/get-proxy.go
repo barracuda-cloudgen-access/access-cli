@@ -63,6 +63,7 @@ var proxyGetCmd = &cobra.Command{
 		}
 
 		params := apiproxies.NewGetProxyParams()
+		setTenant(cmd, params)
 		params.SetID(strfmt.UUID(id))
 
 		resp, err := global.Client.AccessProxies.GetProxy(params, global.AuthWriter)
@@ -150,5 +151,6 @@ func init() {
 	// proxyGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(proxyGetCmd)
+	initTenantFlags(proxyGetCmd)
 	proxyGetCmd.Flags().String("id", "", "id of proxy to get")
 }

@@ -56,6 +56,7 @@ var deviceDeleteCmd = &cobra.Command{
 
 		delete := func(id strfmt.UUID) error {
 			gparams := apidevices.NewGetDeviceParams()
+			setTenant(cmd, gparams)
 			gparams.SetID(id)
 			resp, err := global.Client.Devices.GetDevice(gparams, global.AuthWriter)
 			if err != nil {
@@ -63,6 +64,7 @@ var deviceDeleteCmd = &cobra.Command{
 			}
 
 			params := apidevices.NewDeleteDeviceParams()
+			setTenant(cmd, params)
 			params.SetUserID(resp.Payload.User.ID)
 			params.SetDeviceID(resp.Payload.ID)
 
@@ -107,4 +109,5 @@ func init() {
 	initMultiOpArgFlags(deviceDeleteCmd, "device", "delete", "id", "[]strfmt.UUID")
 	initOutputFlags(deviceDeleteCmd)
 	initLoopControlFlags(deviceDeleteCmd)
+	initTenantFlags(deviceDeleteCmd)
 }

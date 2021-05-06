@@ -773,7 +773,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
-  /devices:
+  /tenants/{tenant_id}/devices:
     get:
       tags:
       - "devices"
@@ -785,6 +785,7 @@ paths:
       - $ref: '#/parameters/sortParam'
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "successful operation"
@@ -810,7 +811,9 @@ paths:
                           example: "John Doe"
         401:
           $ref: "#/responses/Unauthorized"
-  /devices/{id}:
+        404:
+          $ref: "#/responses/NotFound"
+  /tenants/{tenant_id}/devices/{id}:
     get:
       tags:
         - "devices"
@@ -825,6 +828,7 @@ paths:
         type: string
         format: uuid
         description: "The ID of the device to retrieve"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "Device info"
@@ -882,6 +886,7 @@ paths:
         type: string
         format: uuid
         description: "The ID of the device to edit"
+      - $ref: '#/parameters/tenantIdParam'
       - in: body
         name: "device"
         description: "Device information to modify"
@@ -913,7 +918,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /devices/{id}/revoke_auth_attempt:
+  /tenants/{tenant_id}/devices/{id}/revoke_auth_attempt:
     delete:
       tags:
         - "devices"
@@ -928,6 +933,7 @@ paths:
         type: string
         format: uuid
         description: "The ID of the device to revoke"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "Device revoked"
@@ -971,7 +977,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /devices/{id}/evaluate_resource:
+  /tenants/{tenant_id}/devices/{id}/evaluate_resource:
     post:
       tags:
         - "devices"
@@ -988,6 +994,7 @@ paths:
         type: string
         format: uuid
         description: "The ID of the device to use to evaluate the resource"
+      - $ref: '#/parameters/tenantIdParam'
       - in: body
         name: "evaluate_resource"
         description: "Resource domain/ip to evaluate"
@@ -1041,7 +1048,7 @@ paths:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
-  /access_resources:
+  /tenants/{tenant_id}/access_resources:
     get:
       tags:
       - "access_resources"
@@ -1071,6 +1078,7 @@ paths:
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
       - $ref: '#/parameters/searchParam'
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "successful operation"
@@ -1084,6 +1092,8 @@ paths:
               $ref: "#/definitions/AccessResource"
         401:
           $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
     post:
       tags:
         - "access_resources"
@@ -1094,6 +1104,7 @@ paths:
       summary: "Create resource"
       operationId: "createResource"
       parameters:
+      - $ref: '#/parameters/tenantIdParam'
       - in: "body"
         name: "resource"
         description: "Information about the resource to create"
@@ -1148,7 +1159,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /access_resources/{id}:
+  /tenants/{tenant_id}/access_resources/{id}:
     get:
       tags:
         - "access_resources"
@@ -1163,6 +1174,7 @@ paths:
         type: string
         format: uuid
         description: "The ID of the resource to retrieve"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "Resource info"
@@ -1205,6 +1217,7 @@ paths:
         type: string
         format: uuid
         description: "The ID of the resource to edit"
+      - $ref: '#/parameters/tenantIdParam'
       - in: body
         name: "resource"
         description: "Resource information to modify"
@@ -1257,6 +1270,7 @@ paths:
           type: string
           format: uuid
         description: "The IDs of the resources to delete, comma-separated"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         204:
           description: "Resource deleted"
@@ -1264,7 +1278,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
-  /access_policies:
+  /tenants/{tenant_id}/access_policies:
     get:
       tags:
       - "access_policies"
@@ -1277,6 +1291,7 @@ paths:
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
       - $ref: '#/parameters/searchParam'
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "successful operation"
@@ -1295,6 +1310,8 @@ paths:
                       type: integer
         401:
           $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
     post:
       tags:
         - "access_policies"
@@ -1305,6 +1322,7 @@ paths:
       summary: "Create policy"
       operationId: "createPolicy"
       parameters:
+      - $ref: '#/parameters/tenantIdParam'
       - in: "body"
         name: "policy"
         description: "Information about the policy to create"
@@ -1387,9 +1405,11 @@ paths:
                           x-nullable: true
         401:
           $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /access_policies/{id}:
+  /tenants/{tenant_id}/access_policies/{id}:
     get:
       tags:
         - "access_policies"
@@ -1403,6 +1423,7 @@ paths:
         required: true
         type: integer
         description: "The ID of the policy to retrieve"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "Policy info"
@@ -1462,6 +1483,7 @@ paths:
         required: true
         type: integer
         description: "The ID of the policy to edit"
+      - $ref: '#/parameters/tenantIdParam'
       - in: body
         name: "policy"
         description: "Policy information to modify"
@@ -1564,6 +1586,7 @@ paths:
         items:
           type: integer
         description: "The IDs of the policies to delete, comma-separated"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         204:
           description: "Policy deleted"
@@ -1573,7 +1596,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /access_proxies:
+  /tenants/{tenant_id}/access_proxies:
     get:
       tags:
       - "access_proxies"
@@ -1585,6 +1608,7 @@ paths:
       - $ref: '#/parameters/sortParam'
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "successful operation"
@@ -1605,6 +1629,8 @@ paths:
                       type: integer
         401:
           $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
     post:
       tags:
         - "access_proxies"
@@ -1615,6 +1641,7 @@ paths:
       summary: "Create proxy"
       operationId: "createProxy"
       parameters:
+      - $ref: '#/parameters/tenantIdParam'
       - in: "body"
         name: "proxy"
         description: "Information about the proxy to create"
@@ -1660,9 +1687,11 @@ paths:
                 enum: [proxy_pending, proxy_enabled]
         401:
           $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /access_proxies/{id}:
+  /tenants/{tenant_id}/access_proxies/{id}:
     get:
       tags:
         - "access_proxies"
@@ -1677,6 +1706,7 @@ paths:
         type: string
         format: uuid
         description: "The ID of the proxy to retrieve"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "Proxy info"
@@ -1726,6 +1756,7 @@ paths:
         type: string
         format: uuid
         description: "The ID of the proxy to edit"
+      - $ref: '#/parameters/tenantIdParam'
       - in: body
         name: "proxy"
         description: "Proxy information to modify"
@@ -1811,6 +1842,7 @@ paths:
           type: string
           format: uuid
         description: "The IDs of the proxies to delete, comma-separated"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         204:
           description: "Proxy deleted"

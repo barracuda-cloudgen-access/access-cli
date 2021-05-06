@@ -103,6 +103,7 @@ var policiesAddCmd = &cobra.Command{
 				}
 				body := apipolicies.CreatePolicyBody{AccessPolicy: policy}
 				params := apipolicies.NewCreatePolicyParams()
+				setTenant(cmd, params)
 				params.SetPolicy(body)
 
 				resp, err := global.Client.AccessPolicies.CreatePolicy(params, global.AuthWriter)
@@ -137,7 +138,7 @@ func init() {
 
 	initOutputFlags(policiesAddCmd)
 	initLoopControlFlags(policiesAddCmd)
-
+	initTenantFlags(policiesAddCmd)
 	initInputFlags(policiesAddCmd, "policy",
 		inputField{
 			Name:            "Name",

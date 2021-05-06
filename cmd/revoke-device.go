@@ -56,6 +56,7 @@ var deviceRevokeCmd = &cobra.Command{
 
 		for _, id := range uuidArgs {
 			params := apidevices.NewRevokeDeviceParams()
+			setTenant(cmd, params)
 			params.SetID(id)
 
 			_, err = global.Client.Devices.RevokeDevice(params, global.AuthWriter)
@@ -89,4 +90,5 @@ func init() {
 	initMultiOpArgFlags(deviceRevokeCmd, "device", "revoke", "id", "[]strfmt.UUID")
 	initOutputFlags(deviceRevokeCmd)
 	initLoopControlFlags(deviceRevokeCmd)
+	initTenantFlags(deviceRevokeCmd)
 }

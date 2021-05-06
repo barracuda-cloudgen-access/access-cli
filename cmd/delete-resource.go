@@ -56,6 +56,7 @@ var resourceDeleteCmd = &cobra.Command{
 
 		delete := func(ids []strfmt.UUID) error {
 			params := apiresources.NewDeleteResourceParams()
+			setTenant(cmd, params)
 			params.SetID(ids)
 
 			_, err := global.Client.AccessResources.DeleteResource(params, global.AuthWriter)
@@ -111,4 +112,5 @@ func init() {
 	initMultiOpArgFlags(resourceDeleteCmd, "resource", "delete", "id", "[]strfmt.UUID")
 	initOutputFlags(resourceDeleteCmd)
 	initLoopControlFlags(resourceDeleteCmd)
+	initTenantFlags(resourceDeleteCmd)
 }

@@ -50,6 +50,7 @@ var proxiesEditCmd = &cobra.Command{
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				params := apiproxies.NewEditProxyParams()
+				setTenant(cmd, params)
 				// IDs are not part of the request body, so we use this workaround
 				proxy := &struct {
 					models.AccessProxy
@@ -102,7 +103,7 @@ func init() {
 
 	initOutputFlags(proxiesEditCmd)
 	initLoopControlFlags(proxiesEditCmd)
-
+	initTenantFlags(proxiesEditCmd)
 	initInputFlags(proxiesEditCmd, "proxy",
 		inputField{
 			Name:            "ID",

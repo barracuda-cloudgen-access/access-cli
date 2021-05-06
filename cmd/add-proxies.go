@@ -62,6 +62,7 @@ var proxiesAddCmd = &cobra.Command{
 					return nil, err
 				}
 				params := apiproxies.NewCreateProxyParams()
+				setTenant(cmd, params)
 				params.SetProxy(*proxy)
 
 				resp, err := global.Client.AccessProxies.CreateProxy(params, global.AuthWriter)
@@ -134,7 +135,7 @@ func init() {
 
 	initOutputFlags(proxiesAddCmd)
 	initLoopControlFlags(proxiesAddCmd)
-
+	initTenantFlags(proxiesAddCmd)
 	initInputFlags(proxiesAddCmd, "proxy",
 		inputField{
 			Name:            "Name",
