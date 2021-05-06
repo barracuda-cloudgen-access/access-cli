@@ -561,7 +561,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
-  /groups:
+  /tenants/{tenant_id}/groups:
     get:
       tags:
       - "groups"
@@ -570,6 +570,7 @@ paths:
       produces:
       - "application/json"
       parameters:
+      - $ref: '#/parameters/tenantIdParam'
       - $ref: '#/parameters/sortParam'
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
@@ -602,6 +603,8 @@ paths:
                         example: 1
         401:
           $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
     post:
       tags:
         - "groups"
@@ -630,6 +633,7 @@ paths:
                 name:
                   type: string
                   example: "Ninjas"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         201:
           description: "Group created"
@@ -651,9 +655,11 @@ paths:
                           example: "John Doe"
         401:
           $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /groups/{id}:
+  /tenants/{tenant_id}/groups/{id}:
     get:
       tags:
         - "groups"
@@ -667,6 +673,7 @@ paths:
         required: true
         type: integer
         description: "The ID of the group to retrieve"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "Group info"
@@ -716,6 +723,7 @@ paths:
           properties:
             group:
               $ref: "#/definitions/Group"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         200:
           description: "Group edited"
@@ -757,6 +765,7 @@ paths:
         items:
           type: integer
         description: "The IDs of the groups to delete"
+      - $ref: '#/parameters/tenantIdParam'
       responses:
         204:
           description: "Group deleted"

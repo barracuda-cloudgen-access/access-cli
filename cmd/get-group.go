@@ -65,6 +65,7 @@ var groupGetCmd = &cobra.Command{
 		}
 
 		params := apigroups.NewGetGroupParams()
+		setTenant(cmd, params)
 		params.SetID(groupID)
 
 		resp, err := global.Client.Groups.GetGroup(params, global.AuthWriter)
@@ -148,5 +149,6 @@ func init() {
 	// groupGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initOutputFlags(groupGetCmd)
+	initTenantFlags(groupGetCmd)
 	groupGetCmd.Flags().Int("id", 0, "id of group to get")
 }

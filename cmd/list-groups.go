@@ -43,6 +43,7 @@ var groupsListCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apigroups.NewListGroupsParams()
+		setTenant(cmd, params)
 		setSort(cmd, params)
 		setSearchQuery(cmd, params)
 		completePayload := []*apigroups.ListGroupsOKBodyItems0{}
@@ -88,5 +89,6 @@ func init() {
 	initSortFlags(groupsListCmd)
 	initSearchFlags(groupsListCmd)
 	initOutputFlags(groupsListCmd)
+	initTenantFlags(groupsListCmd)
 	groupsListCmd.Flags().StringP("filter", "f", "", "filter groups")
 }

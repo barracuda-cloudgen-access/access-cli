@@ -55,6 +55,7 @@ var groupDeleteCmd = &cobra.Command{
 
 		delete := func(ids []int64) error {
 			params := apigroups.NewDeleteGroupParams()
+			setTenant(cmd, params)
 			params.SetID(ids)
 
 			_, err = global.Client.Groups.DeleteGroup(params, global.AuthWriter)
@@ -110,4 +111,5 @@ func init() {
 	initMultiOpArgFlags(groupDeleteCmd, "group", "delete", "id", "[]int64")
 	initOutputFlags(groupDeleteCmd)
 	initLoopControlFlags(groupDeleteCmd)
+	initTenantFlags(groupDeleteCmd)
 }
