@@ -112,6 +112,7 @@ var loginCmd = &cobra.Command{
 		authViper.Set(ckeyAuthClient, signInResponse.Client)
 		authViper.Set(ckeyAuthUID, signInResponse.UID)
 		authViper.Set(ckeyAuthMethod, authMethodBearerToken)
+		authViper.Set(ckeyAuthCurrentTenant, signInResponse.Payload.Data.TenantID)
 
 		if global.WriteFiles {
 			err = authViper.WriteConfig()

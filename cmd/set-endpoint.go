@@ -45,6 +45,7 @@ var endpointSetCmd = &cobra.Command{
 		authViper.Set(ckeyAuthClient, "")
 		authViper.Set(ckeyAuthUID, "")
 		authViper.Set(ckeyAuthMethod, "")
+		authViper.Set(ckeyAuthCurrentTenant, "")
 		authViper.Set(ckeyAuthEndpoint, args[0])
 
 		insecureSkipVerify, _ := cmd.Flags().GetBool("insecure-skip-verify")

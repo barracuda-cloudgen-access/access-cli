@@ -31,6 +31,7 @@ func init() {
 	authViper.Set(ckeyAuthAccessToken, "testAccessToken")
 	authViper.Set(ckeyAuthClient, "testClient")
 	authViper.Set(ckeyAuthUID, "test@example.com")
+	authViper.Set(ckeyAuthCurrentTenant, "testTenantID")
 }
 
 func baseURIinTests() string {

@@ -54,6 +54,7 @@ type globalInfo struct {
 	WriteFiles       bool
 	FetchPerPage     int
 	DefaultRangeSize int
+	CurrentTenant    string
 	FilterData       map[*cobra.Command]*filterData
 	InputData        map[*cobra.Command]*inputData
 	MultiOpData      map[*cobra.Command]*multiOpData
@@ -194,6 +195,8 @@ func initClient() {
 		global.AuthWriter = AccessAPIKeyAuth(accessToken, client, uid)
 	default:
 	}
+
+	global.CurrentTenant = authViper.GetString(ckeyAuthCurrentTenant)
 }
 
 // AccessAPIKeyAuth provides an API key auth info writer

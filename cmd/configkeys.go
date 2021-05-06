@@ -25,6 +25,7 @@ const ckeyAuthMethod = "method"
 const ckeyAuthAccessToken = "accessToken"
 const ckeyAuthClient = "client"
 const ckeyAuthUID = "uid"
+const ckeyAuthCurrentTenant = "currentTenant"
 
 const ckeyOutputFormat = "outputFormat"
 const ckeyPipeOutputFormat = "pipeOutputFormat"

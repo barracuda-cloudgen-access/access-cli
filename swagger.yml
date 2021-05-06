@@ -94,6 +94,37 @@ paths:
               description: Authentication - User ID
         401:
           $ref: "#/responses/Unauthorized"
+  /auth/validate_token:
+    get:
+      tags:
+        - "auth"
+      summary: "Verifies if current session token is still valid"
+      operationId: "verifyToken"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      security: []
+      parameters:
+      - in: query
+        name: uid
+        type: "string"
+        required: true
+      - in: query
+        name: access-token
+        type: "string"
+        required: true
+      - in: query
+        name: client
+        type: "string"
+        required: true
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/SignInResponse"
+        401:
+          $ref: "#/responses/Unauthorized"
   /auth/password:
     put:
       tags:
@@ -2215,6 +2246,59 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
+  /tenants:
+    get:
+      tags:
+      - "tenants"
+      summary: "List tenants for current admin"
+      operationId: "listTenants"
+      produces:
+      - "application/json"
+      parameters:
+      - $ref: '#/parameters/sortParam'
+      - $ref: '#/parameters/pageParam'
+      - $ref: '#/parameters/perPageParam'
+      - $ref: '#/parameters/searchParam'
+      responses:
+        200:
+          description: "successful operation"
+          headers:
+            total:
+              description: "Total number of items (for pagination)"
+              type: integer
+          schema:
+            type: array
+            items:
+              allOf:
+              - $ref: "#/definitions/Tenant"
+        401:
+          $ref: "#/responses/Unauthorized"
+  /tenants/{id}:
+    get:
+      tags:
+        - "tenants"
+      produces:
+      - "application/json"
+      summary: "Retrieve information about a tenant"
+      operationId: "getTenant"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: string
+        format: uuid
+        description: "The ID of the tenant to retrieve"
+      responses:
+        200:
+          description: "Tenant info"
+          schema:
+            $ref: "#/definitions/Tenant"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
 
 securityDefinitions:
   uid:
@@ -2291,6 +2375,9 @@ definitions:
           uid:
             type: string
             example: "john.doe@acme.com"
+          tenant_id:
+            type: string
+            format: uuid
           allow_password_change:
             type: boolean
           image:
@@ -2928,6 +3015,25 @@ definitions:
         type: string
         format: date-time
       last_sign_in_at:
+        type: string
+        format: date-time
+
+  Tenant:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+        example: John
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      locked_at:
         type: string
         format: date-time
 

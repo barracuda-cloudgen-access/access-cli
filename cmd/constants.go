@@ -52,6 +52,7 @@ const (
 	flagInitPagination  = "pagination_flags_init"
 	flagInitSort        = "sort_flags_init"
 	flagInitSearch      = "search_flags_init"
+	flagInitTenant      = "tenant_flags_init"
 	flagInitOutput      = "output_flags_init"
 	flagInitInput       = "input_flags_init"
 	flagInitMultiOpArg  = "multi_op_arg_flags_init"

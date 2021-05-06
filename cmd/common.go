@@ -25,6 +25,7 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 
+	"github.com/barracuda-cloudgen-access/access-cli/client/auth"
 	"github.com/barracuda-cloudgen-access/access-cli/models"
 )
 
@@ -43,11 +44,15 @@ func preRunCheckAuth(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	accessToken := authViper.GetString(ckeyAuthAccessToken)
+	client := authViper.GetString(ckeyAuthClient)
+	uid := authViper.GetString(ckeyAuthUID)
+
 	switch authViper.GetString(ckeyAuthMethod) {
 	case authMethodBearerToken:
-		if authViper.GetString(ckeyAuthAccessToken) == "" ||
-			authViper.GetString(ckeyAuthClient) == "" ||
-			authViper.GetString(ckeyAuthUID) == "" {
+		if accessToken == "" ||
+			client == "" ||
+			uid == "" {
 			cmd.SilenceUsage = true
 			return fmt.Errorf("not logged in! Run `%s login` first", ApplicationName)
 		}
@@ -58,7 +63,28 @@ func preRunCheckAuth(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("not logged in! Run `%s login` first", ApplicationName)
 	}
 
-	return nil
+	// Happens after upgrade of the CLI, attempt to get and store the tenant id
+	tenant := authViper.GetString(ckeyAuthCurrentTenant)
+	if tenant == "" {
+		//Verify if token is valid
+		params := auth.NewVerifyTokenParams().WithAccessToken(accessToken).WithClient(client).WithUID(uid)
+		res, err := global.Client.Auth.VerifyToken(params)
+		if err != nil {
+			cmd.SilenceUsage = true
+			return fmt.Errorf("login expired! Run `%s login` first", ApplicationName)
+		}
+
+		global.CurrentTenant = string(res.Payload.Data.TenantID)
+		authViper.Set(ckeyAuthCurrentTenant, global.CurrentTenant)
+		if global.WriteFiles {
+			err := authViper.WriteConfig()
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return err
 }
 
 type unprocessableEntityResponse interface {
