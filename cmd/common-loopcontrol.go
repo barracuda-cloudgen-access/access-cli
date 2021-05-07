@@ -34,7 +34,7 @@ func preRunFlagCheckLoopControl(cmd *cobra.Command, args []string) error {
 
 func loopControlContinueOnError(cmd *cobra.Command) bool {
 	if _, ok := cmd.Annotations[flagInitLoopControl]; !ok {
-		panic("setSort called for command where sorting flag was not initialized. This is a bug!")
+		panic("loopControlContinueOnError called for command where looping flag was not initialized. This is a bug!")
 	}
 	c, err := cmd.Flags().GetBool("continue-on-error")
 	if err == nil {
