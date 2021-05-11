@@ -46,6 +46,14 @@ var usersEditCmd = &cobra.Command{
 		tw := userBuildTableWriter()
 		createdList := []*models.User{}
 		total := 0
+
+		// Assign deprecated username if name was not supplied
+		name, _ := cmd.Flags().GetString("name")
+		username, _ := cmd.Flags().GetString("username")
+		if name == "" && username != "" {
+			cmd.Flags().Set("name", username)
+		}
+
 		err := forAllInput(cmd, args, false,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
@@ -63,6 +71,7 @@ var usersEditCmd = &cobra.Command{
 				}
 				err := placeInputValues(cmd, values, user,
 					func(s int) { user.ID = int64(s) },
+					func(s string) { /* deprecated username already handled */ },
 					func(s string) { user.Name = s },
 					func(s string) { user.Email = strfmt.Email(s) },
 					func(s string) { user.PhoneNumber = s },
@@ -121,10 +130,19 @@ func init() {
 			MainField:       true,
 			SchemaName:      "id",
 		},
+		// deprecated
 		inputField{
 			Name:            "Username",
 			FlagName:        "username",
-			FlagDescription: "specify the new username for the user",
+			FlagDescription: "(deprecated, use name instead) specify the new username for the user",
+			VarType:         "string",
+			Mandatory:       false,
+			DefaultValue:    "",
+		},
+		inputField{
+			Name:            "Name",
+			FlagName:        "name",
+			FlagDescription: "specify the new name for the user",
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",

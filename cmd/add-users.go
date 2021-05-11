@@ -47,11 +47,20 @@ var usersAddCmd = &cobra.Command{
 		tw := userBuildTableWriter()
 		createdList := []*models.User{}
 		total := 0
+
+		// Assign deprecated username if name was not supplied
+		name, _ := cmd.Flags().GetString("name")
+		username, _ := cmd.Flags().GetString("username")
+		if name == "" && username != "" {
+			cmd.Flags().Set("name", username)
+		}
+
 		err := forAllInput(cmd, args, true,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
 				user := &apiusers.CreateUserParamsBodyUser{}
 				err := placeInputValues(cmd, values, user,
+					func(s string) { /* deprecated username already handled */ },
 					func(s string) { user.Name = s },
 					func(s string) { user.Email = strfmt.Email(s) },
 					func(s string) { user.PhoneNumber = s },
@@ -101,10 +110,19 @@ func init() {
 	initTenantFlags(usersAddCmd)
 
 	initInputFlags(usersAddCmd, "user",
+		//deprecated
 		inputField{
 			Name:            "Username",
 			FlagName:        "username",
-			FlagDescription: "specify the username for the created user",
+			FlagDescription: "(deprecated, use name instead) specify the username for the created user",
+			VarType:         "string",
+			Mandatory:       false,
+			DefaultValue:    "",
+		},
+		inputField{
+			Name:            "Name",
+			FlagName:        "name",
+			FlagDescription: "specify the name for the created user",
 			VarType:         "string",
 			Mandatory:       true,
 			DefaultValue:    "",
