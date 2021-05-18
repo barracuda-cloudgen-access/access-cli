@@ -1143,6 +1143,9 @@ paths:
                   items:
                     type: string
                     example: "mail"
+                fixed_last_octet:
+                  $ref: '#/definitions/NullableOptionalInt'
+                  example: 10
                 notes:
                   type: string
                 enabled:
@@ -2780,6 +2783,9 @@ definitions:
         items:
           type: string
           example: "mail"
+      fixed_last_octet:
+        $ref: '#/definitions/NullableOptionalInt'
+        example: 10
   AccessResourcePortMapping:
     type: object
     properties:
@@ -3148,6 +3154,15 @@ definitions:
 
   NotFoundResponse: {}
   ForbiddenResponse: {}
+
+  NullableOptionalInt:
+    x-go-type:
+      type: NullableOptionalInt
+      import:
+        package: github.com/barracuda-cloudgen-access/access-cli/serial
+      hints:
+        kind: interface
+        nullable: true
 
 responses:
   NotFound:

@@ -18,11 +18,15 @@ limitations under the License.
 */
 
 import (
+	"log"
+	"strconv"
+
 	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
 	apiresources "github.com/barracuda-cloudgen-access/access-cli/client/access_resources"
 	"github.com/barracuda-cloudgen-access/access-cli/models"
+	"github.com/barracuda-cloudgen-access/access-cli/serial"
 )
 
 // resourcesEditCmd represents the edit command
@@ -76,7 +80,18 @@ var resourcesEditCmd = &cobra.Command{
 						}
 					},
 					func(s []string) { resource.WildcardExceptions = s },
-					func(s string) { resource.Notes = &s })
+					func(s string) { resource.Notes = &s },
+					func(s string) {
+						resource.FixedLastOctet = &serial.NullableOptionalInt{}
+						if s == "null" {
+							return
+						}
+						i, err := strconv.ParseInt(s, 10, 9)
+						if err != nil {
+							log.Fatal(err)
+						}
+						resource.FixedLastOctet.Value = &i
+					})
 				if err != nil {
 					return nil, err
 				}
@@ -195,6 +210,14 @@ func init() {
 			FlagName:        "notes",
 			FlagDescription: "specify notes for the resource",
 			VarType:         "string",
+			Mandatory:       false,
+			DefaultValue:    "",
+		},
+		inputField{
+			Name:            "Fixed Last Octet",
+			FlagName:        "fixed_last_octet",
+			FlagDescription: "forces the agent to bind the resource to a local IP in the format 192.0.2.X (null to disable)",
+			VarType:         "string", // use string to read "null" pseudo value
 			Mandatory:       false,
 			DefaultValue:    "",
 		})
