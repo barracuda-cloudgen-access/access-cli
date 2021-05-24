@@ -21,11 +21,11 @@ jobs:
         go-version: 1.14
       id: go
 
-    - name: Install go-swagger v0.21.0
+    - name: Install go-swagger v0.27.0
       run: |
         swaggerdir=$(mktemp -d)
         cd "$swaggerdir"
-        wget -O swagger https://github.com/go-swagger/go-swagger/releases/download/v0.21.0/swagger_linux_amd64
+        wget -O swagger https://github.com/go-swagger/go-swagger/releases/download/v0.27.0/swagger_linux_amd64
         chmod +x swagger
         echo "$swaggerdir" >> $GITHUB_PATH
 
