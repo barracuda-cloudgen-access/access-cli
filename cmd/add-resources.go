@@ -62,8 +62,9 @@ var resourcesAddCmd = &cobra.Command{
 					func(s string) { resource.PublicHost = s },
 					func(s string) { resource.InternalHost = s },
 					func(s []string) {
-						resource.PortMappings = []*models.AccessResourcePortMapping{
-							colonMappingsToPortMappings(s),
+						resource.PortMappings = []*models.AccessResourcePortMapping{}
+						for _, mapping := range s {
+							resource.PortMappings = append(resource.PortMappings, colonMappingToPortMapping(mapping))
 						}
 					},
 					func(s string) { resource.AccessProxyID = strfmt.UUID(s) },
@@ -110,17 +111,26 @@ var resourcesAddCmd = &cobra.Command{
 	},
 }
 
-func colonMappingsToPortMappings(mappings []string) *models.AccessResourcePortMapping {
-	publicPorts := make([]string, len(mappings))
-	internalPorts := make([]string, len(mappings))
-	for i, mapping := range mappings {
-		parts := strings.SplitN(mapping, ":", 2)
-		publicPorts[i] = strings.TrimSpace(parts[0])
-		internalPorts[i] = strings.TrimSpace(parts[len(parts)-1])
+func colonMappingToPortMapping(mapping string) *models.AccessResourcePortMapping {
+	var protocol string
+	internalPorts := []string{}
+	parts := strings.SplitN(mapping, ":", 3)
+	publicPorts := strings.Split(strings.TrimSpace(parts[0]), ",")
+
+	if len(parts) > 1 {
+		internalPorts = strings.Split(strings.TrimSpace(parts[1]), ",")
 	}
+
+	if len(parts) > 2 {
+		protocol = strings.TrimSpace(parts[2])
+	} else {
+		protocol = "tcp"
+	}
+
 	return &models.AccessResourcePortMapping{
-		PublicPorts:   publicPorts,
 		InternalPorts: internalPorts,
+		PublicPorts:   publicPorts,
+		Protocol:      protocol,
 	}
 }
 
@@ -170,8 +180,8 @@ func init() {
 		inputField{
 			Name:            "Port mappings",
 			FlagName:        "ports",
-			FlagDescription: "specify the port mappings (external:internal) for the created resource",
-			VarType:         "[]string",
+			FlagDescription: "specify the port mappings (external:internal:protocol) for the created resource. Also accepts (external:internal), considers TCP by default.",
+			VarType:         "[]string.skipcomma",
 			Mandatory:       true,
 			DefaultValue:    []string{},
 		},

@@ -2792,6 +2792,8 @@ definitions:
       label:
         type: string
         example: "Example mapping"
+      protocol:
+        enum: [tcp, udp, both]
       public_ports:
         type: array
         items:
