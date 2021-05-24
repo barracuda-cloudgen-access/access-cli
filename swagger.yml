@@ -2327,6 +2327,62 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
+  /tenants/{tenant_id}/app_configuration:
+    get:
+      tags:
+        - "settings_agent_configuration"
+      produces:
+      - "application/json"
+      summary: "Retrieve agent configuration settings"
+      operationId: "settingsAgentConfiguration"
+      parameters:
+      - $ref: '#/parameters/tenantIdParam'
+      responses:
+        200:
+          description: "Admin info"
+          schema:
+            $ref: "#/definitions/SettingsAgentConfiguration"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+    patch:
+      tags:
+        - "settings_agent_configuration"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Edit agent configuration"
+      operationId: "editSettingsAgentConfiguration"
+      parameters:
+      - in: body
+        name: "app_configuration"
+        description: "Agent configuration modify"
+        required: true
+        schema:
+          type: object
+          properties:
+            app_configuration:
+              $ref: "#/definitions/SettingsAgentConfiguration"
+      - $ref: '#/parameters/tenantIdParam'
+      responses:
+        200:
+          description: "Agent configuration edited"
+          schema:
+            $ref: "#/definitions/SettingsAgentConfiguration"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /tenants:
     get:
       tags:
@@ -3115,6 +3171,30 @@ definitions:
         type: string
         format: date-time
 
+  SettingsAgentConfiguration:
+    type: object
+    properties:
+      certificate_period:
+        type: integer
+        $ref: '#/definitions/NullableOptionalInt'
+        example: 30
+      contact_admin_action:
+        $ref: '#/definitions/NullableOptionalString'
+        example: mailto:support@barracuda.com
+      dns_servers:
+        type: object
+        properties:
+          list:
+            type: string
+            example: 8.8.8.8,4.4.4.4
+          protocol:
+            enum: [plain,dns_over_tls]
+      enrollment_polling_time_in_seconds:
+        $ref: '#/definitions/NullableOptionalInt'
+        example: 600
+      history_screen_disabled:
+        $ref: '#/definitions/NullableOptionalBoolean'
+
   Tenant:
     type: object
     properties:
@@ -3133,6 +3213,12 @@ definitions:
       locked_at:
         type: string
         format: date-time
+
+  BadRequestResponse:
+    type: object
+    properties:
+      message:
+        type: string
 
   UnauthorizedResponse:
     type: object
@@ -3157,6 +3243,15 @@ definitions:
   NotFoundResponse: {}
   ForbiddenResponse: {}
 
+  NullableOptionalString:
+    x-go-type:
+      type: NullableOptionalString
+      import:
+        package: github.com/barracuda-cloudgen-access/access-cli/serial
+      hints:
+        kind: interface
+        nullable: true
+
   NullableOptionalInt:
     x-go-type:
       type: NullableOptionalInt
@@ -3166,7 +3261,23 @@ definitions:
         kind: interface
         nullable: true
 
+  NullableOptionalBoolean:
+    x-go-type:
+      type: NullableOptionalBoolean
+      import:
+        package: github.com/barracuda-cloudgen-access/access-cli/serial
+      hints:
+        kind: interface
+        nullable: true
+
 responses:
+
+  BadRequest:
+    description: "the request is invalid"
+    schema:
+      $ref: "#/definitions/BadRequestResponse"
+
+
   NotFound:
     description: "the specified item was not found"
     schema:

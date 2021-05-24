@@ -18,9 +18,6 @@ limitations under the License.
 */
 
 import (
-	"log"
-	"strconv"
-
 	"github.com/go-openapi/strfmt"
 	"github.com/spf13/cobra"
 
@@ -84,15 +81,7 @@ var resourcesEditCmd = &cobra.Command{
 					func(s string) { resource.Notes = &s },
 					func(s string) {
 						resource.FixedLastOctet = &serial.NullableOptionalInt{}
-						if s == "null" {
-							return
-						}
-						i, err := strconv.ParseUint(s, 10, 8)
-						if err != nil {
-							log.Fatal(err)
-						}
-						value := int64(i)
-						resource.FixedLastOctet.Value = &value
+						resource.FixedLastOctet.AssignFromString(s)
 					})
 				if err != nil {
 					return nil, err

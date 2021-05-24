@@ -23,41 +23,43 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-type NullableOptionalInt struct {
-	Value *int64
+type NullableOptionalBoolean struct {
+	Value *bool
 }
 
-// MarshalJSON returns the NullableOptionalInt as JSON
-func (n NullableOptionalInt) MarshalJSON() ([]byte, error) {
+// MarshalJSON returns the NullableOptionalBoolean as JSON
+func (n NullableOptionalBoolean) MarshalJSON() ([]byte, error) {
 	return json.Marshal(n.Value)
 }
 
-// UnmarshalJSON sets the NullableOptionalInt from JSON
-func (n *NullableOptionalInt) UnmarshalJSON(data []byte) error {
-	var value int64
+// UnmarshalJSON sets the NullableOptionalBoolean from JSON
+func (n *NullableOptionalBoolean) UnmarshalJSON(data []byte) error {
+	var value bool
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*n = NullableOptionalInt{Value: &value}
+	*n = NullableOptionalBoolean{Value: &value}
 	return nil
 }
 
 // converting the struct to String format.
-func (n NullableOptionalInt) String() string {
+func (n NullableOptionalBoolean) String() string {
 	if n.Value == nil {
 		return "<null>"
+	} else if *n.Value {
+		return "true"
+	} else {
+		return "false"
 	}
-	return strconv.FormatInt(*n.Value, 10)
 }
 
-func (n *NullableOptionalInt) AssignFromString(s string) {
+func (n *NullableOptionalBoolean) AssignFromString(s string) {
 	if s == "null" {
 		return
 	}
-	i, err := strconv.ParseUint(s, 10, 0)
+	value, err := strconv.ParseBool(s)
 	if err != nil {
 		log.Fatal(err)
 	}
-	value := int64(i)
 	n.Value = &value
 }
