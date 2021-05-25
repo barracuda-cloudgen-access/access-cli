@@ -17,7 +17,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+)
 
 type sortable interface {
 	SetSort(sort *string)
@@ -29,7 +31,7 @@ func initSortFlags(cmd *cobra.Command) {
 		cmd.Annotations = make(map[string]string)
 	}
 	cmd.Annotations[flagInitSort] = "yes"
-	cmd.Flags().String("sort", "id_asc", "sort output. Possible options include: id_{asc|desc}, name_{asc|desc}, created_{asc|desc}, updated_{asc|desc}")
+	cmd.Flags().String("sort", "", "sort output. Possible options include: id_{asc|desc}, name_{asc|desc}, created_{asc|desc}, updated_{asc|desc}")
 }
 
 func preRunFlagCheckSort(cmd *cobra.Command, args []string) error {
@@ -41,8 +43,9 @@ func setSort(cmd *cobra.Command, s sortable) {
 	if _, ok := cmd.Annotations[flagInitSort]; !ok {
 		panic("setSort called for command where sorting flag was not initialized. This is a bug!")
 	}
+
 	sort, err := cmd.Flags().GetString("sort")
-	if err == nil {
+	if err == nil && sort != "" {
 		s.SetSort(&sort)
 	}
 }
