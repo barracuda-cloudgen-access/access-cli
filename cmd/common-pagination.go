@@ -105,14 +105,20 @@ func forAllPages(cmd *cobra.Command, params pageable, do func() (int, int64, err
 		rangeStart = 0
 		rangeEnd = math.MaxInt64
 	} else if rangeEnd == -1 {
-		rangeEnd = rangeStart + int64(global.DefaultRangeSize)
+		rangeEnd = rangeStart + int64(global.FetchPerPage)
 	} else if rangeEnd == 0 {
 		rangeEnd = math.MaxInt64
 	} else {
 		rangeEnd-- // user-facing values are 1-based
 	}
 
-	perPage := int64(global.FetchPerPage)
+	// Increase per page results according with to difference
+	perPage := rangeEnd - rangeStart
+	if perPage > 1000 {
+		// backend will limit this value
+		perPage = 1000
+	}
+
 	total := int64(math.MaxInt64)
 	curPage := rangeStart / perPage
 	sliceStart = rangeStart - curPage*perPage

@@ -29,8 +29,7 @@ import (
 )
 
 func setConfigDefaults() {
-	cfgViper.SetDefault(ckeyRecordsPerGetRequest, 50)
-	cfgViper.SetDefault(ckeyDefaultRangeSize, 20)
+	cfgViper.SetDefault(ckeyRecordsPerGetRequest, 20)
 
 	configDirs := configdir.New(ConfigVendorName, ConfigApplicationName)
 	cfgViper.SetDefault(ckeyCachePath, configDirs.QueryCacheFolder().Path)

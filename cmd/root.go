@@ -47,17 +47,16 @@ var cfgViper *viper.Viper
 var authViper *viper.Viper
 
 type globalInfo struct {
-	Transport        *httptransport.Runtime
-	Client           *apiclient.CloudGenAccessConsole
-	AuthWriter       runtime.ClientAuthInfoWriter
-	VerboseLevel     int
-	WriteFiles       bool
-	FetchPerPage     int
-	DefaultRangeSize int
-	CurrentTenant    string
-	FilterData       map[*cobra.Command]*filterData
-	InputData        map[*cobra.Command]*inputData
-	MultiOpData      map[*cobra.Command]*multiOpData
+	Transport     *httptransport.Runtime
+	Client        *apiclient.CloudGenAccessConsole
+	AuthWriter    runtime.ClientAuthInfoWriter
+	VerboseLevel  int
+	WriteFiles    bool
+	FetchPerPage  int
+	CurrentTenant string
+	FilterData    map[*cobra.Command]*filterData
+	InputData     map[*cobra.Command]*inputData
+	MultiOpData   map[*cobra.Command]*multiOpData
 }
 
 var global globalInfo
@@ -177,14 +176,8 @@ func initClient() {
 		fmt.Fprintf(os.Stderr, "WARNING: %s setting exceeds limit of 100. Limiting to 100.\n", ckeyRecordsPerGetRequest)
 		global.FetchPerPage = 100
 	} else if global.FetchPerPage < 1 {
-		fmt.Fprintf(os.Stderr, "WARNING: %s setting is invalid. Setting to 50.\n", ckeyRecordsPerGetRequest)
-		global.FetchPerPage = 50
-	}
-
-	global.DefaultRangeSize = cfgViper.GetInt(ckeyDefaultRangeSize)
-	if global.DefaultRangeSize < 1 {
-		fmt.Fprintf(os.Stderr, "WARNING: %s setting is invalid. Setting to 20.\n", ckeyDefaultRangeSize)
-		global.DefaultRangeSize = 20
+		fmt.Fprintf(os.Stderr, "WARNING: %s setting is invalid. Setting to 20.\n", ckeyRecordsPerGetRequest)
+		global.FetchPerPage = 20
 	}
 
 	switch authViper.GetString(ckeyAuthMethod) {
