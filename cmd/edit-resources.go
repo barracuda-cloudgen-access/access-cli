@@ -216,7 +216,7 @@ func init() {
 		},
 		inputField{
 			Name:            "Fixed Last Octet",
-			FlagName:        "fixed_last_octet",
+			FlagName:        "fixed-last-octet",
 			FlagDescription: "forces the agent to bind the resource to a local IP in the format 192.0.2.X (null to disable)",
 			VarType:         "string", // use string to read "null" pseudo value
 			Mandatory:       false,
