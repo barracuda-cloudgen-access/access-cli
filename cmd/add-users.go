@@ -114,7 +114,7 @@ func init() {
 		inputField{
 			Name:            "Username",
 			FlagName:        "username",
-			FlagDescription: "(deprecated, use name instead) specify the username for the created user",
+			FlagDescription: "specify the username for the created user",
 			VarType:         "string",
 			Mandatory:       false,
 			DefaultValue:    "",
@@ -169,4 +169,6 @@ func init() {
 			Mandatory:       false,
 			DefaultValue:    false,
 		})
+	usersAddCmd.Flags().MarkDeprecated("username", "use name instead")
+
 }
