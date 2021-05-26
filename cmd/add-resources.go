@@ -80,11 +80,12 @@ var resourcesAddCmd = &cobra.Command{
 						if s == "null" {
 							return
 						}
-						i, err := strconv.ParseInt(s, 10, 9)
+						i, err := strconv.ParseUint(s, 10, 8)
 						if err != nil {
 							log.Fatal(err)
 						}
-						resource.FixedLastOctet.Value = &i
+						value := int64(i)
+						resource.FixedLastOctet.Value = &value
 					})
 				if err != nil {
 					return nil, err
