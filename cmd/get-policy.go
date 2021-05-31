@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/jedib0t/go-pretty/table"
-	"github.com/jedib0t/go-pretty/text"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
 	apipolicies "github.com/barracuda-cloudgen-access/access-cli/client/access_policies"
@@ -89,13 +89,12 @@ func policyBuildTableWriter() table.Writer {
 		"Resources",
 		"Created",
 	})
-	tw.SetAlign([]text.Align{
-		text.AlignRight,
-		text.AlignLeft,
-		text.AlignLeft,
-		text.AlignLeft,
+	tw.SetColumnConfigs([]table.ColumnConfig{
+		{Number: 1, WidthMax: 12, Align: text.AlignRight},
+		{Number: 2, WidthMax: 30, Align: text.AlignLeft},
+		{Number: 3, WidthMax: 12, Align: text.AlignLeft},
+		{Number: 4, WidthMax: 30, Align: text.AlignLeft},
 	})
-	tw.SetAllowedColumnLengths([]int{12, 30, 12, 30})
 	return tw
 }
 

@@ -22,8 +22,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jedib0t/go-pretty/table"
-	"github.com/jedib0t/go-pretty/text"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
 	apiadmins "github.com/barracuda-cloudgen-access/access-cli/client/admins"
@@ -93,7 +93,15 @@ func adminBuildTableWriter() table.Writer {
 		"Roles",
 		"Last Sign In",
 	})
-	tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 30, 30, 36})
+	tw.SetColumnConfigs([]table.ColumnConfig{
+		{Number: 1, WidthMax: 36},
+		{Number: 2, WidthMax: 30},
+		{Number: 3, WidthMax: 30},
+		{Number: 4, WidthMax: 30},
+		{Number: 5, WidthMax: 30},
+		{Number: 6, WidthMax: 30},
+		{Number: 7, WidthMax: 36},
+	})
 	return tw
 }
 

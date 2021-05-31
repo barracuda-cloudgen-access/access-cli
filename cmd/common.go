@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jedib0t/go-pretty/table"
-	"github.com/jedib0t/go-pretty/text"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
 	"github.com/barracuda-cloudgen-access/access-cli/client/auth"
@@ -220,10 +220,10 @@ func multiOpBuildTableWriter() (table.Writer, []multiOpJSONResult) {
 		"ID",
 		"Result",
 	})
-	tw.SetAlign([]text.Align{
-		text.AlignRight,
-		text.AlignLeft})
-	tw.SetAllowedColumnLengths([]int{36, 60})
+	tw.SetColumnConfigs([]table.ColumnConfig{
+		{Number: 1, WidthMax: 36, Align: text.AlignRight},
+		{Number: 2, WidthMax: 60, Align: text.AlignLeft},
+	})
 	return tw, make([]multiOpJSONResult, 0)
 }
 

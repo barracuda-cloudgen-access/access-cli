@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jedib0t/go-pretty/table"
-	"github.com/jedib0t/go-pretty/text"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
 	apiusers "github.com/barracuda-cloudgen-access/access-cli/client/users"
@@ -71,8 +71,12 @@ var enrollmentGenerateCmd = &cobra.Command{
 			"Expiration",
 			"URL",
 		})
-		tw.SetAllowedColumnLengths([]int{15, 10, 30, 140})
-
+		tw.SetColumnConfigs([]table.ColumnConfig{
+			{Number: 1, WidthMax: 15},
+			{Number: 2, WidthMax: 10},
+			{Number: 3, WidthMax: 30},
+			{Number: 4, WidthMax: 140},
+		})
 		createdList := []*apiusers.GenerateEnrollmentLinkCreatedBody{}
 
 		for _, arg := range intArgs {
@@ -189,8 +193,12 @@ var enrollmentChangeCmd = &cobra.Command{
 			"Expiration",
 			"URL",
 		})
-		tw.SetAllowedColumnLengths([]int{15, 10, 30, 140})
-
+		tw.SetColumnConfigs([]table.ColumnConfig{
+			{Number: 1, WidthMax: 15},
+			{Number: 2, WidthMax: 10},
+			{Number: 3, WidthMax: 30},
+			{Number: 4, WidthMax: 140},
+		})
 		editedList := []*apiusers.ChangeEnrollmentLinkSlotsOKBody{}
 
 		for _, arg := range intArgs {
