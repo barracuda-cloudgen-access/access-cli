@@ -1,6 +1,6 @@
 module github.com/barracuda-cloudgen-access/access-cli
 
-go 1.12
+go 1.16
 
 require (
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
