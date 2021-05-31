@@ -58,7 +58,13 @@ var usersAddCmd = &cobra.Command{
 		err := forAllInput(cmd, args, true,
 			func(values *inputEntry) (interface{}, error) { // do func
 				total++ // this is the total of successful+failures, must increment before failure
-				user := &apiusers.CreateUserParamsBodyUser{}
+				user := &struct {
+					apiusers.CreateUserParamsBodyUser
+					Groups []struct {
+						ID int64 `json:"id"`
+					}
+				}{}
+
 				err := placeInputValues(cmd, values, user,
 					func(s string) { /* deprecated username already handled */ },
 					func(s string) { user.Name = s },
@@ -70,8 +76,15 @@ var usersAddCmd = &cobra.Command{
 				if err != nil {
 					return nil, err
 				}
-				body := apiusers.CreateUserBody{User: user}
+				body := apiusers.CreateUserBody{User: &user.CreateUserParamsBodyUser}
+
+				// map group ids since GET and POST are not exactly the same (when adding from file)
+				for _, group := range user.Groups {
+					body.User.GroupIds = append(body.User.GroupIds, group.ID)
+				}
+
 				params := apiusers.NewCreateUserParams()
+
 				setTenant(cmd, params)
 				params.SetUser(body)
 

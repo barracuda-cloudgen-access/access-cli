@@ -63,7 +63,10 @@ var usersEditCmd = &cobra.Command{
 				enabledDefault := true
 				user := &struct {
 					apiusers.EditUserParamsBodyUser
-					ID int64 `json:"id"`
+					ID     int64 `json:"id"`
+					Groups []struct {
+						ID int64 `json:"id"`
+					}
 				}{
 					EditUserParamsBodyUser: apiusers.EditUserParamsBodyUser{
 						Enabled: &enabledDefault, // the UI on the web console enables by default
@@ -83,6 +86,11 @@ var usersEditCmd = &cobra.Command{
 				// here, map the ID from the "fake request body" to the correct place
 				params.SetID(user.ID)
 				body := apiusers.EditUserBody{User: &user.EditUserParamsBodyUser}
+
+				// map group ids since GET and POST are not exactly the same (when editing from file)
+				for _, group := range user.Groups {
+					body.User.GroupIds = append(body.User.GroupIds, group.ID)
+				}
 				params.SetUser(body)
 
 				resp, err := global.Client.Users.EditUser(params, global.AuthWriter)
