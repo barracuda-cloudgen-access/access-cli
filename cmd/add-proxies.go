@@ -20,8 +20,8 @@ limitations under the License.
 import (
 	"fmt"
 
-	"github.com/jedib0t/go-pretty/table"
-	"github.com/jedib0t/go-pretty/text"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
 	apiproxies "github.com/barracuda-cloudgen-access/access-cli/client/access_proxies"
@@ -92,7 +92,13 @@ func proxyBuildTableWriterForCreation() table.Writer {
 		"Proxy host:port",
 		"Enrollment URL",
 	})
-	tw.SetAllowedColumnLengths([]int{36, 30, 30, 30, 60})
+	tw.SetColumnConfigs([]table.ColumnConfig{
+		{Number: 1, WidthMax: 36},
+		{Number: 2, WidthMax: 30},
+		{Number: 3, WidthMax: 30},
+		{Number: 4, WidthMax: 30},
+		{Number: 5, WidthMax: 60},
+	})
 	return tw
 }
 

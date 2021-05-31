@@ -22,8 +22,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jedib0t/go-pretty/table"
-	"github.com/jedib0t/go-pretty/text"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 	"github.com/thoas/go-funk"
 
@@ -94,15 +94,15 @@ func userBuildTableWriter() table.Writer {
 		"Status",
 		"EnrollmentStatus",
 	})
-	tw.SetAlign([]text.Align{
-		text.AlignRight,
-		text.AlignLeft,
-		text.AlignLeft,
-		text.AlignLeft,
-		text.AlignLeft,
-		text.AlignLeft,
-		text.AlignLeft})
-	tw.SetAllowedColumnLengths([]int{15, 30, 30, 30, 10, 15, 16})
+	tw.SetColumnConfigs([]table.ColumnConfig{
+		{Number: 1, WidthMax: 15, Align: text.AlignRight},
+		{Number: 2, WidthMax: 30, Align: text.AlignLeft},
+		{Number: 3, WidthMax: 30, Align: text.AlignLeft},
+		{Number: 4, WidthMax: 30, Align: text.AlignLeft},
+		{Number: 5, WidthMax: 10, Align: text.AlignLeft},
+		{Number: 6, WidthMax: 15, Align: text.AlignLeft},
+		{Number: 7, WidthMax: 16, Align: text.AlignLeft},
+	})
 	return tw
 }
 

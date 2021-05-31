@@ -21,8 +21,8 @@ import (
 	"fmt"
 
 	"github.com/go-openapi/strfmt"
-	"github.com/jedib0t/go-pretty/table"
-	"github.com/jedib0t/go-pretty/text"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
 	apitenants "github.com/barracuda-cloudgen-access/access-cli/client/tenants"
@@ -86,13 +86,12 @@ func tenantBuildTableWriter() table.Writer {
 		"Created At",
 		"Updated At",
 	})
-	tw.SetAlign([]text.Align{
-		text.AlignRight,
-		text.AlignRight,
-		text.AlignLeft,
-		text.AlignLeft,
+	tw.SetColumnConfigs([]table.ColumnConfig{
+		{Number: 1, WidthMax: 36, Align: text.AlignRight},
+		{Number: 2, WidthMax: 30, Align: text.AlignRight},
+		{Number: 3, WidthMax: 30, Align: text.AlignLeft},
+		{Number: 4, WidthMax: 30, Align: text.AlignLeft},
 	})
-	tw.SetAllowedColumnLengths([]int{36, 30, 30, 30})
 	return tw
 }
 
