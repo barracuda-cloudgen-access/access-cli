@@ -30,7 +30,7 @@ jobs:
       uses: goreleaser/goreleaser-action@v2
       with:
         version: latest
-        args: --snapshot
+        args: build --snapshot
 
     - name: Test
       run: go test -v -race ./...
