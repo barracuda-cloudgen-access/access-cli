@@ -33,6 +33,5 @@ jobs:
       uses: goreleaser/goreleaser-action@v2
       with:
         version: latest
-        args: -f .goreleaser-release.yml
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
