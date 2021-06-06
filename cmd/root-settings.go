@@ -42,12 +42,18 @@ var settingsAnalyticsCmd = &cobra.Command{
 	Short: "Operations on analytics",
 }
 
+var settingsUserDirectoryCmd = &cobra.Command{
+	Use:   "user_directories",
+	Short: "Operations on user directories",
+}
+
 func init() {
 	rootCmd.AddCommand(settingsCmd)
 
 	settingsCmd.AddCommand(settingsAgentConfigCmd)
 	settingsCmd.AddCommand(settingsEnrollmentCmd)
 	settingsCmd.AddCommand(settingsAnalyticsCmd)
+	settingsCmd.AddCommand(settingsUserDirectoryCmd)
 
 	// Here you will define your flags and configuration settings.
 

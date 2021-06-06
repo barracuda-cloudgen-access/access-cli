@@ -2494,6 +2494,165 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
+  /tenants/{tenant_id}/user_directories:
+    get:
+      tags:
+        - "user_directories"
+      produces:
+      - "application/json"
+      summary: "Retrieve user directories"
+      operationId: "listUserDirectories"
+      parameters:
+      - $ref: '#/parameters/tenantIdParam'
+      - $ref: '#/parameters/pageParam'
+      - $ref: '#/parameters/perPageParam'
+      responses:
+        200:
+          description: "successful operation"
+          headers:
+            total:
+              description: "Total number of items (for pagination)"
+              type: integer
+          schema:
+            type: array
+            items:
+              allOf:
+              - $ref: "#/definitions/UserDirectory"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+    post:
+      tags:
+        - "user_directories"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Create user directory"
+      operationId: "createUserDirectory"
+      parameters:
+      - in: "body"
+        name: "user_directory"
+        description: "Information about the user_directory to create"
+        required: true
+        schema:
+          type: object
+          properties:
+            user_directory:
+              type: object
+              properties:
+                directory_type:
+                  type: string
+                  enum: ['google_apps', 'azure_ad']
+                name:
+                  type: string
+                notes:
+                  type: string
+                short_code:
+                  type: string
+      - $ref: '#/parameters/tenantIdParam'
+      responses:
+        201:
+          description: "User directory created"
+          schema:
+            allOf:
+              - $ref: "#/definitions/UserDirectory"
+        401:
+          $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
+  /tenants/{tenant_id}/user_directories/{id}:
+    get:
+      tags:
+        - "user_directories"
+      produces:
+      - "application/json"
+      summary: "Retrieve information about a user directory"
+      operationId: "getUserDirectory"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the user directory to retrieve"
+      - $ref: '#/parameters/tenantIdParam'
+      responses:
+        200:
+          description: "User directory info"
+          schema:
+            allOf:
+              - $ref: "#/definitions/UserDirectory"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+    patch:
+      tags:
+        - "user_directories"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Edit user directory"
+      operationId: "editUserDirectory"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the user to edit"
+      - in: body
+        name: "user_directory"
+        description: "User directory information to modify"
+        required: true
+        schema:
+          type: object
+          properties:
+            user_directory:
+              $ref: '#/definitions/UserDirectory'
+      - $ref: '#/parameters/tenantIdParam'
+      responses:
+        200:
+          description: "User directory edited"
+          schema:
+            allOf:
+              - $ref: "#/definitions/UserDirectory"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
+    delete:
+      tags:
+        - "user_directories"
+      summary: "Delete user directory"
+      operationId: "deleteUserDirectory"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the user directories to delete"
+      - $ref: '#/parameters/tenantIdParam'
+      responses:
+        204:
+          description: "User directory deleted"
+        401:
+          $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /tenants:
     get:
       tags:
@@ -3329,6 +3488,53 @@ definitions:
           url:
             type: string
             example: events.acme.org/post
+
+  UserDirectory:
+    type: object
+    properties:
+      created_at:
+        type: string
+        format: date-time
+      directory_type:
+        type: string
+        example: google_apps
+      id:
+        type: integer
+      last_job:
+        type: object
+        x-nullable: true
+        properties:
+          errors:
+            type: array
+            items:
+              type: string
+          finished_at:
+            type: string
+            format: date-time
+          started_at:
+            type: string
+            format: date-time
+          state:
+            type: string
+            example: finished
+          sync_id:
+            type: string
+      last_successful_sync_at:
+        type: string
+        format: date-time
+      name:
+        type: string
+      notes:
+        type: string
+      short_code:
+        type: string
+      total_groups:
+        type: integer
+      total_users:
+        type: integer
+      updated_at:
+        type: string
+        format: date-time
 
   Tenant:
     type: object
