@@ -1,4 +1,4 @@
-Barracuda CloudGen Access CLI client [![Go Report Card](https://goreportcard.com/badge/github.com/barracuda-cloudgen-access/access-cli)](https://goreportcard.com/report/github.com/barracuda-cloudgen-access/access-cli) [![license](https://img.shields.io/github/license/barracuda-cloudgen-access/access-cli.svg)](https://github.com/barracuda-cloudgen-access/access-cli/blob/master/LICENSE)
+Barracuda CloudGen Access CLI client [![Go Report Card](https://goreportcard.com/badge/github.com/barracuda-cloudgen-access/access-cli)](https://goreportcard.com/report/github.com/barracuda-cloudgen-access/access-cli) [![license](https://img.shields.io/github/license/barracuda-cloudgen-access/access-cli.svg)](https://github.com/barracuda-cloudgen-access/access-cli/blob/main/LICENSE)
 ===============
 
 Cross-platform command line client for [CloudGen Access Enterprise Console](https://campus.barracuda.com/product/cloudgenaccess/doc/93201513/cloudgen-access-enterprise-console/) APIs.
