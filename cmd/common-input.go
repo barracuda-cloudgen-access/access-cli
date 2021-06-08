@@ -482,6 +482,9 @@ func placeInputValues(cmd *cobra.Command,
 
 	switch entry.Type {
 	case individualValues:
+		if len(setterFuncs) != len(data.fields) {
+			panic("Setter funcs do not match number of input fields!")
+		}
 		for i, field := range data.fields {
 			if entry.Values[i] != nil {
 				callApplyFunc(setterFuncs[i], entry.Values[i], field.VarType)

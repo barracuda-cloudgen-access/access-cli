@@ -3,8 +3,6 @@ package serial
 
 import (
 	"encoding/json"
-	"log"
-	"strconv"
 )
 
 /*
@@ -23,41 +21,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-type NullableOptionalInt struct {
-	Value *int64
+type NullableOptionalString struct {
+	Value *string
 }
 
-// MarshalJSON returns the NullableOptionalInt as JSON
-func (n NullableOptionalInt) MarshalJSON() ([]byte, error) {
+// MarshalJSON returns the NullableOptionalString as JSON
+func (n NullableOptionalString) MarshalJSON() ([]byte, error) {
 	return json.Marshal(n.Value)
 }
 
-// UnmarshalJSON sets the NullableOptionalInt from JSON
-func (n *NullableOptionalInt) UnmarshalJSON(data []byte) error {
-	var value int64
+// UnmarshalJSON sets the NullableOptionalString from JSON
+func (n *NullableOptionalString) UnmarshalJSON(data []byte) error {
+	var value string
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*n = NullableOptionalInt{Value: &value}
+	*n = NullableOptionalString{Value: &value}
 	return nil
 }
 
 // converting the struct to String format.
-func (n NullableOptionalInt) String() string {
+func (n NullableOptionalString) String() string {
 	if n.Value == nil {
 		return "<null>"
 	}
-	return strconv.FormatInt(*n.Value, 10)
-}
-
-func (n *NullableOptionalInt) AssignFromString(s string) {
-	if s == "null" {
-		return
-	}
-	i, err := strconv.ParseUint(s, 10, 0)
-	if err != nil {
-		log.Fatal(err)
-	}
-	value := int64(i)
-	n.Value = &value
+	return *n.Value
 }
