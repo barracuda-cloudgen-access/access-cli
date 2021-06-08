@@ -77,7 +77,7 @@ var resourcesAddCmd = &cobra.Command{
 					func(s string) { resource.Notes = s },
 					func(s string) {
 						resource.FixedLastOctet = &serial.NullableOptionalInt{}
-						if s == "null" {
+						if s == "" || s == "null" {
 							return
 						}
 						i, err := strconv.ParseUint(s, 10, 8)
