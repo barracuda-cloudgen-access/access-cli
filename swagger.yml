@@ -2383,6 +2383,61 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
+  /tenants/{tenant_id}/enrollment_settings:
+    get:
+      tags:
+        - "settings_enrollment"
+      produces:
+      - "application/json"
+      summary: "Retrieve enrollment settings"
+      operationId: "settingsEnrollment"
+      parameters:
+      - $ref: '#/parameters/tenantIdParam'
+      responses:
+        200:
+          description: "Admin info"
+          schema:
+            $ref: "#/definitions/SettingsEnrollment"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+    patch:
+      tags:
+        - "settings_enrollment"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Edit enrollment settings"
+      operationId: "editSettingsEnrollment"
+      parameters:
+      - in: body
+        name: "enrollment_settings"
+        required: true
+        schema:
+          type: object
+          properties:
+            enrollment_settings:
+              $ref: "#/definitions/SettingsEnrollment"
+      - $ref: '#/parameters/tenantIdParam'
+      responses:
+        200:
+          description: "Enrollment settings edited"
+          schema:
+            $ref: "#/definitions/SettingsEnrollment"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /tenants:
     get:
       tags:
@@ -3194,6 +3249,16 @@ definitions:
         example: 600
       history_screen_disabled:
         $ref: '#/definitions/NullableOptionalBoolean'
+
+  SettingsEnrollment:
+    type: object
+    properties:
+      expiration_days:
+        type: integer
+        example: 30
+      refcount:
+        type: integer
+        example: 10
 
   Tenant:
     type: object
