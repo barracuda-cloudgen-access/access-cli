@@ -37,11 +37,17 @@ var settingsEnrollmentCmd = &cobra.Command{
 	Short: "Operations on enrollment",
 }
 
+var settingsAnalyticsCmd = &cobra.Command{
+	Use:   "analytics",
+	Short: "Operations on analytics",
+}
+
 func init() {
 	rootCmd.AddCommand(settingsCmd)
 
 	settingsCmd.AddCommand(settingsAgentConfigCmd)
 	settingsCmd.AddCommand(settingsEnrollmentCmd)
+	settingsCmd.AddCommand(settingsAnalyticsCmd)
 
 	// Here you will define your flags and configuration settings.
 
