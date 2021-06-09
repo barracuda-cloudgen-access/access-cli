@@ -2438,6 +2438,62 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
+  /tenants/{tenant_id}/analytics_settings:
+    get:
+      tags:
+        - "settings_analytics"
+      produces:
+      - "application/json"
+      summary: "Retrieve analytics settings"
+      operationId: "settingsAnalytics"
+      parameters:
+      - $ref: '#/parameters/tenantIdParam'
+      responses:
+        200:
+          description: "Admin info"
+          schema:
+            $ref: "#/definitions/SettingsAnalytics"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+    patch:
+      tags:
+        - "settings_analytics"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Edit analytics settings"
+      operationId: "editSettingsAnalytics"
+      parameters:
+      - in: body
+        name: "analytics_settings"
+        description: "Analytics settings modify"
+        required: true
+        schema:
+          type: object
+          properties:
+            analytics_settings:
+              $ref: "#/definitions/SettingsAnalytics"
+      - $ref: '#/parameters/tenantIdParam'
+      responses:
+        200:
+          description: "Agent configuration edited"
+          schema:
+            $ref: "#/definitions/SettingsAnalytics"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
   /tenants:
     get:
       tags:
@@ -3259,6 +3315,20 @@ definitions:
       refcount:
         type: integer
         example: 10
+
+  SettingsAnalytics:
+    type: object
+    properties:
+      external_server:
+        type: object
+        properties:
+          disable_ssl:
+            type: boolean
+          intercept_all_domains:
+            type: boolean
+          url:
+            type: string
+            example: events.acme.org/post
 
   Tenant:
     type: object
