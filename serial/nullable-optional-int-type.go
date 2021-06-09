@@ -51,7 +51,7 @@ func (n NullableOptionalInt) String() string {
 }
 
 func (n *NullableOptionalInt) AssignFromString(s string) {
-	if s == "null" {
+	if s == "" || s == "null" {
 		return
 	}
 	i, err := strconv.ParseUint(s, 10, 0)
