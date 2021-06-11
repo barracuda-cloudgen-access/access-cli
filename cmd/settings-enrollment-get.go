@@ -44,9 +44,10 @@ var getEnrollmentCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-
 		params := api.NewSettingsEnrollmentParams()
 		setTenant(cmd, params)
+
+		cmd.SilenceUsage = true // errors beyond this point are no longer due to malformed input
 
 		resp, err := global.Client.SettingsEnrollment.SettingsEnrollment(params, global.AuthWriter)
 		if err != nil {
