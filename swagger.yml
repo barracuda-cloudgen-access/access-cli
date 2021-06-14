@@ -2494,6 +2494,118 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
+
+  /tenants/{tenant_id}/identity_providers:
+    get:
+      tags:
+      - "identity_providers"
+      summary: "List identity provider"
+      operationId: "listIdentityProvider"
+      produces:
+      - "application/json"
+      parameters:
+      - $ref: '#/parameters/tenantIdParam'
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/IdentityProvider"
+        401:
+          $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
+    post:
+      tags:
+        - identity_providers
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Create identity provider"
+      operationId: "createIdentityProvider"
+      parameters:
+      - in: "body"
+        name: "identity_provider"
+        description: "Information about the identity provider to configure"
+        required: true
+        schema:
+          type: object
+          properties:
+            identity_provider:
+              type: object
+              properties:
+                idp_type:
+                  type: string
+                  enum: ["email", "oidc", "azure_oidc", "google_oidc", "barracuda_oidc", "saml"]
+                details:
+                  type: object
+                  additionalProperties:
+                    type: object
+                  description: IdP specific settings
+      - $ref: '#/parameters/tenantIdParam'
+      responses:
+        201:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/IdentityProvider"
+        401:
+          $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
+  /tenants/{tenant_id}/identity_providers/{id}:
+    get:
+      tags:
+        - identity_providers
+      produces:
+      - "application/json"
+      summary: "Retrieve information about an identity provider"
+      operationId: "getIdentityProvider"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: integer
+        description: "The ID of the IdP to retrieve"
+      - $ref: '#/parameters/tenantIdParam'
+      responses:
+        200:
+          description: "Idp info"
+          schema:
+            allOf:
+              - $ref: "#/definitions/IdentityProvider"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+    delete:
+      tags:
+        - identity_providers
+      summary: "Delete identity provider"
+      operationId: "deleteIdentityProvider"
+      parameters:
+      - in: path
+        name: "id"
+        required: true
+        type: array
+        collectionFormat: csv
+        items:
+          type: integer
+        description: "The IDs of the users to delete, comma-separated"
+      - $ref: '#/parameters/tenantIdParam'
+      responses:
+        204:
+          description: "IdP deleted"
+        401:
+          $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
+
   /tenants:
     get:
       tags:
@@ -3329,6 +3441,27 @@ definitions:
           url:
             type: string
             example: events.acme.org/post
+
+  IdentityProvider:
+    type: object
+    properties:
+      created_at:
+        type: string
+        format: date-time
+      details:
+        type: object
+        description: IdP specific settings
+      id:
+        type: integer
+      idp_type:
+        type: string
+        enum: ["email", "oidc", "azure_oidc", "google_oidc", "barracuda_oidc", "saml"]
+      name:
+        type: string
+        x-nullable: true
+      updated_at:
+        type: string
+        format: date-time
 
   Tenant:
     type: object

@@ -23,6 +23,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"reflect"
 	"strconv"
@@ -91,6 +92,10 @@ func initInputFlags(cmd *cobra.Command, typeName string, fields ...inputField) {
 			cmd.Flags().IntP(field.FlagName, field.FlagShorthand, field.DefaultValue.(int), field.FlagDescription)
 		case "string":
 			cmd.Flags().StringP(field.FlagName, field.FlagShorthand, field.DefaultValue.(string), field.FlagDescription)
+		case "string+file":
+			cmd.Flags().StringP(field.FlagName, field.FlagShorthand, field.DefaultValue.(string), field.FlagDescription)
+			// special case to read input from file, appends -file to argument
+			cmd.Flags().StringP(wrapFlagForFile(field.FlagName), field.FlagShorthand, field.DefaultValue.(string), field.FlagDescription+" (from file path)")
 		case "[]int":
 			// see https://github.com/spf13/pflag/issues/222
 			// cmd.Flags().IntSliceP(field.FlagName, field.FlagShorthand, field.DefaultValue.([]int), field.FlagDescription)
@@ -144,12 +149,21 @@ func preRunFlagCheckInput(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func getFlagValue(cmd *cobra.Command, varType, flagName string) (interface{}, error) {
-	if !cmd.Flags().Changed(flagName) {
-		return nil, fmt.Errorf("user did not specify %s", flagName)
+func wrapFlagForFile(flagName string) string {
+	return flagName + "-file"
+}
+
+func getFlagValueChanged(cmd *cobra.Command, varType, flagName string) bool {
+	changed := cmd.Flags().Changed(flagName)
+	if !changed && varType == "string+file" {
+		changed = cmd.Flags().Changed(wrapFlagForFile(flagName))
 	}
-	var value interface{}
+	return changed
+}
+
+func getFlagValue(cmd *cobra.Command, varType, flagName string) (interface{}, error) {
 	var err error
+	var value interface{}
 	switch varType {
 	case "bool":
 		value, err = cmd.Flags().GetBool(flagName)
@@ -157,6 +171,24 @@ func getFlagValue(cmd *cobra.Command, varType, flagName string) (interface{}, er
 		value, err = cmd.Flags().GetInt(flagName)
 	case "string":
 		value, err = cmd.Flags().GetString(flagName)
+	case "string+file":
+		// If string value was passed, return it, otherwise, attempt to read from file
+		value, err = cmd.Flags().GetString(flagName)
+		if err != nil {
+			return nil, err
+		}
+		if value != "" {
+			return value, nil
+		}
+		filename, err := cmd.Flags().GetString(wrapFlagForFile(flagName))
+		if err != nil {
+			return nil, err
+		}
+		contents, err := ioutil.ReadFile(filename)
+		if err != nil {
+			return nil, err
+		}
+		value = string(contents)
 	case "[]int":
 		// see https://github.com/spf13/pflag/issues/222
 		// we accepted a string slice instead, and will now convert to a int slice
@@ -219,7 +251,8 @@ func forAllInput(cmd *cobra.Command,
 	for i, field := range data.fields {
 		var d interface{}
 
-		if !cmd.Flags().Changed(field.FlagName) && field.Mandatory {
+		flagChanged := getFlagValueChanged(cmd, field.VarType, field.FlagName)
+		if !flagChanged && field.Mandatory {
 			// user did not supply the field value in a flag
 			fieldInArgs := false
 			if field.MainField {
@@ -230,7 +263,7 @@ func forAllInput(cmd *cobra.Command,
 				// must ask interactively
 				d = interactivelyReadField(cmd, field)
 			}
-		} else if !cmd.Flags().Changed(field.FlagName) && !writeDefaultValues {
+		} else if !flagChanged && !writeDefaultValues {
 			// in placeInputValues, we only call the respective function for this field
 			// if the value for the entry is not nil. so, we just leave it nil, to indicate this value is not provided
 			continue
