@@ -82,10 +82,11 @@ var setAgentConfigCmd = &cobra.Command{
 							os.Exit(1)
 						}
 
-						config.DNSServers = &models.SettingsAgentConfigurationDNSServers{
-							Protocol: parts[0],
-							List:     parts[1],
-						}
+						// config.DNSServers = append(config.DNSServers, )
+						// config.DNSServers = &models.SettingsAgentConfiguration{
+						// 	Protocol: parts[0],
+						// 	List:     parts[1],
+						// }
 					},
 				)
 				if err != nil {
@@ -159,8 +160,8 @@ func init() {
 			Name:            "DNS Servers List",
 			FlagName:        "dns_servers",
 			FlagDescription: "Enforce agent to use a DNS server config. Format: \"protocol:IP1,IP2\". Protocols: [plain, dns_over_tls]",
-			VarType:         "string",
-			DefaultValue:    "",
+			VarType:         "[]string",
+			DefaultValue:    []string{},
 		},
 	)
 }

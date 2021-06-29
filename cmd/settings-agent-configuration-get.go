@@ -75,9 +75,31 @@ func agentConfigBuildTableWriter() table.Writer {
 }
 
 func agentConfigTableWriterAppend(tw table.Writer, config models.SettingsAgentConfiguration) table.Writer {
-	dnsConfig := "<null>"
-	if config.DNSServers.List != "" {
-		dnsConfig = config.DNSServers.Protocol.(string) + ": " + config.DNSServers.List
+	dnsConfig := ""
+	if config.DNSServers != nil {
+		for i, c := range config.DNSServers {
+			dnsConfig += "suffix:" + c.Suffix + ", serverType:" +
+				c.ServerType + ", proto:" + c.Protocol
+			if c.IPV4 != nil {
+				if c.IPV4.Primary != "" {
+					dnsConfig += ", ipv4-1: " + c.IPV4.Primary
+				}
+				if c.IPV4.Secondary != "" {
+					dnsConfig += ", ipv4-2: " + c.IPV4.Secondary
+				}
+			}
+			if c.IPV6 != nil {
+				if c.IPV6.Primary != "" {
+					dnsConfig += ", ipv6-1: " + c.IPV6.Primary
+				}
+				if c.IPV6.Secondary != "" {
+					dnsConfig += ", ipv6-2: " + c.IPV6.Secondary
+				}
+			}
+			if i < len(config.DNSServers)-1 {
+				dnsConfig += "\n"
+			}
+		}
 	}
 	tw.AppendRow(table.Row{
 		config.CertificatePeriod,

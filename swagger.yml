@@ -3293,13 +3293,37 @@ definitions:
         $ref: '#/definitions/NullableOptionalString'
         example: mailto:support@barracuda.com
       dns_servers:
-        type: object
-        properties:
-          list:
-            type: string
-            example: 8.8.8.8,4.4.4.4
-          protocol:
-            enum: [plain,dns_over_tls]
+        type: array
+        items:
+          type: object
+          properties:
+            suffix:
+              type: string
+              example: <default>, example.com
+            server_type:
+              type: string
+              enum: [resolver, host, resource]
+            protocol:
+              type: string
+              enum: [plain, dns_over_tls, dns_over_https]
+            ipv4:
+              type: object
+              properties:
+                primary:
+                  type: string
+                  example: 1.2.3.4|<domain_name>|<rsc_uuid>
+                secondary:
+                  type: string
+                  example: 1.2.3.5|<domain_name>|<rsc_uuid>
+            ipv6:
+              type: object
+              properties:
+                primary:
+                  type: string
+                  example: ffff::1|<domain_name>|<rsc_uuid>
+                secondary:
+                  type: string
+                  example: ffff::2|<domain_name>|<rsc_uuid>
       enrollment_polling_time_in_seconds:
         $ref: '#/definitions/NullableOptionalInt'
         example: 600
