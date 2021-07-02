@@ -1610,6 +1610,7 @@ paths:
       parameters:
       - $ref: '#/parameters/sortParam'
       - $ref: '#/parameters/pageParam'
+      - $ref: '#/parameters/searchParam'
       - $ref: '#/parameters/perPageParam'
       - $ref: '#/parameters/tenantIdParam'
       responses:
