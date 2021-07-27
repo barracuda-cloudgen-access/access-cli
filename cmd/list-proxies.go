@@ -45,6 +45,8 @@ var proxiesListCmd = &cobra.Command{
 		params := apiproxies.NewListProxiesParams()
 		setTenant(cmd, params)
 		setSort(cmd, params)
+		setSearchQuery(cmd, params)
+
 		completePayload := []*apiproxies.ListProxiesOKBodyItems0{}
 		total := 0
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
@@ -85,6 +87,7 @@ func init() {
 	// proxiesListCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	initPaginationFlags(proxiesListCmd)
+	initSearchFlags(proxiesListCmd)
 	initSortFlags(proxiesListCmd)
 	initOutputFlags(proxiesListCmd)
 	initTenantFlags(proxiesListCmd)
