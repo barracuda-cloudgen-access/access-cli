@@ -32,7 +32,7 @@ jobs:
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v2
       with:
-        args: build --rm-dist
+        args: publish
         version: latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
