@@ -19,6 +19,7 @@ limitations under the License.
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/jedib0t/go-pretty/v6/table"
@@ -101,7 +102,7 @@ func processErrorResponse(err error) error {
 	}
 
 	type forbiddenResponse interface {
-		GetPayload() models.ForbiddenResponse
+		GetPayload() *models.ForbiddenResponse
 	}
 
 	type notFoundResponse interface {
@@ -114,6 +115,10 @@ func processErrorResponse(err error) error {
 	case unauthorizedResponse:
 		return fmt.Errorf(strings.Join(r.GetPayload().Errors, "\n"))
 	case forbiddenResponse:
+		authResponse := r.GetPayload().Authentication
+		if len(authResponse) > 0 && authResponse[0] == "reauthentication needed" {
+			return fmt.Errorf("this operation needs a fresh login. Please re-run \"%s login <args>\" and try again", os.Args[0])
+		}
 		return fmt.Errorf("forbidden")
 	case notFoundResponse:
 		return fmt.Errorf("not found")

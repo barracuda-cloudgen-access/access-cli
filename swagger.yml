@@ -3377,7 +3377,15 @@ definitions:
       type: object
 
   NotFoundResponse: {}
-  ForbiddenResponse: {}
+
+  ForbiddenResponse:
+    type: object
+    properties:
+      authentication:
+        type: array
+        items:
+          type: string
+          example: "reauthentication needed"
 
   NullableOptionalString:
     x-go-type:
