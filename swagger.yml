@@ -1944,7 +1944,6 @@ paths:
         description: "Restrict category of the returned assets"
         required: false
         type: string
-        enum: [blacklist, whitelist]
       responses:
         200:
           description: "successful operation"
@@ -3226,7 +3225,7 @@ definitions:
         type: integer
       name:
         type: string
-        example: "whitelist"
+        example: "allowlist"
       enabled:
         type: boolean
       read_only:
