@@ -22,6 +22,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -30,6 +31,12 @@ import (
 var endpointSetCmd = &cobra.Command{
 	Use:   "set [endpoint]",
 	Short: "Set console endpoint to use",
+	Long: `Set console endpoint to use.
+Valid values for [endpoint]:
+  - eu
+  - us
+  - HTTP/HTTPS URL
+`,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
 			return fmt.Errorf("missing endpoint argument")
@@ -37,16 +44,24 @@ var endpointSetCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
+		var endpointUrl string
 		// if someone passes in a URL, ensure we only extract user:pass@host:port without protocol, slashes, etc.
 		re := regexp.MustCompile(`^(?:https?:(?:\/\/)?)?([^\/?\n]+)`)
-		args[0] = re.FindStringSubmatch(args[0])[1]
+		switch strings.ToLower(args[0]) {
+		case "eu":
+			endpointUrl = "https://api.eu.access.barracuda.com"
+		case "us":
+			endpointUrl = "https://api.us.access.barracuda.com"
+		default:
+			endpointUrl = re.FindStringSubmatch(args[0])[1]
+		}
 
 		authViper.Set(ckeyAuthAccessToken, "")
 		authViper.Set(ckeyAuthClient, "")
 		authViper.Set(ckeyAuthUID, "")
 		authViper.Set(ckeyAuthMethod, "")
 		authViper.Set(ckeyAuthCurrentTenant, "")
-		authViper.Set(ckeyAuthEndpoint, args[0])
+		authViper.Set(ckeyAuthEndpoint, endpointUrl)
 
 		insecureSkipVerify, _ := cmd.Flags().GetBool("insecure-skip-verify")
 		authViper.Set(ckeyAuthSkipTLSVerify, insecureSkipVerify)
@@ -67,7 +82,7 @@ var endpointSetCmd = &cobra.Command{
 				return err
 			}
 		}
-		cmd.Printf("Endpoint set to %s.\nCredentials cleared, please login again using `%s login`\n", args[0], ApplicationName)
+		cmd.Printf("Endpoint set to %s.\nCredentials cleared, please login again using `%s login`\n", endpointUrl, ApplicationName)
 		if insecureUseHTTP {
 			cmd.Println("WARNING: HTTP, instead of HTTPS, is being used for API communication. THIS IS INSECURE.")
 		} else if insecureSkipVerify {
