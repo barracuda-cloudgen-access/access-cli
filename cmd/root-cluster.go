@@ -24,25 +24,26 @@ import (
 )
 
 // endpointCmd represents the endpoint command
-var endpointCmd = &cobra.Command{
-	Use:   "endpoint",
-	Short: "Get currently configured console endpoint",
+var clusterCmd = &cobra.Command{
+	Use:     "cluster",
+	Aliases: []string{"endpoint"},
+	Short:   "Get currently configured console cluster",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) > 0 && args[0] != "get" {
-			return fmt.Errorf("use `access-cli endpoint set` to set the console endpoint")
+			return fmt.Errorf("use `access-cli cluster set` to set the console cluster")
 		}
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		endpoint := authViper.GetString(ckeyAuthEndpoint)
-		if endpoint == "" {
-			cmd.Println("Endpoint not currently set")
+		cluster := authViper.GetString(ckeyAuthEndpoint)
+		if cluster == "" {
+			cmd.Println("Cluster not currently set")
 		}
-		cmd.Println("Currently configured endpoint:")
-		cmd.Println(endpoint)
+		cmd.Println("Currently configured cluster:")
+		cmd.Println(cluster)
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(endpointCmd)
+	rootCmd.AddCommand(clusterCmd)
 }
