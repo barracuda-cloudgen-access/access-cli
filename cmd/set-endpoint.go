@@ -93,7 +93,7 @@ Valid values for [endpoint]:
 }
 
 func init() {
-	endpointCmd.AddCommand(endpointSetCmd)
+	clusterCmd.AddCommand(endpointSetCmd)
 
 	endpointSetCmd.Flags().Bool("insecure-skip-verify", false, "Skip TLS certificate verification for the endpoint. INSECURE, use only if you know what you are doing")
 	endpointSetCmd.Flags().Bool("insecure-use-http", false, "Communicate with the management console over HTTP instead of HTTPS. INSECURE, use only if you know what you are doing")
