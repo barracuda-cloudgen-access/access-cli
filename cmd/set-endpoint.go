@@ -49,9 +49,9 @@ Valid values for [endpoint]:
 		re := regexp.MustCompile(`^(?:https?:(?:\/\/)?)?([^\/?\n]+)`)
 		switch strings.ToLower(args[0]) {
 		case "eu":
-			endpointUrl = "https://api.eu.access.barracuda.com"
+			endpointUrl = "api.eu.access.barracuda.com"
 		case "us":
-			endpointUrl = "https://api.us.access.barracuda.com"
+			endpointUrl = "api.us.access.barracuda.com"
 		default:
 			endpointUrl = re.FindStringSubmatch(args[0])[1]
 		}
