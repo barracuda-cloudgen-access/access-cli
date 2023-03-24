@@ -444,9 +444,11 @@ func forAllInputFromCSV(cmd *cobra.Command,
 			}
 			if strings.ToLower(header[i]) == "port_mappings" ||
 				strings.ToLower(header[i]) == "portmappings" {
-				m[header[i]] = []*models.AccessResourcePortMapping{
-					colonMappingToPortMapping(strings.TrimRight(strings.TrimLeft(record[i], "["), "]")),
-				}
+				mappings := strings.Split(strings.TrimRight(strings.TrimLeft(record[i], "["), "]"), ";")
+
+				m[header[i]] = funk.Map(mappings, func(row string) *models.AccessResourcePortMapping {
+					return colonMappingToPortMapping(row)
+				})
 			} else {
 				m[header[i]] = record[i]
 			}
