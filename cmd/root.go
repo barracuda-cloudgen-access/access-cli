@@ -110,7 +110,12 @@ func aliasNormalizeFunc(f *pflag.FlagSet, name string) pflag.NormalizedName {
 		name = "range-end"
 	case "format":
 		name = "output"
+	case "from-date":
+		name = "from-time"
+	case "to-date":
+		name = "to-time"
 	}
+
 	return pflag.NormalizedName(name)
 }
 
