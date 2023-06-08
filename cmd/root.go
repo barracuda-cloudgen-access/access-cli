@@ -25,6 +25,7 @@ import (
 	"os"
 	"path/filepath"
 	goruntime "runtime"
+	"strings"
 
 	"github.com/gbl08ma/httpcache"
 	"github.com/gbl08ma/httpcache/diskcache"
@@ -120,11 +121,25 @@ func aliasNormalizeFunc(f *pflag.FlagSet, name string) pflag.NormalizedName {
 }
 
 func initClient() {
+
 	endpoint := authViper.GetString(ckeyAuthEndpoint)
 	if endpoint == "" {
 		return
 	}
-
+	if strings.Contains(endpoint, "fyde") {
+		if strings.Contains(endpoint, "enterprise.eu.fyde.com") {
+			endpoint = "api.eu.access.barracuda.com"
+			authViper.Set(ckeyAuthEndpoint, endpoint)
+		} else {
+			endpoint = DefaultEndpoint
+			authViper.Set(ckeyAuthEndpoint, endpoint)
+		}
+		err := authViper.WriteConfig()
+		if err != nil {
+			fmt.Printf("Error writing auth file: %v\n", err)
+			return
+		}
+	}
 	transport := http.DefaultTransport
 
 	schemes := []string{"https"}
