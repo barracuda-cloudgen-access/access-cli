@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   description: "CloudGen Access Console API docs"
-  version: "1.0.0"
+  version: "1.0.1"
   title: "CloudGen Access Console"
   termsOfService: "https://www.barracuda.com/company/legal/prd_trm"
   contact:
@@ -1876,6 +1876,16 @@ paths:
         collectionFormat: multi
         items:
           type: string
+      - in: query
+        name: "from_time"
+        description: "Date Range from date, example: 2023-05-25"
+        required: false
+        type: string
+      - in: query
+        name: "to_time"
+        description: "Date Range to date, example: 2023-06-02"
+        required: false
+        type: string
       - $ref: '#/parameters/pageParam'
       - $ref: '#/parameters/perPageParam'
       - $ref: '#/parameters/tenantIdParam'
