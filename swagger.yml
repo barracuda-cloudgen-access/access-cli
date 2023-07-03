@@ -1877,6 +1877,16 @@ paths:
         items:
           type: string
       - in: query
+        name: "last_days"
+        description: "Date Range from now go back last x days for events to return, example: 7 => 7 days"
+        required: false
+        type: integer
+      - in: query
+        name: "last_hours"
+        description: "Date Range from now go back last x hours for events to return, example: 6 => 6 hours"
+        required: false
+        type: string
+      - in: query
         name: "from_time"
         description: "Date Range from date, example: 2023-05-25"
         required: false
