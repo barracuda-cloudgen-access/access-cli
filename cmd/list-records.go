@@ -47,7 +47,7 @@ var recordsListCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		params := apievents.NewListDeviceEventsParams()
 		setTenant(cmd, params)
-		setFilter(cmd, params.SetEventName, params.SetUserID, params.SetFromTime, params.SetToTime)
+		setFilter(cmd, params.SetEventName, params.SetUserID, params.SetFromTime, params.SetToTime, params.SetLastDays, params.SetLastHours)
 		completePayload := []*models.DeviceEventListItem{}
 		total := 0
 		cutStart, cutEnd, err := forAllPages(cmd, params, func() (int, int64, error) {
@@ -114,7 +114,10 @@ func init() {
 		filterType{"event-name", "[]string"},
 		filterType{"user-id", "int"},
 		filterType{"from-date", "string"},
-		filterType{"to-date", "string"})
+		filterType{"to-date", "string"},
+		filterType{"last-days", "int"},
+		filterType{"last-hours", "int"},
+	)
 
 	initOutputFlags(recordsListCmd)
 	initTenantFlags(recordsListCmd)
