@@ -23,12 +23,14 @@ builds:
     hooks:
       pre: ./scripts/generate-completions.sh
 archives:
-- replacements:
-    darwin: macOS
-    linux: Linux
-    windows: Windows
-    386: i386
-    amd64: x86_64
+  - name_template: >-
+      {{ .ProjectName }}_
+      {{- if eq .Os "darwin" }}macOS
+      {{- else if eq .Os "linux" }}Linux
+      {{- else if eq .Os "windows" }}Windows{{ end }}_
+      {{- if eq .Arch "386" }}i386
+      {{- else if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
 nfpms:
   -
     vendor: Barracuda Networks, Inc.
@@ -40,12 +42,14 @@ nfpms:
       - deb
       - rpm
     bindir: /usr/bin
-    replacements:
-      darwin: macOS
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
+    file_name_template: >-
+     {{ .ProjectName }}_
+      {{- if eq .Os "darwin" }}macOS
+      {{- else if eq .Os "linux" }}Linux
+      {{- else if eq .Os "windows" }}Windows{{ end }}_
+      {{- if eq .Arch "386" }}i386
+      {{- else if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
     replaces:
       - fyde-cli
     contents:
