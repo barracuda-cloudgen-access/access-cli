@@ -1885,7 +1885,7 @@ paths:
         name: "last_hours"
         description: "Date Range from now go back last x hours for events to return, example: 6 => 6 hours"
         required: false
-        type: string
+        type: integer
       - in: query
         name: "from_time"
         description: "Date Range from date, example: 2023-05-25"
