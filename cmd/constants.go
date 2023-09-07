@@ -2,7 +2,7 @@
 package cmd
 
 /*
-Copyright © 2020 Barracuda Networks, Inc.
+Copyright © 2023 Barracuda Networks, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ const (
 	ConfigApplicationName = "access-cli"
 
 	// DefaultEndpoint is the default endpoint used by the client
-	DefaultEndpoint = "enterprise.fyde.com"
+	DefaultEndpoint = "api.us.barracuda.com"
 
 	flagInitFilter      = "filter_flags_init"
 	flagInitPagination  = "pagination_flags_init"

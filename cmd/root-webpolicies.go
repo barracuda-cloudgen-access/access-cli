@@ -21,41 +21,23 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// versionCmd represents the version command
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Show version information",
-	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Println("Version", version.Version)
-		cmd.Println("Built on", version.BuildDate, "from commit", version.GitCommit)
-		if version.GitState == "dirty" {
-			cmd.Println("(there were uncommitted changes)")
-		}
-	},
+// webPoliciesCmd represents the policies command
+var webPoliciesCmd = &cobra.Command{
+	Use:     "webpolicies",
+	Aliases: []string{"webpolicy"},
+	Short:   "Operations on web policies",
 }
-
-// VersionInformation contains version information, it's used to pass build info
-// from the main package to this package
-type VersionInformation struct {
-	GitCommit string
-	BuildDate string
-	GitState  string
-	Version   string
-}
-
-// used to pass build info from the main package to this package
-var version VersionInformation
 
 func init() {
-	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(webPoliciesCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// versionCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// policiesCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// versionCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// policiesCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

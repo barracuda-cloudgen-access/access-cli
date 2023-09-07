@@ -19,20 +19,20 @@ limitations under the License.
 
 import (
 	"fmt"
-	"strconv"
+	"time"
 
+	apiwebcategories "github.com/barracuda-cloudgen-access/access-cli/client/web_categories"
+	"github.com/barracuda-cloudgen-access/access-cli/models"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
-
-	apiassets "github.com/barracuda-cloudgen-access/access-cli/client/assets"
-	"github.com/barracuda-cloudgen-access/access-cli/models"
 )
 
-// domainGetCmd represents the get command
-var domainGetCmd = &cobra.Command{
-	Use:   "get [domain ID]",
-	Short: "Get domain",
+// userGetCmd represents the get command
+var webCategoryGetCmd = &cobra.Command{
+	Use:     "get [domain]...",
+	Aliases: []string{"domain"},
+	Short:   "Get web categories for domains",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		err := preRunCheckAuth(cmd, args)
 		if err != nil {
@@ -44,96 +44,75 @@ var domainGetCmd = &cobra.Command{
 			return err
 		}
 
-		if len(args) == 0 && !cmd.Flags().Changed("id") {
-			return fmt.Errorf("missing domain ID argument")
+		if !multiOpCheckArgsPresent(cmd, args) {
+			return fmt.Errorf("missing domain argument")
 		}
 
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var domainID int64
 		var err error
-		if cmd.Flags().Changed("id") {
-			var d int
-			d, err = cmd.Flags().GetInt("id")
-			domainID = int64(d)
-		} else {
-			domainID, err = strconv.ParseInt(args[0], 10, 64)
-		}
+		domains, err := multiOpParseStringArgs(cmd, args, "domain")
 		if err != nil {
 			return err
 		}
 
-		params := apiassets.NewGetAssetParams()
-		setTenant(cmd, params)
-		params.SetID(domainID)
+		if err != nil {
+			return err
+		}
+		params := apiwebcategories.QueryWebCategoriesParams{}
+		params.WithTimeout(30 * time.Second)
+		setTenant(cmd, &params)
+		params.SetDomains(domains)
+		resp, err := global.Client.WebCategories.QueryWebCategories(&params, global.AuthWriter)
 
-		resp, err := global.Client.Assets.GetAsset(params, global.AuthWriter)
 		if err != nil {
 			return processErrorResponse(err)
 		}
 
-		tw := domainBuildTableWriter()
-		domainTableWriterAppend(tw, resp.Payload)
-
+		tw := domainLookupBuildTableWriter()
+		for _, item := range resp.Payload.Domains {
+			domainLookupTableWriterAppend(tw, *item)
+		}
 		return printListOutputAndError(cmd, resp.Payload, tw, 1, err)
 	},
 }
 
-func domainBuildTableWriter() table.Writer {
+func domainLookupBuildTableWriter() table.Writer {
 	tw := table.NewWriter()
 	tw.Style().Format.Header = text.FormatDefault
 	tw.AppendHeader(table.Row{
-		"ID",
-		"Name",
-		"Category",
-		"Asset source",
+		"Domain",
+		"Categories",
 	})
 	tw.SetColumnConfigs([]table.ColumnConfig{
-		{Number: 1, WidthMax: 15},
-		{Number: 2, WidthMax: 30},
-		{Number: 3, WidthMax: 30},
-		{Number: 4, WidthMax: 36},
+		{Number: 1, WidthMax: 30, Align: text.AlignLeft},
+		{Number: 2, WidthMax: 30, Align: text.AlignLeft},
 	})
 	return tw
 }
 
-func domainTableWriterAppend(tw table.Writer, asset *models.Asset) {
+func domainLookupTableWriterAppend(tw table.Writer, item models.DomainLookupResultItem) {
 	tw.AppendRow(table.Row{
-		asset.ID,
-		asset.Name,
-		asset.Category,
-		asset.AssetSourceID,
-	})
-}
-
-func domainTableWriterAppendError(tw table.Writer, err error, id interface{}) {
-	idStr := "[ERR]"
-	if id != nil {
-		idStr += fmt.Sprintf(" %v", id)
-	}
-	tw.AppendRow(table.Row{
-		idStr,
-		processErrorResponse(err),
-		"-",
-		"-",
+		item.Domain,
+		item.Categories,
 	})
 }
 
 func init() {
-	domainsCmd.AddCommand(domainGetCmd)
+	webCategoriesCmd.AddCommand(webCategoryGetCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// domainGetCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// userGetCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// domainGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// userGetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	initMultiOpArgFlags(webCategoryGetCmd, "webcategory", "get", "domain", "[]string")
 
-	initOutputFlags(domainGetCmd)
-	initTenantFlags(domainGetCmd)
-	domainGetCmd.Flags().Int("id", 0, "id of domain to get")
+	initOutputFlags(webCategoryGetCmd)
+	initTenantFlags(webCategoryGetCmd)
 }
