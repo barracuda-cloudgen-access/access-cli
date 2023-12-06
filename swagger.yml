@@ -423,6 +423,29 @@ paths:
         type: integer
         description: "The ID of the user for which to generate a enrollment link"
       - $ref: '#/parameters/tenantIdParam'
+      - in: "body"
+        name: "enrollment"
+        description: "Information about the enrollment type to create"
+        required: true
+        schema:
+          type: object
+          required:
+            - enrollment
+          properties:
+            enrollment:
+              type: object
+              properties:
+                device_classification:
+                  type: string
+                  enum:
+                  - 'supervised'
+                  - 'managed'
+                  - 'personal'
+                  default: 'supervised'
+                refcount:
+                  type: integer
+                  default: 0
+                  description: "The number of slots to create"
       responses:
         201:
           description: "Enrollment link created"
@@ -437,12 +460,18 @@ paths:
               url:
                 type: string
                 format: url
+              device_classification:
+                type: string
+                enum: [supervised, managed, personal]
+        400:
+          $ref: "#/responses/BadRequest"
         401:
           $ref: "#/responses/Unauthorized"
         403:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
+  /tenants/{tenant_id}/users/{id}/enrollment/{enrollment_id}:
     patch:
       tags:
         - "users"
@@ -454,6 +483,12 @@ paths:
         required: true
         type: integer
         description: "The ID of the user for which to change the number of slots"
+      - in: path
+        name: "enrollment_id"
+        required: true
+        type: string
+        format: uuid
+        description: "The ID of the enrollment link for which to change the number of slots"
       - in: "body"
         name: "request"
         description: "Request body"
@@ -479,12 +514,20 @@ paths:
             properties:
               count:
                 type: integer
+              id:
+                type: string
+                format: uuid
               expiration:
                 type: string
                 format: date-time
               url:
                 type: string
                 format: url
+              user_id:
+                type: integer
+              device_classification:
+                type: string
+                enum: [supervised, managed, personal]
         401:
           $ref: "#/responses/Unauthorized"
         403:
@@ -504,6 +547,12 @@ paths:
         required: true
         type: integer
         description: "The ID of the user for which to revoke the enrollment link"
+      - in: path
+        name: "enrollment_id"
+        required: true
+        type: string
+        format: uuid
+        description: "The ID of the enrollment link"
       - $ref: '#/parameters/tenantIdParam'
       responses:
         204:
@@ -529,8 +578,24 @@ paths:
         type: integer
         description: "The ID of the user for which to send the email"
       - $ref: '#/parameters/tenantIdParam'
+      - in: body
+        name: "device_classifications"
+        description: "Device classifications to send enrollment emails for"
+        required: true
+        schema:
+          type: object
+          properties:
+            device_classifications:
+              type: object
+              properties:
+                managed:
+                  type: integer
+                personal:
+                  type: integer
+                supervised:
+                  type: integer
       responses:
-        204:
+        201:
           description: "Email sent"
         422:
           $ref: "#/responses/UnprocessableEntity"
@@ -2762,19 +2827,28 @@ definitions:
         type: string
         enum: [valid, expired]
         example: expired
-      enrollment:
-        type: object
-        properties:
-          count:
-            type: integer
-            example: 4
-          expiration:
-            type: string
-            format: date-time
-          url:
-            type: string
-            format: url
-            example: "https://www.fyde.com/enroll?endpoint=https%3A%2F%2Fexample.com&token=7b3710ca-9078-4ca3-9375-0a99392b02cf"
+      enrollments:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            count:
+              type: integer
+              example: 4
+            device_classification:
+              type: string
+              enum: [supervised, managed, personal]
+              example: supervised
+            expiration:
+              type: string
+              format: date-time
+            url:
+              type: string
+              format: url
+              example: "https://www.fyde.com/enroll?endpoint=https%3A%2F%2Fexample.com&token=7b3710ca-9078-4ca3-9375-0a99392b02cf"
       groups:
         type: array
         items:
