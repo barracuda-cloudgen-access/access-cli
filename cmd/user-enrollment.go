@@ -83,22 +83,22 @@ var enrollmentGenerateCmd = &cobra.Command{
 		createdList := []*apiusers.GenerateEnrollmentLinkCreatedBody{}
 
 		for _, arg := range intArgs {
-			params := apiusers.NewGenerateEnrollmentLinkParams()
-			setTenant(cmd, params)
-			params.SetID(arg)
-
 			device_classification := cmd.Flag("classification").Value.String()
-			ref_count, err := cmd.Flags().GetInt("slots")
+			count, err := cmd.Flags().GetInt("slots")
 			if err != nil {
 				return err
 			}
+
+			ref_count := int64(count)
 			enrollment := apiusers.GenerateEnrollmentLinkBody{
 				Enrollment: &apiusers.GenerateEnrollmentLinkParamsBodyEnrollment{
 					DeviceClassification: &device_classification,
-					Refcount:             int64(ref_count),
+					Refcount:             &ref_count,
 				},
 			}
-
+			params := apiusers.NewGenerateEnrollmentLinkParams()
+			setTenant(cmd, params)
+			params.SetID(arg)
 			params.SetEnrollment(enrollment)
 			if err != nil {
 				return err
@@ -500,7 +500,7 @@ func init() {
 			FlagDescription: "specify the number of slots for the enrollment link",
 			VarType:         "int",
 			Mandatory:       true,
-			DefaultValue:    1,
+			DefaultValue:    10,
 			MainField:       true,
 			SchemaName:      "slots",
 		},
@@ -517,7 +517,7 @@ func init() {
 	initTenantFlags(enrollmentRevokeCmd)
 
 	initMultiOpArgFlags(enrollmentChangeCmd, "user", "change enrollments for", "id", "[]int64")
-	enrollmentChangeCmd.Flags().Int("slots", 0, "specify the new number of slots for the enrollment link")
+	enrollmentChangeCmd.Flags().Int("slots", 10, "specify the new number of slots for the enrollment link")
 	enrollmentChangeCmd.Flags().String("classification", "supervised", "specify the classification to change")
 
 	initOutputFlags(enrollmentChangeCmd)
@@ -530,7 +530,7 @@ func init() {
 	initTenantFlags(enrollmentGetCmd)
 
 	initMultiOpArgFlags(enrollmentEmailCmd, "user", "send enrollment emails. If provided classification for this user does not exist, create one", "id", "[]int64")
-	enrollmentEmailCmd.Flags().Int("slots", 1, "specify the number of slots for the enrollment link")
+	enrollmentEmailCmd.Flags().Int("slots", 10, "specify the number of slots for the enrollment link")
 	enrollmentEmailCmd.Flags().String("classification", "supervised", "specify the classification to send the enrollment email for")
 	enrollmentEmailCmd.Flags().Bool("all", false, "send enrollment link to all classifications for the user")
 	initOutputFlags(enrollmentEmailCmd)
