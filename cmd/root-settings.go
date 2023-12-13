@@ -42,12 +42,18 @@ var settingsAnalyticsCmd = &cobra.Command{
 	Short: "Operations on analytics",
 }
 
+var settingsIdentityProviderConfigCmd = &cobra.Command{
+	Use:   "idp",
+	Short: "Configure Identity Provider settings",
+}
+
 func init() {
 	rootCmd.AddCommand(settingsCmd)
 
 	settingsCmd.AddCommand(settingsAgentConfigCmd)
 	settingsCmd.AddCommand(settingsEnrollmentCmd)
 	settingsCmd.AddCommand(settingsAnalyticsCmd)
+	settingsCmd.AddCommand(settingsIdentityProviderConfigCmd)
 
 	// Here you will define your flags and configuration settings.
 
