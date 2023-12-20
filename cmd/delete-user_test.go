@@ -2,7 +2,7 @@
 package cmd
 
 /*
-Copyright © 2020 Barracuda Networks, Inc.
+Copyright © 2023 Barracuda Networks, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ func TestDeleteUsersOneRequest(t *testing.T) {
 	defer gock.Off()
 
 	gock.New(baseURIinTests()).
-		MatchType("json").
 		Delete("/users/345,9845,2202").
 		Reply(204)
 
@@ -69,17 +68,14 @@ func TestDeleteUsersIndividualRequests(t *testing.T) {
 	defer gock.Off()
 
 	gock.New(baseURIinTests()).
-		MatchType("json").
 		Delete("/users/345").
 		Reply(204)
 
 	gock.New(baseURIinTests()).
-		MatchType("json").
 		Delete("/users/9845").
 		Reply(204)
 
 	gock.New(baseURIinTests()).
-		MatchType("json").
 		Delete("/users/2202").
 		Reply(204)
 
@@ -118,12 +114,10 @@ func TestDeleteUsersIndividualRequestsOneFail(t *testing.T) {
 	defer gock.Off()
 
 	gock.New(baseURIinTests()).
-		MatchType("json").
 		Delete("/users/345").
 		Reply(204)
 
 	gock.New(baseURIinTests()).
-		MatchType("json").
 		Delete("/users/2202").
 		Reply(204)
 

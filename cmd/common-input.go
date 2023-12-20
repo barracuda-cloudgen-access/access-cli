@@ -2,7 +2,7 @@
 package cmd
 
 /*
-Copyright © 2020 Barracuda Networks, Inc.
+Copyright © 2023 Barracuda Networks, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -771,4 +771,71 @@ func multiOpParseUUIDArgs(cmd *cobra.Command, args []string, idFieldName string)
 	}
 
 	return uuidArgs, nil
+}
+
+func multiOpParseStringArgs(cmd *cobra.Command, args []string, strFieldName string) ([]string, error) {
+	if _, ok := cmd.Annotations[flagInitMultiOpArg]; !ok {
+		panic("multiOpParseStringArgs called for command where multi-op arg flags were not initialized. This is a bug!")
+	}
+
+	if cmd.Flags().Changed(global.MultiOpData[cmd].fieldName) {
+		switch global.MultiOpData[cmd].fieldType {
+		case "[]string":
+			strSlice, err := cmd.Flags().GetStringSlice(global.MultiOpData[cmd].fieldName)
+			if err != nil {
+				return nil, err
+			}
+			if len(strSlice) == 1 && strings.Trim(strSlice[0], "[] ") == "" {
+				return []string{}, nil
+			}
+			out := make([]string, len(strSlice))
+			for i, str := range strSlice {
+				// support [1,2,3] syntax
+				str = strings.Trim(str, "[] ")
+
+				out[i] = str
+			}
+			return out, nil
+		default:
+			panic("multiOpParseStringArgs called where it shouldn't have been. This is a bug!")
+		}
+	}
+
+	if len(args) > 0 {
+		strArgs := make([]string, len(args))
+		for i, arg := range args {
+			strArgs[i] = arg
+		}
+		return strArgs, nil
+	}
+
+	stdinInfo, err := os.Stdin.Stat()
+	hasPiped := err == nil && (stdinInfo.Mode()&os.ModeCharDevice == 0)
+	if !hasPiped {
+		return []string{}, fmt.Errorf("missing arguments")
+	}
+
+	d := json.NewDecoder(os.Stdin)
+
+	var jsonArray []map[string]interface{}
+	if err := d.Decode(&jsonArray); err != nil {
+		return []string{}, fmt.Errorf("decoding JSON from pipe: %w", err)
+	}
+
+	strArgs := make([]string, len(jsonArray))
+	for i, itemMap := range jsonArray {
+		numIface, present := itemMap[strFieldName]
+		if !present {
+			return strArgs, fmt.Errorf("key %s not present in piped JSON", strFieldName)
+		}
+
+		s, ok := numIface.(string)
+		if !ok {
+			return strArgs, fmt.Errorf("value of %s is not a string in piped JSON", strFieldName)
+		}
+
+		strArgs[i] = s
+	}
+
+	return strArgs, nil
 }

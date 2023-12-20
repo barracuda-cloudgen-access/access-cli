@@ -2,7 +2,7 @@
 package cmd
 
 /*
-Copyright © 2020 Barracuda Networks, Inc.
+Copyright © 2023 Barracuda Networks, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -173,7 +173,7 @@ func initClient() {
 		T: transport,
 	}
 
-	global.Transport = httptransport.New(endpoint, "/api/v1", schemes)
+	global.Transport = httptransport.New(endpoint, "/api", schemes)
 	global.Transport.Transport = transport
 
 	global.Client = apiclient.New(global.Transport, strfmt.Default)

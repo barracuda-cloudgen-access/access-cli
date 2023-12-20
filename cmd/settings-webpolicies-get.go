@@ -16,19 +16,3 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-
-const ckeyAuthEndpoint = "endpoint"
-const ckeyAuthSkipTLSVerify = "skipTLSVerify"
-const ckeyAuthUseInsecureHTTP = "useInsecureHTTP"
-const ckeyAuthUseCache = "useCache"
-const ckeyAuthMethod = "method"
-const ckeyAuthAccessToken = "accessToken"
-const ckeyAuthClient = "client"
-const ckeyAuthUID = "uid"
-const ckeyAuthCurrentTenant = "currentTenant"
-
-const ckeyOutputFormat = "outputFormat"
-const ckeyPipeOutputFormat = "pipeOutputFormat"
-const ckeyRecordsPerGetRequest = "recordsPerGetRequest"
-const ckeyDefaultRangeSize = "defaultRangeSize"
-const ckeyCachePath = "cachePath"

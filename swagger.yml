@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   description: "CloudGen Access Console API docs"
-  version: "1.0.1"
+  version: "1.0.2"
   title: "CloudGen Access Console"
   termsOfService: "https://www.barracuda.com/company/legal/prd_trm"
   contact:
@@ -9,8 +9,8 @@ info:
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "enterprise.fyde.com"
-basePath: "/api/v1"
+host: "api.us.access.barracuda.com"
+basePath: "/api"
 tags:
 - name: "auth"
   description: "Authentication on management console"
@@ -19,6 +19,16 @@ tags:
   externalDocs:
     description: "Console docs"
     url: "https://campus.barracuda.com/product/cloudgenaccess/doc/93201523/add-policy/"
+- name: "web_policies"
+  description: "Operations on web policies"
+  externalDocs:
+    description: "Console docs"
+    url: "https://campus.barracuda.com/product/cloudgenaccess"
+- name: "web_categories"
+  description: "Read-only operations on web categories"
+  externalDocs:
+    description: "Console docs"
+    url: "https://campus.barracuda.com/product/cloudgenaccess"
 - name: "access_proxies"
   description: "Operations on access proxies"
   externalDocs:
@@ -56,7 +66,7 @@ tags:
 schemes:
 - "https"
 paths:
-  /auth/sign_in:
+  /v1/auth/sign_in:
     post:
       tags:
       - "auth"
@@ -94,7 +104,7 @@ paths:
               description: Authentication - User ID
         401:
           $ref: "#/responses/Unauthorized"
-  /auth/validate_token:
+  /v1/auth/validate_token:
     get:
       tags:
         - "auth"
@@ -125,7 +135,7 @@ paths:
             $ref: "#/definitions/SignInResponse"
         401:
           $ref: "#/responses/Unauthorized"
-  /auth/password:
+  /v1/auth/password:
     put:
       tags:
       - "auth"
@@ -169,7 +179,7 @@ paths:
       responses:
         200:
           description: "successful operation"
-  /tenants/{tenant_id}/users:
+  /v1/tenants/{tenant_id}/users:
     get:
       tags:
       - "users"
@@ -289,7 +299,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /tenants/{tenant_id}/users/{id}:
+  /v1/tenants/{tenant_id}/users/{id}:
     get:
       tags:
         - "users"
@@ -410,7 +420,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /tenants/{tenant_id}/users/{id}/enrollment:
+  /v1/tenants/{tenant_id}/users/{id}/enrollment:
     post:
       tags:
         - "users"
@@ -471,7 +481,7 @@ paths:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
-  /tenants/{tenant_id}/users/{id}/enrollment/{enrollment_id}:
+  /v1/tenants/{tenant_id}/users/{id}/enrollment/{enrollment_id}:
     patch:
       tags:
         - "users"
@@ -563,7 +573,7 @@ paths:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
-  /tenants/{tenant_id}/users/{id}/send_enrollment_email:
+  /v1/tenants/{tenant_id}/users/{id}/send_enrollment_email:
     post:
       tags:
         - "users"
@@ -599,7 +609,7 @@ paths:
           description: "Email sent"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /tenants/{tenant_id}/users/{user_id}/devices/{device_id}:
+  /v1/tenants/{tenant_id}/users/{user_id}/devices/{device_id}:
     delete:
       tags:
         - "devices"
@@ -626,7 +636,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
-  /tenants/{tenant_id}/groups:
+  /v1/tenants/{tenant_id}/groups:
     get:
       tags:
       - "groups"
@@ -724,7 +734,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /tenants/{tenant_id}/groups/{id}:
+  /v1/tenants/{tenant_id}/groups/{id}:
     get:
       tags:
         - "groups"
@@ -838,7 +848,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
-  /tenants/{tenant_id}/devices:
+  /v1/tenants/{tenant_id}/devices:
     get:
       tags:
       - "devices"
@@ -878,7 +888,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
-  /tenants/{tenant_id}/devices/{id}:
+  /v1/tenants/{tenant_id}/devices/{id}:
     get:
       tags:
         - "devices"
@@ -983,7 +993,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /tenants/{tenant_id}/devices/{id}/revoke_auth_attempt:
+  /v1/tenants/{tenant_id}/devices/{id}/revoke_auth_attempt:
     delete:
       tags:
         - "devices"
@@ -1042,7 +1052,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /tenants/{tenant_id}/devices/{id}/evaluate_resource:
+  /v1/tenants/{tenant_id}/devices/{id}/evaluate_resource:
     post:
       tags:
         - "devices"
@@ -1113,7 +1123,7 @@ paths:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
-  /tenants/{tenant_id}/access_resources:
+  /v1/tenants/{tenant_id}/access_resources:
     get:
       tags:
       - "access_resources"
@@ -1227,7 +1237,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /tenants/{tenant_id}/access_resources/{id}:
+  /v1/tenants/{tenant_id}/access_resources/{id}:
     get:
       tags:
         - "access_resources"
@@ -1346,7 +1356,260 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
-  /tenants/{tenant_id}/access_policies:
+  /v2/tenants/{tenant_id}/dns_security/web_categories:
+    get:
+      tags:
+      - "web_categories"
+      summary: "List web categories"
+      operationId: "listWebCategories"
+      produces:
+      - "application/json"
+      parameters:
+      - $ref: '#/parameters/tenantIdParam'
+      - in: query
+        name: "version"
+        description: "category version"
+        required: true
+        type: string
+        default: "3.2"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/WebCategories"
+        401:
+          $ref: "#/responses/Unauthorized"
+  /v2/tenants/{tenant_id}/dns_security/domain_lookup:
+    get:
+      tags:
+      - "web_categories"
+      summary: "Query web categories for domains"
+      operationId: "queryWebCategories"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      parameters:
+      - $ref: '#/parameters/tenantIdParam'
+      - in: query
+        name: domains
+        description: "Category lookup for provided domains"
+        required: true
+        type: array
+        collectionFormat: csv
+        items:
+          type: string
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/DomainLookupResult"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
+  /v2/tenants/{tenant_id}/dns_security/rulesets:
+    get:
+      tags:
+      - "web_policies"
+      summary: "List web policies"
+      operationId: "listWebPolicies"
+      produces:
+      - "application/json"
+      parameters:
+      - $ref: '#/parameters/tenantIdParam'
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/WebPolicy"
+        401:
+          $ref: "#/responses/Unauthorized"
+  /v2/tenants/{tenant_id}/dns_security/rulesets/{id}:
+    delete:
+      tags:
+        - "web_policies"
+      summary: "Delete web policy"
+      operationId: "deleteWebPolicy"
+      parameters:
+      - $ref: '#/parameters/tenantIdParam'
+      - in: path
+        name: "id"
+        required: true
+        type: string
+        format: uuid
+        description: "The ID of the web policy container to delete"
+      responses:
+        200:
+          description: "Policy deleted"
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+        401:
+          $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
+  /v3/tenants/{tenant_id}/dns_security/rulesets/{ruleset_id}/rules:
+    post:
+      tags:
+      - "web_policies"
+      summary: "New web policy for users and/or groups"
+      operationId: "addWebPolicy"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      parameters:
+      - $ref: '#/parameters/tenantIdParam'
+      - $ref: '#/parameters/rulesetIdParam'
+      - in: body
+        name: "webpolicy"
+        description: "Add new web policy for everyone or for specific  users and/or groups"
+        required: true
+        schema:
+          type: object
+          properties:
+            data:
+              type: object
+              required:
+              - action
+              - type
+              - label
+              - index
+              properties:
+                action:
+                  type: string
+                  example: "block"
+                type:
+                  type: string
+                  example: "category"
+                categories:
+                  type: array
+                  items:
+                    type: integer
+                    example: 1999
+                domains:
+                  type: array
+                  items:
+                    type: string
+                    example: "example.com"
+                label:
+                  type: string
+                  example: "example.com block policy"
+                index:
+                  type: integer
+                  default: 0
+                alert:
+                  type: boolean
+                  default: false
+                notify:
+                  type: boolean
+                  default: false
+                log:
+                  type: boolean
+                  default: false
+                disabled:
+                  type: boolean
+                  default: false
+                group_ids:
+                  type: array
+                  items:
+                    type: integer
+                    example: 1
+                user_ids:
+                  type: array
+                  items:
+                    type: integer
+                    example: 33
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: object
+            properties:
+              rule_id:
+                type: string
+                format: uuid
+              ruleset_id:
+                type: string
+                format: uuid
+              jumprule_id:
+                type: string
+                format: uuid
+        401:
+          $ref: "#/responses/Unauthorized"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
+  /v2/tenants/{tenant_id}/dns_security/rulesets/{ruleset_id}/rules/{rule_id}:
+    patch:
+      tags:
+      - "web_policies"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      summary: "Edit web policy"
+      operationId: "editWebPolicy"
+      parameters:
+      - $ref: '#/parameters/tenantIdParam'
+      - $ref: '#/parameters/rulesetIdParam'
+      - $ref: '#/parameters/ruleIdParam'
+      - in: body
+        name: "webPolicy"
+        description: "Web policy information to modify"
+        required: true
+        schema:
+          type: object
+          properties:
+            data:
+              type: object
+              properties:
+                index:
+                  type: integer
+                action:
+                  type: string
+                categories:
+                  type: array
+                  items:
+                    type: integer
+                domains:
+                  type: array
+                  items:
+                    type: string
+                log:
+                  type: boolean
+                alert:
+                  type: boolean
+                notify:
+                  type: boolean
+                disabled:
+                  type: boolean
+                type:
+                  type: string
+                label:
+                  type: string
+                user_ids:
+                  type: array
+                  items:
+                    type: integer
+                group_ids:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        200:
+          description: "successful operation"
+        400:
+          $ref: "#/responses/BadRequest"
+        401:
+          $ref: "#/responses/Unauthorized"
+        422:
+          $ref: "#/responses/UnprocessableEntity"
+  /v1/tenants/{tenant_id}/access_policies:
     get:
       tags:
       - "access_policies"
@@ -1477,7 +1740,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /tenants/{tenant_id}/access_policies/{id}:
+  /v1/tenants/{tenant_id}/access_policies/{id}:
     get:
       tags:
         - "access_policies"
@@ -1664,7 +1927,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /tenants/{tenant_id}/access_proxies:
+  /v1/tenants/{tenant_id}/access_proxies:
     get:
       tags:
       - "access_proxies"
@@ -1760,7 +2023,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /tenants/{tenant_id}/access_proxies/{id}:
+  /v1/tenants/{tenant_id}/access_proxies/{id}:
     get:
       tags:
         - "access_proxies"
@@ -1919,7 +2182,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
-  /tenants/{tenant_id}/device_events:
+  /v1/tenants/{tenant_id}/device_events:
     get:
       tags:
       - "device_events"
@@ -1979,7 +2242,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
-  /tenants/{tenant_id}/device_events/{id}:
+  /v1/tenants/{tenant_id}/device_events/{id}:
     get:
       tags:
         - "device_events"
@@ -2011,7 +2274,7 @@ paths:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
-  /tenants/{tenant_id}/assets:
+  /v1/tenants/{tenant_id}/assets:
     get:
       tags:
       - "assets"
@@ -2082,7 +2345,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /tenants/{tenant_id}/assets/{id}:
+  /v1/tenants/{tenant_id}/assets/{id}:
     get:
       tags:
         - "assets"
@@ -2130,7 +2393,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
-  /tenants/{tenant_id}/asset_sources:
+  /v1/tenants/{tenant_id}/asset_sources:
     get:
       tags:
       - "asset_sources"
@@ -2157,7 +2420,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
-  /tenants/{tenant_id}/asset_sources/{id}:
+  /v1/tenants/{tenant_id}/asset_sources/{id}:
     patch:
       tags:
         - "asset_sources"
@@ -2200,7 +2463,7 @@ paths:
           $ref: "#/responses/Forbidden"
         404:
           $ref: "#/responses/NotFound"
-  /tenants/{tenant_id}/admins:
+  /v1/tenants/{tenant_id}/admins:
     get:
       tags:
       - "admins"
@@ -2307,7 +2570,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /tenants/{tenant_id}/admins/{id}:
+  /v1/tenants/{tenant_id}/admins/{id}:
     get:
       tags:
         - "admins"
@@ -2412,7 +2675,7 @@ paths:
           $ref: "#/responses/Unauthorized"
         404:
           $ref: "#/responses/NotFound"
-  /tenants/{tenant_id}/app_configuration:
+  /v1/tenants/{tenant_id}/app_configuration:
     get:
       tags:
         - "settings_agent_configuration"
@@ -2468,7 +2731,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /tenants/{tenant_id}/enrollment_settings:
+  /v1/tenants/{tenant_id}/enrollment_settings:
     get:
       tags:
         - "settings_enrollment"
@@ -2523,7 +2786,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /tenants/{tenant_id}/analytics_settings:
+  /v1/tenants/{tenant_id}/analytics_settings:
     get:
       tags:
         - "settings_analytics"
@@ -2579,7 +2842,7 @@ paths:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/UnprocessableEntity"
-  /tenants:
+  /v1/tenants:
     get:
       tags:
       - "tenants"
@@ -2606,7 +2869,7 @@ paths:
               - $ref: "#/definitions/Tenant"
         401:
           $ref: "#/responses/Unauthorized"
-  /tenants/{id}:
+  /v1/tenants/{id}:
     get:
       tags:
         - "tenants"
@@ -2684,6 +2947,20 @@ parameters:
     description: "Full-text search query"
     type: string
     required: false
+  rulesetIdParam:
+    in: path
+    name: "ruleset_id"
+    required: true
+    type: string
+    format: uuid
+    description: "The ID of the web policy ruleset"
+  ruleIdParam:
+    in: path
+    name: "rule_id"
+    required: true
+    type: string
+    format: uuid
+    description: "The ID of the web policy rule"
 definitions:
   SignInRequest:
     type: "object"
@@ -3442,7 +3719,223 @@ definitions:
       locked_at:
         type: string
         format: date-time
-
+  DomainLookupResult:
+    type: object
+    properties:
+      version:
+        type: string
+      domains:
+        type: array
+        items:
+          $ref: "#/definitions/DomainLookupResultItem"
+  DomainLookupResultItem:
+    type: object
+    properties:
+      domain:
+        type: string
+      categories:
+        type: array
+        items:
+          type: integer
+  WebCategories:
+    type: object
+    properties:
+      version:
+        type: string
+        description: WCS version
+      status:
+        type: string
+        description: request status
+      categories:
+        type: object
+        additionalProperties:
+          type: object
+          properties:
+            display:
+              type: string
+            name:
+              type: string
+            parent:
+              type: integer
+      supercategories:
+        type: object
+        additionalProperties:
+          type: string
+  WebPolicy:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      account_id:
+        type: integer
+        format: bigint
+      main:
+        type: boolean
+      rules:
+        type: array
+        items:
+          $ref: "#/definitions/WebPolicyRuleset"
+  WebPolicyRuleset:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      ruleset_id:
+        type: string
+        format: uuid
+      index:
+        type: integer
+      action:
+        type: string
+      safesearch:
+        type: boolean
+      url_logging:
+        type: boolean
+      log:
+        type: boolean
+      alert:
+        type: boolean
+      notify:
+        type: boolean
+      type:
+        type: string
+      label:
+        type: string
+      disabled:
+        type: boolean
+      group_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+      user_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+      users:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            user_uuid:
+              type: string
+              format: uuid
+      groups:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            group_uuid:
+              type: string
+              format: uuid
+      ruleset_jump:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uuid
+          account_id:
+            type: integer
+            format: bigint
+          main:
+            type: boolean
+          rules:
+            type: array
+            items:
+              $ref: "#/definitions/GetWebPolicyRule"
+  GetWebPolicyRule:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      ruleset_id:
+        type: string
+        format: uuid
+      index:
+        type: integer
+      action:
+        type: string
+      categories:
+        type: array
+        items:
+          type: integer
+      domains:
+        type: array
+        items:
+          type: string
+      safesearch:
+        type: boolean
+      url_logging:
+        type: boolean
+      log:
+        type: boolean
+      alert:
+        type: boolean
+      notify:
+        type: boolean
+      disabled:
+        type: boolean
+      type:
+        type: string
+      label:
+        type: string
+      user_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+      group_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+  WebPolicyData:
+    type: object
+    properties:
+      index:
+        type: integer
+      action:
+        type: string
+      categories:
+        type: array
+        items:
+          type: integer
+      domains:
+        type: array
+        items:
+          type: string
+      log:
+        type: boolean
+      alert:
+        type: boolean
+      notify:
+        type: boolean
+      disabled:
+        type: boolean
+      type:
+        type: string
+      label:
+        type: string
+      user_ids:
+        type: array
+        items:
+          type: integer
+      group_ids:
+        type: array
+        items:
+          type: integer
   BadRequestResponse:
     type: object
     properties:

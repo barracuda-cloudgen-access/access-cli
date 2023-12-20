@@ -119,4 +119,4 @@ You can see existing issues and report new ones [on GitHub](https://github.com/b
 
 ## License
 
-access-cli is Copyright © 2020 Barracuda Networks, Inc. and is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0), a OSI-approved license.
+access-cli is Copyright © 2023 Barracuda Networks, Inc. and is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0), a OSI-approved license.
