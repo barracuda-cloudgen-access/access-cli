@@ -46,7 +46,7 @@ const (
 	ConfigApplicationName = "access-cli"
 
 	// DefaultEndpoint is the default endpoint used by the client
-	DefaultEndpoint = "api.us.barracuda.com"
+	DefaultEndpoint = "api.us.access.barracuda.com"
 
 	flagInitFilter      = "filter_flags_init"
 	flagInitPagination  = "pagination_flags_init"

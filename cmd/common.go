@@ -35,7 +35,6 @@ func preRunCheckEndpoint(cmd *cobra.Command, args []string) error {
 		cmd.SilenceUsage = true
 		return fmt.Errorf("endpoint not set! Run `%s endpoint [hostname]` first", ApplicationName)
 	}
-
 	return nil
 }
 

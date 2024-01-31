@@ -2982,7 +2982,7 @@ definitions:
             format: email
           url:
             type: string
-            example: "https://enterprise.fyde.com/sso/start"
+            example: "https://api.us.access.barracuda.com/sso/start"
           provider:
             type: string
             example: email
@@ -3071,7 +3071,7 @@ definitions:
         format: email
       redirect_url:
         type: string
-        example: "https://enterprise.fyde.com/auth/password"
+        example: "https://api.us.access.barracuda.com/auth/password"
   User:
     type: object
     properties:
